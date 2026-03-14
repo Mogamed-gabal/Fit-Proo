@@ -1,0 +1,516 @@
+{
+  "client": {
+    "register": {
+      "request": {
+        "method": "POST",
+        "endpoint": "/api/auth/register/client",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "name": "John Doe",
+          "email": "john.doe@example.com",
+          "password": "SecurePass123",
+          "phone": "01012345678",
+          "address": "123 Main Street, Cairo, Egypt",
+          "age": 30,
+          "height": 175,
+          "goal": "weight_loss"
+        },
+        "requiredFields": [
+          "name",
+          "email", 
+          "password",
+          "phone",
+          "address"
+        ],
+        "optionalFields": [
+          "age",
+          "height",
+          "goal"
+        ],
+        "validationRules": {
+          "name": "Required, string, 2-50 characters",
+          "email": "Required, valid email format, unique",
+          "password": "Required, min 8 characters, at least 1 uppercase, 1 lowercase, 1 number",
+          "phone": "Required, Egyptian mobile number, 11 digits starting with 010, 011, 012, or 015",
+          "address": "Required, string, max 200 characters",
+          "age": "Optional, number, 1-120",
+          "height": "Optional, number, 50-250 cm",
+          "goal": "Optional, string"
+        }
+      },
+      "successResponse": {
+        "status": 201,
+        "body": {
+          "success": true,
+          "message": "Registration successful. Please check your email for verification.",
+          "data": {
+            "user": {
+              "_id": "64f8a1b2c3d4e5f6a7b8c9d0",
+              "name": "John Doe",
+              "email": "john.doe@example.com",
+              "phone": "01012345678",
+              "address": "123 Main Street, Cairo, Egypt",
+              "role": "client",
+              "age": 30,
+              "height": 175,
+              "goal": "weight_loss",
+              "emailVerified": false,
+              "isBlocked": false,
+              "status": "approved",
+              "createdAt": "2024-01-15T10:30:00.000Z",
+              "updatedAt": "2024-01-15T10:30:00.000Z"
+            }
+          }
+        }
+      },
+      "errorResponses": [
+        {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": "رقم الموبايل غير صحيح. يجب أن يكون 11 رقمًا يبدأ بـ 010 أو 011 أو 012 أو 015"
+          },
+          "cause": "Invalid Egyptian mobile number"
+        },
+        {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": "كلمة المرور يجب أن تكون على الأقل 8 أحرفًا تحتوي على حرف كبير، حرف صغير، ورقم"
+          },
+          "cause": "Password doesn't meet strength requirements"
+        },
+        {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": "Email already registered"
+          },
+          "cause": "Email already exists in database"
+        },
+        {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": "Password must be at least 8 characters"
+          },
+          "cause": "Password too short (schema validation)"
+        },
+        {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": "Registration successful but verification email could not be sent. Please contact support."
+          },
+          "cause": "Email service failure"
+        }
+      ]
+    },
+    "login": {
+      "request": {
+        "method": "POST",
+        "endpoint": "/api/auth/login",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "email": "john.doe@example.com",
+          "password": "SecurePass123"
+        },
+        "requiredFields": [
+          "email",
+          "password"
+        ]
+      },
+      "successResponse": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "message": "Login successful",
+          "data": {
+            "user": {
+              "_id": "64f8a1b2c3d4e5f6a7b8c9d0",
+              "name": "John Doe",
+              "email": "john.doe@example.com",
+              "phone": "01012345678",
+              "address": "123 Main Street, Cairo, Egypt",
+              "role": "client",
+              "age": 30,
+              "height": 175,
+              "goal": "weight_loss",
+              "emailVerified": true,
+              "isBlocked": false,
+              "status": "approved",
+              "lastLogin": "2024-01-15T11:00:00.000Z",
+              "createdAt": "2024-01-15T10:30:00.000Z",
+              "updatedAt": "2024-01-15T11:00:00.000Z"
+            },
+            "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          }
+        }
+      },
+      "errorResponses": [
+        {
+          "status": 401,
+          "body": {
+            "success": false,
+            "error": "Invalid credentials"
+          },
+          "cause": "Wrong email or password"
+        },
+        {
+          "status": 403,
+          "body": {
+            "success": false,
+            "message": "Email not verified. Please check your email and verify your account."
+          },
+          "cause": "Email not verified"
+        },
+        {
+          "status": 401,
+          "body": {
+            "success": false,
+            "error": "Account is blocked"
+          },
+          "cause": "User account is blocked"
+        }
+      ]
+    }
+  },
+  "professional": {
+    "register": {
+      "request": {
+        "method": "POST",
+        "endpoint": "/api/auth/register/professional",
+        "headers": {
+          "Content-Type": "multipart/form-data"
+        },
+        "body": {
+          "name": "Dr. Sarah Johnson",
+          "email": "sarah.johnson@medical.com",
+          "password": "SecurePass123",
+          "phone": "01198765432",
+          "address": "789 Medical Center, Alexandria, Egypt",
+          "age": 35,
+          "short_bio": "Experienced physical therapist with 12 years of expertise in sports medicine and rehabilitation.",
+          "years_of_experience": 12,
+          "packages": [
+            {
+              "duration": 1,
+              "price": 150
+            },
+            {
+              "duration": 3,
+              "price": 400
+            },
+            {
+              "duration": 6,
+              "price": 750
+            }
+          ],
+          "certificates": ["certificate1.jpg", "certificate2.jpg", "certificate3.jpg"],
+          "id_card_front": ["id_front.jpg"],
+          "id_card_back": ["id_back.jpg"]
+        },
+        "requiredFields": [
+          "name",
+          "email",
+          "password",
+          "phone",
+          "address",
+          "packages",
+          "certificates",
+          "id_card_front",
+          "id_card_back"
+        ],
+        "optionalFields": [
+          "age",
+          "short_bio",
+          "years_of_experience"
+        ],
+        "validationRules": {
+          "name": "Required, string, 2-50 characters",
+          "email": "Required, valid email format, unique",
+          "password": "Required, min 8 characters, at least 1 uppercase, 1 lowercase, 1 number",
+          "phone": "Required, Egyptian mobile number, 11 digits starting with 010, 011, 012, or 015",
+          "address": "Required, string, max 200 characters",
+          "packages": "Required, array of exactly 3 packages with durations [1, 3, 6] months",
+          "certificates": "Required, at least 1 image file, max 5 files",
+          "id_card_front": "Required, 1 image file",
+          "id_card_back": "Required, 1 image file",
+          "age": "Optional, number, 18-100",
+          "short_bio": "Optional, string, max 500 characters",
+          "years_of_experience": "Optional, number, 0-70"
+        },
+        "fileUploadRules": {
+          "maxFileSize": "5MB per file",
+          "allowedTypes": "image/* (JPEG, PNG, GIF, etc.)",
+          "maxFiles": "7 total (5 certificates + 2 ID cards)"
+        }
+      },
+      "successResponse": {
+        "status": 201,
+        "body": {
+          "success": true,
+          "message": "Registration successful. Please check your email for verification and wait for admin approval.",
+          "data": {
+            "user": {
+              "_id": "64f8a1b2c3d4e5f6a7b8c9d1",
+              "name": "Dr. Sarah Johnson",
+              "email": "sarah.johnson@medical.com",
+              "phone": "01198765432",
+              "address": "789 Medical Center, Alexandria, Egypt",
+              "role": "doctor",
+              "age": 35,
+              "short_bio": "Experienced physical therapist with 12 years of expertise in sports medicine and rehabilitation.",
+              "years_of_experience": 12,
+              "packages": [
+                {
+                  "duration": 1,
+                  "price": 150
+                },
+                {
+                  "duration": 3,
+                  "price": 400
+                },
+                {
+                  "duration": 6,
+                  "price": 750
+                }
+              ],
+              "emailVerified": false,
+              "isBlocked": false,
+              "status": "pending",
+              "createdAt": "2024-01-15T10:30:00.000Z",
+              "updatedAt": "2024-01-15T10:30:00.000Z"
+            }
+          }
+        }
+      },
+      "errorResponses": [
+        {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": "رقم الموبايل غير صحيح. يجب أن يكون 11 رقمًا يبدأ بـ 010 أو 011 أو 012 أو 015"
+          },
+          "cause": "Invalid Egyptian mobile number"
+        },
+        {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": "كلمة المرور يجب أن تكون على الأقل 8 أحرفًا تحتوي على حرف كبير، حرف صغير، ورقم"
+          },
+          "cause": "Password doesn't meet strength requirements"
+        },
+        {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": "Address is required"
+          },
+          "cause": "Missing address field"
+        },
+        {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": "Email already registered"
+          },
+          "cause": "Email already exists in database"
+        },
+        {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": "Exactly 3 packages are required (1, 3, and 6 months)"
+          },
+          "cause": "Invalid packages array length"
+        },
+        {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": "Packages must include durations of 1, 3, and 6 months"
+          },
+          "cause": "Missing required package durations"
+        },
+        {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": "All package prices must be positive numbers"
+          },
+          "cause": "Invalid package prices"
+        },
+        {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": "At least one certificate is required"
+          },
+          "cause": "No certificate files uploaded"
+        },
+        {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": "Only image files are allowed for certificates"
+          },
+          "cause": "Invalid certificate file type"
+        },
+        {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": "Only image files are allowed for ID cards"
+          },
+          "cause": "Invalid ID card file type"
+        },
+        {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": "Both front and back ID card images are required"
+          },
+          "cause": "Missing ID card files"
+        },
+        {
+          "status": 400,
+          "body": {
+            "success": false,
+            "error": "Password must be at least 8 characters"
+          },
+          "cause": "Password too short (schema validation)"
+        }
+      ]
+    },
+    "login": {
+      "request": {
+        "method": "POST",
+        "endpoint": "/api/auth/login",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "email": "sarah.johnson@medical.com",
+          "password": "SecurePass123"
+        },
+        "requiredFields": [
+          "email",
+          "password"
+        ]
+      },
+      "successResponse": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "message": "Login successful",
+          "data": {
+            "user": {
+              "_id": "64f8a1b2c3d4e5f6a7b8c9d1",
+              "name": "Dr. Sarah Johnson",
+              "email": "sarah.johnson@medical.com",
+              "phone": "01198765432",
+              "address": "789 Medical Center, Alexandria, Egypt",
+              "role": "doctor",
+              "age": 35,
+              "short_bio": "Experienced physical therapist with 12 years of expertise in sports medicine and rehabilitation.",
+              "years_of_experience": 12,
+              "packages": [
+                {
+                  "duration": 1,
+                  "price": 150
+                },
+                {
+                  "duration": 3,
+                  "price": 400
+                },
+                {
+                  "duration": 6,
+                  "price": 750
+                }
+              ],
+              "emailVerified": true,
+              "isBlocked": false,
+              "status": "approved",
+              "lastLogin": "2024-01-15T11:00:00.000Z",
+              "createdAt": "2024-01-15T10:30:00.000Z",
+              "updatedAt": "2024-01-15T11:00:00.000Z"
+            },
+            "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          }
+        }
+      },
+      "errorResponses": [
+        {
+          "status": 401,
+          "body": {
+            "success": false,
+            "error": "Invalid credentials"
+          },
+          "cause": "Wrong email or password"
+        },
+        {
+          "status": 403,
+          "body": {
+            "success": false,
+            "message": "Email not verified. Please check your email and verify your account."
+          },
+          "cause": "Email not verified"
+        },
+        {
+          "status": 401,
+          "body": {
+            "success": false,
+            "error": "Account not approved"
+          },
+          "cause": "Professional account pending admin approval"
+        },
+        {
+          "status": 401,
+          "body": {
+            "success": false,
+            "error": "Account is blocked"
+          },
+          "cause": "User account is blocked"
+        }
+      ]
+    }
+  },
+  "additionalInfo": {
+    "tokenInfo": {
+      "accessToken": {
+        "type": "JWT",
+        "expiresIn": "15 minutes",
+        "header": "Authorization: Bearer <token>"
+      },
+      "refreshToken": {
+        "type": "JWT",
+        "expiresIn": "7 days",
+        "storedIn": "Database with revocation support"
+      }
+    },
+    "emailVerification": {
+      "required": true,
+      "tokenExpiry": "24 hours",
+      "endpoint": "/api/auth/verify-email"
+    },
+    "rateLimiting": {
+      "registration": "5 requests per 15 minutes",
+      "login": "10 requests per 15 minutes",
+      "emailVerification": "5 requests per 15 minutes"
+    },
+    "security": {
+      "passwordHashing": "bcrypt with 12 salt rounds",
+      "tokenSecurity": "JWT with refresh token rotation",
+      "fileStorage": "Memory storage (Buffer) in MongoDB",
+      "inputSanitization": "express-mongo-sanitize, helmet"
+    }
+  }
+}
