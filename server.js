@@ -29,7 +29,8 @@ const corsOptions = {
     const allowedOrigins = [
       process.env.FRONTEND_URL,
       'http://localhost:3000',
-      'http://localhost:5500'
+      'http://localhost:5500',  
+      'http://localhost:4200'
     ];
 
     if (!origin) return callback(null, true);
