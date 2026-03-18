@@ -9,10 +9,35 @@ const { uploadImage } = require('../services/cloudinaryService');
 const validatePassword = require('../utils/passwordValidator');
 
 class AuthController {
-  async registerClient(req, res) {
+  async registerClient(req, res, next) {
     try {
-      const { name, email, password, phone, address, age, height, goal } = req.body;
+      const { name, email, password, phone, address, dateOfBirth, region, gender, height, goal } = req.body;
       
+      // 🔒 SECURITY FIX: Validate required fields
+      if (!name || !email || !password || !phone || !address || !dateOfBirth || !region || !gender) {
+        return res.status(400).json({
+          success: false,
+          error: 'All required fields must be provided: name, email, password, phone, address, dateOfBirth, region, gender'
+        });
+      }
+      
+      // Validate age is at least 18 years
+      const birthDate = new Date(dateOfBirth);
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      
+      if (age < 18) {
+        return res.status(400).json({
+          success: false,
+          error: 'User must be at least 18 years old'
+        });
+      }
+       
       // Validate password using centralized validator
       validatePassword(password);
       const existingUser = await User.findOne({ email }).select('_id');
@@ -31,7 +56,9 @@ class AuthController {
         phone,
         address,
         role: 'client',
-        age,
+        region,
+        dateOfBirth,
+        gender,
         height,
         goal,
         status: 'approved'
@@ -63,26 +90,40 @@ class AuthController {
         });
       }
       
-      // Handle duplicate key errors
-      if (error.code === 11000) {
-        return res.status(400).json({
-          success: false,
-          error: 'Email already registered'
-        });
-      }
-      
-      // Generic server error
-      res.status(500).json({
-        success: false,
-        error: 'Internal server error'
-      });
+      // Let the global error handler handle all other errors
+      next(error);
     }
   }
 
-async registerProfessional(req, res) {
+async registerProfessional(req, res, next) {
   try {
-    const { name, email, password, phone, address, age, short_bio, years_of_experience,specialization } = req.body;
+    const { name, email, password, phone, address, dateOfBirth, region, gender, short_bio, years_of_experience, specialization } = req.body;
     let { packages } = req.body;
+
+    // 🔒 SECURITY FIX: Validate required fields
+    if (!name || !email || !password || !phone || !address || !dateOfBirth || !region || !gender) {
+      return res.status(400).json({
+        success: false,
+        error: 'All required fields must be provided: name, email, password, phone, address, dateOfBirth, region, gender'
+      });
+    }
+
+    // Validate age is at least 18 years
+    const birthDate = new Date(dateOfBirth);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    
+    if (age < 18) {
+      return res.status(400).json({
+        success: false,
+        error: 'User must be at least 18 years old'
+      });
+    }
 
     // Validate password using centralized validator
     validatePassword(password);
@@ -102,13 +143,6 @@ async registerProfessional(req, res) {
     // Hardcode role to doctor
     const role = 'doctor';
 
-    // Address validation
-    // if (!address || address.trim().length === 0) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     error: 'Address is required'
-    //   });
-    // }
 // Validate specialization
 if (!specialization || !['doctor', 'nutritionist', 'therapist', 'coach'].includes(specialization)) {
   return res.status(400).json({
@@ -261,7 +295,9 @@ try {
       password,
       phone,
       address: address.trim(),
-      age,
+      dateOfBirth,
+      region,
+      gender,
       short_bio,
       years_of_experience,
       role,
@@ -283,11 +319,8 @@ try {
     });
 
   } catch (error) {
-    if (error.name === 'ValidationError') {
-      const firstMessage = Object.values(error.errors)[0].message;
-      return res.status(400).json({ success: false, error: firstMessage });
-    }
-    res.status(400).json({ success: false, error: error.message });
+    // Let the global error handler handle all errors
+    next(error);
   }
 }
 

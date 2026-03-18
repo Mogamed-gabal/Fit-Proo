@@ -44,6 +44,25 @@ phone: {
     trim: true,
     maxlength: [200, 'Address cannot exceed 200 characters']
   },
+  dateOfBirth: {
+    type: Date,
+    required: [true, 'Date of birth is required']
+  },
+  region: {
+    type: String,
+    required: [true, 'Region is required'],
+    enum: [
+      'Cairo', 'Giza', 'Alexandria', 'Dakahlia', 'Red Sea', 'Beheira', 'Fayoum',
+      'Gharbia', 'Ismailia', 'Menofia', 'Minya', 'Qaliubiya', 'New Valley', 'Suez',
+      'Aswan', 'Assiut', 'Beni Suef', 'Port Said', 'Damietta', 'Sharkia',
+      'South Sinai', 'Kafr El Sheikh', 'Matrouh', 'Luxor', 'Qena', 'North Sinai', 'Sohag'
+    ]
+  },
+  gender: {
+    type: String,
+    required: [true, 'Gender is required'],
+    enum: ['male', 'female', 'other']
+  },
   role: {
     type: String,
     enum: ['client', 'doctor', 'admin', 'supervisor'],
@@ -109,10 +128,13 @@ phone: {
     secure_url: String,
     public_id: String
   }],
-  age: {
-    type: Number,
-    min: [18, 'Age must be at least 18'],
-    max: [100, 'Age cannot exceed 100']
+  profilePicture: {
+    filename: String,
+    originalName: String,
+    mimetype: String,
+    size: Number,
+    secure_url: String,
+    public_id: String
   },
   short_bio: {
     type: String,
@@ -128,16 +150,14 @@ phone: {
     originalName: String,
     mimetype: String,
     size: Number,
-    secure_url: String,
-    public_id: String
+    buffer: Buffer
   },
   id_card_back: {
     filename: String,
     originalName: String,
     mimetype: String,
     size: Number,
-    secure_url: String,
-    public_id: String
+    buffer: Buffer
   },
 height: {
     type: Number,
@@ -184,6 +204,25 @@ height: {
   timestamps: true
 });
 
+// Virtual for automatic age calculation from dateOfBirth
+userSchema.virtual('age').get(function() {
+  if (!this.dateOfBirth) return null;
+  const today = new Date();
+  const birthDate = new Date(this.dateOfBirth);
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  
+  return age;
+});
+
+// Ensure virtuals are included in JSON output
+userSchema.set('toJSON', { virtuals: true });
+userSchema.set('toObject', { virtuals: true });
+
 // Exclude soft-deleted users by default
 userSchema.pre(/^find/, function(next) {
   this.find({ isDeleted: { $ne: true } });
@@ -223,10 +262,12 @@ userSchema.methods.toJSON = function() {
   delete userObject.loginAttempts;
   delete userObject.lockUntil;
   delete userObject.passwordResetOtpAttempts;
+  delete userObject.id_card_front;
+  delete userObject.id_card_back;
   delete userObject.blockedBy;
   delete userObject.deletedBy;
   
-  // Keep image URLs but remove sensitive public_id
+  // Keep certificates URLs but remove sensitive data
   if (userObject.certificates) {
     userObject.certificates = userObject.certificates.map(cert => ({
       filename: cert.filename,
@@ -236,24 +277,15 @@ userSchema.methods.toJSON = function() {
       secure_url: cert.secure_url
     }));
   }
-  
-  if (userObject.id_card_front) {
-    userObject.id_card_front = {
-      filename: userObject.id_card_front.filename,
-      originalName: userObject.id_card_front.originalName,
-      mimetype: userObject.id_card_front.mimetype,
-      size: userObject.id_card_front.size,
-      secure_url: userObject.id_card_front.secure_url
-    };
-  }
-  
-  if (userObject.id_card_back) {
-    userObject.id_card_back = {
-      filename: userObject.id_card_back.filename,
-      originalName: userObject.id_card_back.originalName,
-      mimetype: userObject.id_card_back.mimetype,
-      size: userObject.id_card_back.size,
-      secure_url: userObject.id_card_back.secure_url
+
+  // Keep profile picture URL but remove sensitive data
+  if (userObject.profilePicture) {
+    userObject.profilePicture = {
+      filename: userObject.profilePicture.filename,
+      originalName: userObject.profilePicture.originalName,
+      mimetype: userObject.profilePicture.mimetype,
+      size: userObject.profilePicture.size,
+      secure_url: userObject.profilePicture.secure_url
     };
   }
   
@@ -292,8 +324,16 @@ userSchema.index({ passwordResetOtpExpires: 1 }, { expireAfterSeconds: 86400 });
 // 🔒 SECURITY FIX: Index for lockout functionality
 userSchema.index({ lockUntil: 1 });
 
-// 🔒 SECURITY FIX: Indexes for admin actions
-userSchema.index({ blockedBy: 1 });
-userSchema.index({ deletedBy: 1 });
+// 🔒 PERFORMANCE FIX: Additional indexes for common queries
+userSchema.index({ role: 1, isDeleted: 1, status: 1 });
+userSchema.index({ region: 1, createdAt: -1 });
+userSchema.index({ specialization: 1, role: 1 });
+userSchema.index({ 'weightHistory.date': -1 });
+userSchema.index({ createdAt: -1 });
+userSchema.index({ updatedAt: -1 });
+
+// 🔒 PERFORMANCE FIX: Compound indexes for common queries
+userSchema.index({ role: 1, status: 1, isDeleted: 1 });
+userSchema.index({ role: 1, specialization: 1, status: 1 });
 
 module.exports = mongoose.model('User', userSchema);

@@ -19,7 +19,13 @@ const SUPERVISOR_ALLOWED_ACTIONS = [
 const DOCTOR_ALLOWED_ACTIONS = [
   'read_own_profile',
   'manage_own_subscriptions',
-  'read_own_subscriptions'
+  'read_own_subscriptions',
+  'manage_own_certificates',
+  'manage_own_packages',
+  'manage_own_bio',
+  'update_own_profile',
+  'manage_own_profile_picture',
+  'read_own_weight'
 ];
 
 const CLIENT_ALLOWED_ACTIONS = [
@@ -27,7 +33,9 @@ const CLIENT_ALLOWED_ACTIONS = [
   'manage_own_subscriptions',
   'read_own_subscriptions',
   'manage_own_weight',
-  'read_own_weight'
+  'read_own_weight',
+  'update_own_profile',
+  'manage_own_profile_picture'
 ];
 
 /**

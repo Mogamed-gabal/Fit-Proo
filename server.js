@@ -12,7 +12,7 @@ const slowDown = require('express-slow-down');
 const connectDB = require('./src/config/db');
 const logger = require('./src/config/logger');
 const routes = require('./src/routes');
-const { userErrorHandler, notFoundHandler } = require('./src/middlewares/userErrorMiddleware');
+const { secureErrorHandler, notFoundHandler } = require('./src/middlewares/secureErrorHandler');
 
 // Load environment variables
 dotenv.config();
@@ -177,7 +177,7 @@ app.use(notFoundHandler);
 GLOBAL ERROR HANDLER
 ========================================
 */
-app.use(userErrorHandler);
+app.use(secureErrorHandler);
 
 /*
 ========================================
