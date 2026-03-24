@@ -90,9 +90,9 @@ const validatePackageUpdate = [
     .withMessage('At least one package is required'),
   
   body('packages.*.duration')
-    .isString()
-    .isIn(['1 week', '2 weeks', '1 month', '3 months', '6 months', '1 year'])
-    .withMessage('Package duration must be one of: 1 week, 2 weeks, 1 month, 3 months, 6 months, 1 year'),
+    .isInt({ min: 1 })
+    .isIn([1, 3, 6])
+    .withMessage('Package duration must be one of: 1 (1 month), 3 (3 months), 6 (6 months)'),
   
   body('packages.*.price')
     .isFloat({ min: 50, max: 10000 })

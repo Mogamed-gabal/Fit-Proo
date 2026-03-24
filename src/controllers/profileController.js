@@ -3,7 +3,7 @@ const { withTransaction } = require('../utils/transactionHelper');
 const { uploadImage } = require('../services/cloudinaryService');
 
 class ProfileController {
-  async addWeightEntry(req, res) {
+  async addWeightEntry(req, res, next) {
     try {
       const { weight } = req.body;
       const userId = req.user.userId;
@@ -56,14 +56,12 @@ class ProfileController {
         }
       });
     } catch (error) {
-      res.status(400).json({
-        success: false,
-        error: error.message
-      });
+      // Let the global error handler handle all errors
+      next(error);
     }
   }
 
-  async getWeightHistory(req, res) {
+  async getWeightHistory(req, res, next) {
     try {
       const userId = req.user.userId;
 
@@ -93,14 +91,12 @@ class ProfileController {
         }
       });
     } catch (error) {
-      res.status(400).json({
-        success: false,
-        error: error.message
-      });
+      // Let the global error handler handle all errors
+      next(error);
     }
   }
 
-  async getWeightHistoryPaginated(req, res) {
+  async getWeightHistoryPaginated(req, res, next) {
     try {
       const userId = req.user.userId;
       const page = parseInt(req.query.page) || 1;
@@ -147,14 +143,12 @@ class ProfileController {
         }
       });
     } catch (error) {
-      res.status(400).json({
-        success: false,
-        error: error.message
-      });
+      // Let the global error handler handle all errors
+      next(error);
     }
   }
 
-  async getProfile(req, res) {
+  async getProfile(req, res, next) {
     try {
       const userId = req.user.userId;
 
@@ -175,14 +169,12 @@ class ProfileController {
         }
       });
     } catch (error) {
-      res.status(400).json({
-        success: false,
-        error: error.message
-      });
+      // Let the global error handler handle all errors
+      next(error);
     }
   }
 
-  async updateProfile(req, res) {
+  async updateProfile(req, res, next) {
     try {
       const userId = req.user.userId;
       const user = await User.findById(userId);
@@ -198,11 +190,13 @@ class ProfileController {
       let allowedFields = [];
       
       if (user.role === 'client') {
-        allowedFields = ['phone', 'region'];
+        allowedFields = ['name', 'phone', 'address', 'region', 'gender', 'dateOfBirth', 'height', 'goal'];
       } else if (user.role === 'doctor') {
-        allowedFields = ['name', 'phone', 'address', 'height', 'goal'];
+        allowedFields = ['name', 'phone', 'address', 'region', 'gender', 'dateOfBirth', 'short_bio', 'years_of_experience', 'specialization'];
+      } else if (user.role === 'admin' || user.role === 'supervisor') {
+        allowedFields = ['name', 'phone', 'address', 'region', 'gender', 'dateOfBirth'];
       } else {
-        allowedFields = ['name', 'phone', 'address', 'height', 'goal'];
+        allowedFields = ['name', 'phone', 'address', 'region', 'gender', 'dateOfBirth'];
       }
 
       const updates = {};
@@ -253,14 +247,12 @@ class ProfileController {
         }
       });
     } catch (error) {
-      res.status(400).json({
-        success: false,
-        error: error.message
-      });
+      // Let the global error handler handle all errors
+      next(error);
     }
   }
 
-  async updateProfilePicture(req, res) {
+  async updateProfilePicture(req, res, next) {
     try {
       const userId = req.user.userId;
       
@@ -308,14 +300,12 @@ class ProfileController {
         }
       });
     } catch (error) {
-      res.status(400).json({
-        success: false,
-        error: error.message
-      });
+      // Let the global error handler handle all errors
+      next(error);
     }
   }
 
-  async deleteProfilePicture(req, res) {
+  async deleteProfilePicture(req, res, next) {
     try {
       const userId = req.user.userId;
 
@@ -345,14 +335,12 @@ class ProfileController {
         message: 'Profile picture deleted successfully'
       });
     } catch (error) {
-      res.status(400).json({
-        success: false,
-        error: error.message
-      });
+      // Let the global error handler handle all errors
+      next(error);
     }
   }
 
-  async addCertificate(req, res) {
+  async addCertificate(req, res, next) {
     try {
       const userId = req.user.userId;
       
@@ -406,14 +394,12 @@ class ProfileController {
         }
       });
     } catch (error) {
-      res.status(400).json({
-        success: false,
-        error: error.message
-      });
+      // Let the global error handler handle all errors
+      next(error);
     }
   }
 
-  async deleteCertificate(req, res) {
+  async deleteCertificate(req, res, next) {
     try {
       const userId = req.user.userId;
       const { certificateId } = req.params;
@@ -467,14 +453,12 @@ class ProfileController {
         message: 'Certificate deleted successfully'
       });
     } catch (error) {
-      res.status(400).json({
-        success: false,
-        error: error.message
-      });
+      // Let the global error handler handle all errors
+      next(error);
     }
   }
 
-  async updatePackages(req, res) {
+  async updatePackages(req, res, next) {
     try {
       const userId = req.user.userId;
       const { packages } = req.body;
@@ -522,14 +506,12 @@ class ProfileController {
         }
       });
     } catch (error) {
-      res.status(400).json({
-        success: false,
-        error: error.message
-      });
+      // Let the global error handler handle all errors
+      next(error);
     }
   }
 
-  async updateBio(req, res) {
+  async updateBio(req, res, next) {
     try {
       const userId = req.user.userId;
       const { short_bio } = req.body;
@@ -560,10 +542,8 @@ class ProfileController {
         }
       });
     } catch (error) {
-      res.status(400).json({
-        success: false,
-        error: error.message
-      });
+      // Let the global error handler handle all errors
+      next(error);
     }
   }
 }

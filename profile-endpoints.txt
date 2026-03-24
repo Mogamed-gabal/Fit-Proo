@@ -1,0 +1,98 @@
+# Profile API Endpoints for Postman
+
+# Authentication: Bearer Token required for all endpoints
+
+# GET PROFILE
+GET /api/profile/
+Headers: Authorization: Bearer <token>
+
+# UPDATE PROFILE
+PUT /api/profile/
+Headers: Authorization: Bearer <token>
+Body (Client):
+{
+  "name": "string",
+  "phone": "string", 
+  "address": "string",
+  "region": "string",
+  "gender": "male|female|other",
+  "dateOfBirth": "YYYY-MM-DD",
+  "height": "number",
+  "goal": "weight_loss|muscle_gain|fitness|health|performance"
+}
+
+Body (Doctor):
+{
+  "name": "string",
+  "phone": "string",
+  "address": "string", 
+  "region": "string",
+  "gender": "male|female|other",
+  "dateOfBirth": "YYYY-MM-DD",
+  "short_bio": "string",
+  "years_of_experience": "number",
+  "specialization": "doctor|nutritionist|therapist|coach"
+}
+
+# UPLOAD PROFILE PICTURE
+PUT /api/profile/picture
+Headers: Authorization: Bearer <token>
+Body: form-data with "profilePicture" file (max 5MB, JPEG/PNG/GIF/WebP)
+
+# DELETE PROFILE PICTURE
+DELETE /api/profile/picture
+Headers: Authorization: Bearer <token>
+
+# ADD WEIGHT ENTRY (Client Only)
+POST /api/profile/weight
+Headers: Authorization: Bearer <token>
+Body:
+{
+  "weight": "number"
+}
+
+# GET WEIGHT HISTORY (Client Only)
+GET /api/profile/weight
+Headers: Authorization: Bearer <token>
+
+# GET WEIGHT HISTORY PAGINATED (Client Only)
+GET /api/profile/weight/paginated?page=1&limit=10
+Headers: Authorization: Bearer <token>
+
+# ADD CERTIFICATE (Doctor Only)
+POST /api/profile/certificates
+Headers: Authorization: Bearer <token>
+Body: form-data with "certificate" file (max 5MB, JPEG/PNG/GIF/WebP)
+
+# DELETE CERTIFICATE (Doctor Only)
+DELETE /api/profile/certificates/:certificateId
+Headers: Authorization: Bearer <token>
+
+# UPDATE PACKAGES (Doctor Only)
+PUT /api/profile/packages
+Headers: Authorization: Bearer <token>
+Body:
+{
+  "packages": [
+    {
+      "duration": 1,
+      "price": 100
+    },
+    {
+      "duration": 3,
+      "price": 250
+    },
+    {
+      "duration": 6,
+      "price": 400
+    }
+  ]
+}
+
+# UPDATE BIO (Doctor Only)
+PUT /api/profile/bio
+Headers: Authorization: Bearer <token>
+Body:
+{
+  "short_bio": "string (max 500 chars)"
+}

@@ -6,7 +6,7 @@ const morgan = require('morgan');
 const hpp = require('hpp');
 const compression = require('compression');
 
-const { rateLimit, ipKeyGenerator } = require('express-rate-limit');
+const rateLimit = require('express-rate-limit');
 const slowDown = require('express-slow-down');
 
 const connectDB = require('./src/config/db');
@@ -139,7 +139,7 @@ const limiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 
-  keyGenerator: (req) => ipKeyGenerator(req)
+  keyGenerator: (req) => req.ip
 });
 
 app.use('/api/', limiter);

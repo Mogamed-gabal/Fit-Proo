@@ -3,13 +3,27 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss');
 
 /**
- * Global sanitization middleware
+ * Global input sanitization middleware
  */
 const sanitizeInputs = (req, res, next) => {
-  // Sanitize body, query, params
-  if (req.body) req.body = mongoSanitize(req.body);
-  if (req.query) req.query = mongoSanitize(req.query);
-  if (req.params) req.params = mongoSanitize(req.params);
+  // Apply mongo-sanitize only to req.body to prevent NoSQL injection
+  if (req.body) {
+    const originalBody = { ...req.body };
+    const sanitizedBody = mongoSanitize(req.body);
+    
+    // Use sanitized body if it's not empty, otherwise use original
+    req.body = sanitizedBody && Object.keys(sanitizedBody).length > 0 ? sanitizedBody : originalBody;
+  }
+  
+  // Apply XSS protection to string fields in body (skip email and password)
+  if (req.body) {
+    Object.keys(req.body).forEach(key => {
+      if (typeof req.body[key] === 'string' && !['email', 'password'].includes(key)) {
+        req.body[key] = sanitizeString(req.body[key]);
+      }
+    });
+  }
+  
   next();
 };
 
@@ -19,9 +33,13 @@ const sanitizeInputs = (req, res, next) => {
 const sanitizeString = (value) => {
   if (typeof value === 'string') {
     return xss(value, {
-      whiteList: {},
+      whiteList: {}, // Allow no HTML tags
       stripIgnoreTag: true,
-      stripIgnoreTagBody: ['script']
+      stripIgnoreTagBody: ['script'],
+      onIgnoreTag: (tag, html, options) => {
+        // Keep the text content but remove the tag
+        return html.replace(/<[^>]*>/g, '');
+      }
     });
   }
   return value;

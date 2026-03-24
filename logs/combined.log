@@ -457,3 +457,25 @@
 {"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-03-19 00:22:33"}
 {"ip":"127.0.0.1","level":"error","message":"Application Error Invalid flags supplied to RegExp constructor '[object O]'","method":"POST","service":"fitness-api","stack":"SyntaxError: Invalid flags supplied to RegExp constructor '[object O]'\n    at new RegExp (<anonymous>)\n    at StandardValidation.matches [as validator] (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\validator\\lib\\matches.js:12:15)\n    at C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\express-validator\\lib\\context-items\\standard-validation.js:18:33\n    at Array.forEach (<anonymous>)\n    at StandardValidation.run (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\express-validator\\lib\\context-items\\standard-validation.js:17:16)\n    at C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\express-validator\\lib\\chain\\context-runner-impl.js:41:39\n    at Array.map (<anonymous>)\n    at ContextRunnerImpl.run (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\express-validator\\lib\\chain\\context-runner-impl.js:34:70)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async middleware (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\express-validator\\lib\\middlewares\\check.js:15:13)","timestamp":"2026-03-19 00:22:36","type":"ERROR","url":"/api/auth/register/professional","userAgent":"PostmanRuntime/7.51.1"}
 {"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-03-19 00:22:50"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-03-19 01:05:31"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-03-19 01:05:43"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-03-19 01:05:55"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-03-19 01:06:07"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-03-19 01:21:52"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-03-19 01:22:43"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-03-19 01:28:28"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-03-19 22:09:33"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-03-19 22:14:47"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-03-19 22:15:03"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-03-19 22:15:19"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-03-19 22:16:53"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-03-19 22:17:51"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-03-19 22:18:04"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-03-19 22:20:03"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-03-19 22:20:36"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-03-19 22:21:33"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-03-19 22:21:49"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-03-19 22:22:54"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-03-19 22:24:37"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-03-19 22:24:51"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-03-19 22:45:40"}
