@@ -28,7 +28,8 @@ const DOCTOR_ALLOWED_ACTIONS = [
   'read_own_weight',
   'manage_client_workout_plans',
   'view_client_workout_plans',
-  'view_client_progress'
+  'view_client_progress',
+  'manage_workout_templates'
 ];
 
 const CLIENT_ALLOWED_ACTIONS = [
