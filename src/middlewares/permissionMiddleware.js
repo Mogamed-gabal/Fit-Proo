@@ -25,7 +25,10 @@ const DOCTOR_ALLOWED_ACTIONS = [
   'manage_own_bio',
   'update_own_profile',
   'manage_own_profile_picture',
-  'read_own_weight'
+  'read_own_weight',
+  'manage_client_workout_plans',
+  'view_client_workout_plans',
+  'view_client_progress'
 ];
 
 const CLIENT_ALLOWED_ACTIONS = [
@@ -35,7 +38,9 @@ const CLIENT_ALLOWED_ACTIONS = [
   'manage_own_weight',
   'read_own_weight',
   'update_own_profile',
-  'manage_own_profile_picture'
+  'manage_own_profile_picture',
+  'manage_own_progress',
+  'view_own_progress'
 ];
 
 /**

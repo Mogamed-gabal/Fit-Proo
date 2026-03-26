@@ -5,11 +5,13 @@ const subscriptionRoutes = require('./subscription');
 const profileRoutes = require('./profile');
 const adminRoutes = require('./admin');
 const auditRoutes = require('./audit');
+const workoutPlanRoutes = require('./workoutPlans');
 
 router.use('/auth', authRoutes);
 router.use('/subscription', subscriptionRoutes);
 router.use('/profile', profileRoutes);
 router.use('/admin', adminRoutes);
 router.use('/audit', auditRoutes);
+router.use('/workout-plans', workoutPlanRoutes);
 
 module.exports = router;

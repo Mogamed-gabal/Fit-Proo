@@ -40,17 +40,23 @@ phone: {
 },
   address: {
     type: String,
-    required: [true, 'Address is required'],
+    required: function () {
+      return ['client', 'doctor'].includes(this.role);
+    },
     trim: true,
     maxlength: [200, 'Address cannot exceed 200 characters']
   },
   dateOfBirth: {
     type: Date,
-    required: [true, 'Date of birth is required']
+    required: function () {
+      return ['client', 'doctor'].includes(this.role);
+    }
   },
   region: {
     type: String,
-    required: [true, 'Region is required'],
+    required: function () {
+      return ['client', 'doctor'].includes(this.role);
+    },
     enum: [
       'Cairo', 'Giza', 'Alexandria', 'Dakahlia', 'Red Sea', 'Beheira', 'Fayoum',
       'Gharbia', 'Ismailia', 'Menofia', 'Minya', 'Qaliubiya', 'New Valley', 'Suez',
@@ -60,7 +66,9 @@ phone: {
   },
   gender: {
     type: String,
-    required: [true, 'Gender is required'],
+    required: function () {
+      return ['client', 'doctor'].includes(this.role);
+    },
     enum: ['male', 'female', 'other']
   },
   role: {
@@ -69,12 +77,12 @@ phone: {
     required: [true, 'Role is required']
   },
   specialization: {
-  type: String,
-  enum: ['doctor', 'nutritionist', 'therapist', 'coach'],
-  required: function () {
-    return this.role === 'doctor';
-  }
-},
+    type: String,
+    enum: ['doctor', 'nutritionist', 'therapist', 'coach'],
+    required: function () {
+      return this.role === 'doctor';
+    }
+  },
   emailVerified: {
     type: Boolean,
     default: false
