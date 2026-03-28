@@ -35,11 +35,7 @@ const sanitizeString = (value) => {
     return xss(value, {
       whiteList: {}, // Allow no HTML tags
       stripIgnoreTag: true,
-      stripIgnoreTagBody: ['script'],
-      onIgnoreTag: (tag, html, options) => {
-        // Keep the text content but remove the tag
-        return html.replace(/<[^>]*>/g, '');
-      }
+      stripIgnoreTagBody: ['script']
     });
   }
   return value;

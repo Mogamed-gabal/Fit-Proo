@@ -6,6 +6,7 @@
 const WorkoutPlan = require('../models/WorkoutPlan');
 const ClientProgress = require('../models/ClientProgress');
 const User = require('../models/User');
+const Notification = require('../models/Notification');
 
 class WorkoutPlanController {
   /**
@@ -13,7 +14,19 @@ class WorkoutPlanController {
    */
   async createWorkoutPlan(req, res, next) {
     try {
-      const { clientId, name, description, startDate, endDate, difficulty, durationWeeks, exercises } = req.body;
+      // ✅ Debug logging
+      console.log('🔍 Request body:', JSON.stringify(req.body, null, 2));
+
+      const { 
+        clientId, 
+        name, 
+        description, 
+        notes,
+        startDate, 
+        endDate, 
+        difficulty, 
+        weeklyPlan 
+      } = req.body;
       const doctorId = req.user.userId;
 
       // Validate doctor role
@@ -21,6 +34,15 @@ class WorkoutPlanController {
         return res.status(403).json({
           success: false,
           error: 'Only doctors can create workout plans'
+        });
+      }
+
+      // Get doctor information
+      const doctor = await User.findById(doctorId);
+      if (!doctor) {
+        return res.status(404).json({
+          success: false,
+          error: 'Doctor not found'
         });
       }
 
@@ -47,20 +69,38 @@ class WorkoutPlanController {
         });
       }
 
-      // Create new workout plan
+      // Calculate duration (fixed 7 days per week)
+      const durationWeeks = 7; // Fixed 7 days per week
+      const totalDays = durationWeeks * 7;
+
+      // ✅ Debug weekly plan
+      console.log('🔍 Weekly plan structure:', JSON.stringify(weeklyPlan, null, 2));
+
+      // Create new workout plan with doctor name and fixed duration
       const workoutPlan = new WorkoutPlan({
         clientId,
         doctorId,
+        doctorName: doctor.name,
         name,
         description,
+        notes,
         startDate: new Date(startDate),
         endDate: new Date(endDate),
         difficulty,
         durationWeeks,
-        exercises
+        weeklyPlan
       });
 
       await workoutPlan.save();
+
+      // Create notification for client
+      try {
+        await Notification.createWorkoutPlanNotification(clientId, workoutPlan._id, name);
+        console.log(`Notification created for client ${clientId}`);
+      } catch (notificationError) {
+        console.error('Failed to create notification:', notificationError);
+        // Don't fail the request if notification fails
+      }
 
       res.status(201).json({
         success: true,
@@ -68,6 +108,7 @@ class WorkoutPlanController {
         data: { workoutPlan }
       });
     } catch (error) {
+      console.error('🚨 Error in createWorkoutPlan:', error);
       next(error);
     }
   }
@@ -77,7 +118,7 @@ class WorkoutPlanController {
    */
   async updateWorkoutPlan(req, res, next) {
     try {
-      const { planId, name, description, startDate, endDate, difficulty, durationWeeks, exercises } = req.body;
+      const { planId, name, description, notes, startDate, endDate, difficulty, weeklyPlan } = req.body;
       const doctorId = req.user.userId;
 
       // Find the workout plan
@@ -92,11 +133,14 @@ class WorkoutPlanController {
       // Update fields
       if (name) workoutPlan.name = name;
       if (description) workoutPlan.description = description;
+      if (notes !== undefined) workoutPlan.notes = notes;
       if (startDate) workoutPlan.startDate = new Date(startDate);
       if (endDate) workoutPlan.endDate = new Date(endDate);
       if (difficulty) workoutPlan.difficulty = difficulty;
-      if (durationWeeks) workoutPlan.durationWeeks = durationWeeks;
-      if (exercises) workoutPlan.exercises = exercises;
+      if (weeklyPlan) workoutPlan.weeklyPlan = weeklyPlan;
+      
+      // Duration is fixed to 7 days per week, don't update it
+      // workoutPlan.durationWeeks stays as default (7)
 
       workoutPlan.updatedAt = new Date();
       await workoutPlan.save();
@@ -216,6 +260,15 @@ class WorkoutPlanController {
       const { clientId, originalPlanId, newStartDate, newEndDate } = req.body;
       const doctorId = req.user.userId;
 
+      // Get doctor information
+      const doctor = await User.findById(doctorId);
+      if (!doctor) {
+        return res.status(404).json({
+          success: false,
+          error: 'Doctor not found'
+        });
+      }
+
       // Find original plan
       const originalPlan = await WorkoutPlan.findById(originalPlanId);
       if (!originalPlan) {
@@ -239,15 +292,17 @@ class WorkoutPlanController {
         await existingActivePlan.save();
       }
 
-      // Create new plan by cloning original
+      // Create new plan by cloning original with doctor name and fixed duration
       const newPlan = new WorkoutPlan({
         clientId,
         doctorId,
+        doctorName: doctor.name,
         name: originalPlan.name,
         description: originalPlan.description,
+        notes: originalPlan.notes,
         difficulty: originalPlan.difficulty,
-        durationWeeks: originalPlan.durationWeeks,
-        exercises: originalPlan.exercises,
+        durationWeeks: 7, // Fixed 7 days per week
+        weeklyPlan: originalPlan.weeklyPlan,
         startDate: new Date(newStartDate),
         endDate: new Date(newEndDate),
         isActive: true,
@@ -289,6 +344,46 @@ class WorkoutPlanController {
       res.status(200).json({
         success: true,
         message: 'Workout plan deactivated successfully'
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * Get workout plan by ID (for viewing details)
+   */
+  async getWorkoutPlanById(req, res, next) {
+    try {
+      const { planId } = req.params;
+      const userId = req.user.userId;
+
+      let workoutPlan;
+
+      if (req.user.role === 'doctor') {
+        // Doctor can view any plan they created
+        workoutPlan = await WorkoutPlan.findOne({ 
+          _id: planId, 
+          doctorId: userId 
+        }).populate('clientId', 'name email');
+      } else if (req.user.role === 'client') {
+        // Client can only view their own plans
+        workoutPlan = await WorkoutPlan.findOne({ 
+          _id: planId, 
+          clientId: userId 
+        });
+      }
+
+      if (!workoutPlan) {
+        return res.status(404).json({
+          success: false,
+          error: 'Workout plan not found'
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        data: { workoutPlan }
       });
     } catch (error) {
       next(error);

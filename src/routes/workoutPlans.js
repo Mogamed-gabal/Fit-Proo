@@ -18,7 +18,8 @@ const {
   completeDay,
   updateProgressStatus,
   clientId,
-  workoutPlanId
+  workoutPlanId,
+  getWorkoutPlanById
 } = require('../middlewares/validators/workoutPlanValidator');
 
 // Apply authentication to all routes
@@ -81,6 +82,15 @@ router.post('/plans/reuse',
   requirePermission('manage_client_workout_plans'),
   reuseWorkoutPlan,
   workoutPlanController.reuseWorkoutPlan.bind(workoutPlanController)
+);
+
+/**
+ * Get workout plan by ID (for viewing details)
+ */
+router.get('/plans/:planId', 
+  requirePermission('view_client_workout_plans'),
+  getWorkoutPlanById,
+  workoutPlanController.getWorkoutPlanById.bind(workoutPlanController)
 );
 
 /**
