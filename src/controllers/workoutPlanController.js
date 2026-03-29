@@ -226,7 +226,7 @@ class WorkoutPlanController {
   async getClientWorkoutHistory(req, res, next) {
     try {
       const { clientId } = req.params;
-      const userId = req.user.userId;
+      const doctorId = req.user.userId;
 
       let workoutPlans;
 
@@ -238,7 +238,7 @@ class WorkoutPlanController {
           .lean();
       } else if (req.user.role === 'client') {
         // Client viewing their own history
-        workoutPlans = await WorkoutPlan.find({ clientId: userId })
+        workoutPlans = await WorkoutPlan.find({ clientId })
           .sort({ createdAt: -1 })
           .lean();
       }

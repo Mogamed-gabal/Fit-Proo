@@ -42,38 +42,103 @@ const createTemplate = [
     .isIn(['beginner', 'intermediate', 'advanced'])
     .withMessage('Difficulty must be beginner, intermediate, or advanced'),
 
-  body('durationWeeks')
-    .optional()
-    .isInt({ min: 1, max: 52 })
-    .withMessage('Duration must be between 1 and 52 weeks'),
+  // Duration is fixed to 7 days per week, no need to validate
+  // body('durationWeeks') - removed as it's now fixed
 
   body('isPublic')
     .optional()
     .isBoolean()
     .withMessage('isPublic must be a boolean'),
 
-  // Exercises validation
-  body('exercises')
+  // Weekly plan validation - updated for new structure
+  body('weeklyPlan')
     .isArray({ min: 1 })
-    .withMessage('At least one exercise is required')
-    .custom((exercises) => {
-      for (const exercise of exercises) {
-        if (!exercise.name || typeof exercise.name !== 'string') {
-          throw new Error('Each exercise must have a name');
+    .withMessage('Weekly plan must be an array with at least one day')
+    .custom((weeklyPlan) => {
+      // ✅ Add safety checks
+      if (!weeklyPlan || !Array.isArray(weeklyPlan)) {
+        throw new Error('Weekly plan must be a valid array');
+      }
+
+      for (let i = 0; i < weeklyPlan.length; i++) {
+        const dayPlan = weeklyPlan[i];
+        
+        if (!dayPlan || typeof dayPlan !== 'object') {
+          throw new Error(`Day ${i + 1} must be a valid object`);
         }
-        if (!exercise.muscle || typeof exercise.muscle !== 'string') {
-          throw new Error('Each exercise must have a muscle group');
+
+        if (!dayPlan.dayName || !['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].includes(dayPlan.dayName)) {
+          throw new Error('Invalid day name in weekly plan');
         }
-        if (!exercise.sets || typeof exercise.sets !== 'number' || exercise.sets < 1) {
-          throw new Error('Each exercise must have at least 1 set');
+
+        if (!dayPlan.dailyPlanName || typeof dayPlan.dailyPlanName !== 'string') {
+          throw new Error('Each day must have a daily plan name');
         }
-        if (!exercise.reps || typeof exercise.reps !== 'number' || exercise.reps < 1) {
-          throw new Error('Each exercise must have at least 1 rep');
+
+        if (!dayPlan.bodyParts || !Array.isArray(dayPlan.bodyParts) || dayPlan.bodyParts.length === 0) {
+          throw new Error('Each day must have at least one body part');
         }
-        if (exercise.rest !== undefined && (typeof exercise.rest !== 'number' || exercise.rest < 0)) {
-          throw new Error('Exercise rest time must be a non-negative number');
+
+        if (!dayPlan.muscles || !Array.isArray(dayPlan.muscles) || dayPlan.muscles.length === 0) {
+          throw new Error('Each day must have at least one muscle');
+        }
+
+        // ✅ Better exercises validation
+        if (!dayPlan.exercises) {
+          throw new Error('Each day must have exercises');
+        }
+
+        if (!Array.isArray(dayPlan.exercises)) {
+          throw new Error('Exercises must be an array');
+        }
+
+        if (dayPlan.exercises.length === 0) {
+          throw new Error('Each day must have at least one exercise');
+        }
+        
+        // Validate each exercise in the day
+        for (let j = 0; j < dayPlan.exercises.length; j++) {
+          const exercise = dayPlan.exercises[j];
+          
+          if (!exercise || typeof exercise !== 'object') {
+            throw new Error(`Exercise ${j + 1} in day ${i + 1} must be a valid object`);
+          }
+
+          if (!exercise.name || typeof exercise.name !== 'string') {
+            throw new Error('Each exercise must have a name');
+          }
+
+          if (!exercise.gifUrl || typeof exercise.gifUrl !== 'string') {
+            throw new Error('Each exercise must have a GIF URL');
+          }
+
+          if (!exercise.equipment || !['dumbbells', 'barbell', 'machine', 'cable', 'bodyweight', 'resistance_bands', 'kettlebell', 'medicine_ball', 'foam_roller', 'none'].includes(exercise.equipment)) {
+            throw new Error('Each exercise must have valid equipment');
+          }
+
+          if (!exercise.instructions || typeof exercise.instructions !== 'string') {
+            throw new Error('Each exercise must have instructions');
+          }
+
+          if (!exercise.sets || typeof exercise.sets !== 'number' || exercise.sets < 1 || exercise.sets > 10) {
+            throw new Error('Each exercise must have sets between 1 and 10');
+          }
+
+          if (!exercise.reps || typeof exercise.reps !== 'number' || exercise.reps < 1 || exercise.reps > 100) {
+            throw new Error('Each exercise must have reps between 1 and 100');
+          }
+
+          if (!exercise.restTime || typeof exercise.restTime !== 'number' || exercise.restTime < 0 || exercise.restTime > 600) {
+            throw new Error('Each exercise must have rest time between 0 and 600 seconds');
+          }
+
+          // ✅ Note validation (optional)
+          if (exercise.note && typeof exercise.note !== 'string') {
+            throw new Error('Exercise note must be a string');
+          }
         }
       }
+      
       return true;
     }),
 
@@ -105,37 +170,104 @@ const updateTemplate = [
     .isIn(['beginner', 'intermediate', 'advanced'])
     .withMessage('Difficulty must be beginner, intermediate, or advanced'),
 
-  body('durationWeeks')
-    .optional()
-    .isInt({ min: 1, max: 52 })
-    .withMessage('Duration must be between 1 and 52 weeks'),
+  // Duration is fixed to 7 days per week, no need to validate
+  // body('durationWeeks') - removed as it's now fixed
 
   body('isPublic')
     .optional()
     .isBoolean()
     .withMessage('isPublic must be a boolean'),
 
-  body('exercises')
+  // Weekly plan validation for updates
+  body('weeklyPlan')
     .optional()
-    .isArray()
-    .custom((exercises) => {
-      for (const exercise of exercises) {
-        if (exercise.name && typeof exercise.name !== 'string') {
-          throw new Error('Each exercise must have a valid name');
+    .isArray({ min: 1 })
+    .withMessage('Weekly plan must be an array with at least one day')
+    .custom((weeklyPlan) => {
+      // ✅ Add safety checks
+      if (!weeklyPlan || !Array.isArray(weeklyPlan)) {
+        throw new Error('Weekly plan must be a valid array');
+      }
+
+      for (let i = 0; i < weeklyPlan.length; i++) {
+        const dayPlan = weeklyPlan[i];
+        
+        if (!dayPlan || typeof dayPlan !== 'object') {
+          throw new Error(`Day ${i + 1} must be a valid object`);
         }
-        if (exercise.muscle && typeof exercise.muscle !== 'string') {
-          throw new Error('Each exercise must have a valid muscle group');
+
+        if (!dayPlan.dayName || !['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].includes(dayPlan.dayName)) {
+          throw new Error('Invalid day name in weekly plan');
         }
-        if (exercise.sets !== undefined && (typeof exercise.sets !== 'number' || exercise.sets < 1)) {
-          throw new Error('Each exercise must have at least 1 set');
+
+        if (!dayPlan.dailyPlanName || typeof dayPlan.dailyPlanName !== 'string') {
+          throw new Error('Each day must have a daily plan name');
         }
-        if (exercise.reps !== undefined && (typeof exercise.reps !== 'number' || exercise.reps < 1)) {
-          throw new Error('Each exercise must have at least 1 rep');
+
+        if (!dayPlan.bodyParts || !Array.isArray(dayPlan.bodyParts) || dayPlan.bodyParts.length === 0) {
+          throw new Error('Each day must have at least one body part');
         }
-        if (exercise.rest !== undefined && (typeof exercise.rest !== 'number' || exercise.rest < 0)) {
-          throw new Error('Exercise rest time must be a non-negative number');
+
+        if (!dayPlan.muscles || !Array.isArray(dayPlan.muscles) || dayPlan.muscles.length === 0) {
+          throw new Error('Each day must have at least one muscle');
+        }
+
+        // ✅ Better exercises validation
+        if (!dayPlan.exercises) {
+          throw new Error('Each day must have exercises');
+        }
+
+        if (!Array.isArray(dayPlan.exercises)) {
+          throw new Error('Exercises must be an array');
+        }
+
+        if (dayPlan.exercises.length === 0) {
+          throw new Error('Each day must have at least one exercise');
+        }
+        
+        // Validate each exercise in the day
+        for (let j = 0; j < dayPlan.exercises.length; j++) {
+          const exercise = dayPlan.exercises[j];
+          
+          if (!exercise || typeof exercise !== 'object') {
+            throw new Error(`Exercise ${j + 1} in day ${i + 1} must be a valid object`);
+          }
+
+          if (!exercise.name || typeof exercise.name !== 'string') {
+            throw new Error('Each exercise must have a name');
+          }
+
+          if (!exercise.gifUrl || typeof exercise.gifUrl !== 'string') {
+            throw new Error('Each exercise must have a GIF URL');
+          }
+
+          if (!exercise.equipment || !['dumbbells', 'barbell', 'machine', 'cable', 'bodyweight', 'resistance_bands', 'kettlebell', 'medicine_ball', 'foam_roller', 'none'].includes(exercise.equipment)) {
+            throw new Error('Each exercise must have valid equipment');
+          }
+
+          if (!exercise.instructions || typeof exercise.instructions !== 'string') {
+            throw new Error('Each exercise must have instructions');
+          }
+
+          if (!exercise.sets || typeof exercise.sets !== 'number' || exercise.sets < 1 || exercise.sets > 10) {
+            throw new Error('Each exercise must have sets between 1 and 10');
+          }
+
+          if (!exercise.reps || typeof exercise.reps !== 'number' || exercise.reps < 1 || exercise.reps > 100) {
+            throw new Error('Each exercise must have reps between 1 and 100');
+          }
+
+          if (!exercise.restTime || typeof exercise.restTime !== 'number' || exercise.restTime < 0 || exercise.restTime > 600) {
+            throw new Error('Each exercise must have rest time between 0 and 600 seconds');
+          }
+
+          // ✅ Note validation (optional)
+          if (exercise.note && typeof exercise.note !== 'string') {
+            throw new Error('Exercise note must be a string');
+          }
         }
       }
+      
       return true;
     }),
 

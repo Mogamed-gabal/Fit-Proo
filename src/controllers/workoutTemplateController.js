@@ -13,7 +13,7 @@ class WorkoutTemplateController {
    */
   async createTemplate(req, res, next) {
     try {
-      const { name, description, difficulty, durationWeeks, exercises, isPublic } = req.body;
+      const { name, description, difficulty, weeklyPlan, isPublic } = req.body;
       const doctorId = req.user.userId;
 
       // Validate doctor role
@@ -24,14 +24,24 @@ class WorkoutTemplateController {
         });
       }
 
-      // Create new template
+      // Get doctor information
+      const doctor = await User.findById(doctorId);
+      if (!doctor) {
+        return res.status(404).json({
+          success: false,
+          error: 'Doctor not found'
+        });
+      }
+
+      // Create new template with doctor name and fixed duration
       const template = new WorkoutTemplate({
         doctorId,
+        doctorName: doctor.name,
         name,
         description,
         difficulty,
-        durationWeeks,
-        exercises,
+        durationWeeks: 7, // Fixed 7 days per week
+        weeklyPlan,
         isPublic: isPublic || false
       });
 
@@ -125,7 +135,7 @@ class WorkoutTemplateController {
    */
   async updateTemplate(req, res, next) {
     try {
-      const { templateId, name, description, difficulty, durationWeeks, exercises, isPublic } = req.body;
+      const { templateId, name, description, difficulty, weeklyPlan, isPublic } = req.body;
       const doctorId = req.user.userId;
 
       // Find template
@@ -142,9 +152,11 @@ class WorkoutTemplateController {
       if (name) template.name = name;
       if (description) template.description = description;
       if (difficulty) template.difficulty = difficulty;
-      if (durationWeeks) template.durationWeeks = durationWeeks;
-      if (exercises) template.exercises = exercises;
+      if (weeklyPlan) template.weeklyPlan = weeklyPlan;
       if (isPublic !== undefined) template.isPublic = isPublic;
+      
+      // Duration is fixed to 7 days per week, don't update it
+      // template.durationWeeks stays as default (7)
 
       template.updatedAt = new Date();
       await template.save();
@@ -231,32 +243,40 @@ class WorkoutTemplateController {
       });
 
       if (existingActivePlan) {
-        // Deactivate existing plan
-        existingActivePlan.isActive = false;
-        existingActivePlan.updatedAt = new Date();
-        await existingActivePlan.save();
+        return res.status(400).json({
+          success: false,
+          error: 'Client already has an active workout plan'
+        });
+      }
+
+      // Get doctor information
+      const doctor = await User.findById(doctorId);
+      if (!doctor) {
+        return res.status(404).json({
+          success: false,
+          error: 'Doctor not found'
+        });
       }
 
       // Create new workout plan from template
       const workoutPlan = new WorkoutPlan({
         clientId,
         doctorId,
+        doctorName: doctor.name,
         name: template.name,
         description: template.description,
-        difficulty: template.difficulty,
-        durationWeeks: template.durationWeeks,
-        exercises: template.exercises,
+        notes: `Created from template: ${template.name}`,
         startDate: new Date(startDate),
         endDate: new Date(endDate),
-        isActive: true,
-        clonedFrom: templateId
+        difficulty: template.difficulty,
+        durationWeeks: 7, // Fixed 7 days per week
+        weeklyPlan: template.weeklyPlan
       });
 
       await workoutPlan.save();
 
-      // Update template usage count
-      template.usageCount = (template.usageCount || 0) + 1;
-      template.updatedAt = new Date();
+      // Increment template usage count
+      template.usageCount += 1;
       await template.save();
 
       res.status(201).json({
