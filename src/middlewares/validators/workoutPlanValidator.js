@@ -173,6 +173,16 @@ const createWorkoutPlan = [
           if (!exercise.restTime || typeof exercise.restTime !== 'number' || exercise.restTime < 0 || exercise.restTime > 600) {
             throw new Error('Each exercise must have rest time between 0 and 600 seconds');
           }
+
+          // ✅ Status validation (optional, defaults to incomplete)
+          if (exercise.status && !['incomplete', 'complete'].includes(exercise.status)) {
+            throw new Error('Exercise status must be incomplete or complete');
+          }
+
+          // ✅ Note validation (optional)
+          if (exercise.note && typeof exercise.note !== 'string') {
+            throw new Error('Exercise note must be a string');
+          }
         }
       }
       
@@ -307,6 +317,16 @@ const updateWorkoutPlan = [
 
           if (!exercise.restTime || typeof exercise.restTime !== 'number' || exercise.restTime < 0 || exercise.restTime > 600) {
             throw new Error('Each exercise must have rest time between 0 and 600 seconds');
+          }
+
+          // ✅ Status validation (optional, defaults to incomplete)
+          if (exercise.status && !['incomplete', 'complete'].includes(exercise.status)) {
+            throw new Error('Exercise status must be incomplete or complete');
+          }
+
+          // ✅ Note validation (optional)
+          if (exercise.note && typeof exercise.note !== 'string') {
+            throw new Error('Exercise note must be a string');
           }
         }
       }

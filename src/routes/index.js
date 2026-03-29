@@ -8,6 +8,7 @@ const auditRoutes = require('./audit');
 const workoutPlanRoutes = require('./workoutPlans');
 const workoutTemplateRoutes = require('./workoutTemplates');
 const notificationRoutes = require('./notifications');
+const exerciseProgressRoutes = require('./exerciseProgress');
 
 router.use('/auth', authRoutes);
 router.use('/subscription', subscriptionRoutes);
@@ -17,5 +18,6 @@ router.use('/audit', auditRoutes);
 router.use('/workout-plans', workoutPlanRoutes);
 router.use('/workout-templates', workoutTemplateRoutes);
 router.use('/notifications', notificationRoutes);
+router.use('/exercise-progress', exerciseProgressRoutes);
 
 module.exports = router;

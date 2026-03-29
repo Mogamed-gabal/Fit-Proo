@@ -54,6 +54,15 @@ const exerciseSchema = new mongoose.Schema({
     type: String,
     trim: true,
     maxlength: [200, 'Exercise note cannot exceed 200 characters']
+  },
+  status: {
+    type: String,
+    enum: ['incomplete', 'complete'],
+    default: 'incomplete'
+  },
+  completedAt: {
+    type: Date,
+    default: null
   }
 });
 
@@ -80,7 +89,16 @@ const dailyPlanSchema = new mongoose.Schema({
     required: true,
     enum: ['pectorals', 'lats', 'rhomboids', 'traps', 'deltoids', 'biceps', 'triceps', 'forearms', 'quads', 'hamstrings', 'glutes', 'calves', 'abs', 'obliques', 'erector_spinae']
   }],
-  exercises: [exerciseSchema]
+  exercises: [exerciseSchema],
+  status: {
+    type: String,
+    enum: ['incomplete', 'complete'],
+    default: 'incomplete'
+  },
+  completedAt: {
+    type: Date,
+    default: null
+  }
 });
 
 const workoutPlanSchema = new mongoose.Schema({
