@@ -198,6 +198,73 @@ const workoutPlanSchema = new mongoose.Schema({
   timestamps: true
 });
 
+// Pre-save middleware to manage plan activation
+workoutPlanSchema.pre('save', async function(next) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Set to start of day for comparison
+  
+  const startDate = new Date(this.startDate);
+  startDate.setHours(0, 0, 0, 0);
+  
+  const endDate = new Date(this.endDate);
+  endDate.setHours(23, 59, 59, 999); // Set to end of day for comparison
+  
+  // Auto-manage isActive based on dates
+  if (today >= startDate && today <= endDate) {
+    this.isActive = true;
+  } else {
+    this.isActive = false;
+  }
+  
+  next();
+});
+
+// Static method to get active plans for a client
+workoutPlanSchema.statics.getActivePlanForClient = function(clientId) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  return this.findOne({
+    clientId,
+    isActive: true,
+    startDate: { $lte: today },
+    endDate: { $gte: today }
+  }).sort({ createdAt: -1 });
+};
+
+// Static method to deactivate expired plans
+workoutPlanSchema.statics.deactivateExpiredPlans = function() {
+  const today = new Date();
+  today.setHours(23, 59, 59, 999);
+  
+  return this.updateMany(
+    {
+      isActive: true,
+      endDate: { $lt: today }
+    },
+    {
+      $set: { isActive: false }
+    }
+  );
+};
+
+// Static method to activate future plans
+workoutPlanSchema.statics.activateFuturePlans = function() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  return this.updateMany(
+    {
+      isActive: false,
+      startDate: { $lte: today },
+      endDate: { $gte: today }
+    },
+    {
+      $set: { isActive: true }
+    }
+  );
+};
+
 // Validation for weekly plan
 workoutPlanSchema.pre('save', function(next) {
   // Ensure at least one body part and one muscle are specified

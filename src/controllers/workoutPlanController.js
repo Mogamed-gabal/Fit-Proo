@@ -7,6 +7,7 @@ const WorkoutPlan = require('../models/WorkoutPlan');
 const ClientProgress = require('../models/ClientProgress');
 const User = require('../models/User');
 const Notification = require('../models/Notification');
+const WorkoutPlanScheduler = require('../utils/workoutPlanScheduler');
 
 class WorkoutPlanController {
   /**
@@ -55,17 +56,20 @@ class WorkoutPlanController {
         });
       }
 
-      // Check if client already has an active plan
-      const existingActivePlan = await WorkoutPlan.findOne({
-        clientId,
-        isActive: true,
-        endDate: { $gt: new Date() }
-      });
-
-      if (existingActivePlan) {
+      // Run scheduler to ensure all plan statuses are up to date
+      await WorkoutPlanScheduler.runScheduler();
+      
+      // Check if client can have a new workout plan (no overlapping dates)
+      const canCreate = await WorkoutPlanScheduler.canCreateNewPlan(
+        clientId, 
+        startDate, 
+        endDate
+      );
+      
+      if (!canCreate) {
         return res.status(400).json({
           success: false,
-          error: 'Client already has an active workout plan'
+          error: 'Client already has a workout plan during the specified period'
         });
       }
 

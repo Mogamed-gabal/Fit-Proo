@@ -12,6 +12,7 @@ const slowDown = require('express-slow-down');
 const connectDB = require('./src/config/db');
 const logger = require('./src/config/logger');
 const routes = require('./src/routes');
+const autoScheduler = require('./src/utils/autoScheduler');
 const { secureErrorHandler, notFoundHandler } = require('./src/middlewares/secureErrorHandler');
 
 // Load environment variables
@@ -187,6 +188,9 @@ START SERVER
 const startServer = async () => {
   try {
     await connectDB();
+
+    // Initialize auto-scheduler after database connection
+    await autoScheduler.initialize();
 
     const PORT = process.env.PORT || 5000;
 
