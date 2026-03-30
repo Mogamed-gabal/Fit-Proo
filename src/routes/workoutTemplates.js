@@ -48,7 +48,7 @@ router.get('/templates',
  * Get a specific template
  */
 router.get('/templates/:templateId', 
-  requirePermission('manage_client_workout_plans'),
+  requirePermission('view_client_workout_plans'),
   templateId,
   workoutTemplateController.getTemplate.bind(workoutTemplateController)
 );

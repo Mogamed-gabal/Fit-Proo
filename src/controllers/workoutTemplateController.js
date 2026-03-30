@@ -109,11 +109,20 @@ class WorkoutTemplateController {
   async getTemplate(req, res, next) {
     try {
       const { templateId } = req.params;
-      const doctorId = req.user.userId;
+      const userId = req.user.userId;
+      const userRole = req.user.role;
 
-      // Find template
-      const template = await WorkoutTemplate.findOne({ _id: templateId, doctorId });
-      
+      let template;
+
+      if (userRole === 'doctor') {
+        // Doctor can get their own templates (public or private)
+        template = await WorkoutTemplate.findOne({ _id: templateId, doctorId: userId });
+      } else if (userRole === 'client') {
+        // Client can only get public templates
+        template = await WorkoutTemplate.findOne({ _id: templateId, isPublic: true })
+          .populate('doctorId', 'name email');
+      }
+
       if (!template) {
         return res.status(404).json({
           success: false,
@@ -353,14 +362,15 @@ class WorkoutTemplateController {
         });
       }
 
-      // Create duplicate template
+      // Create duplicate template with new structure
       const duplicateTemplate = new WorkoutTemplate({
         doctorId,
+        doctorName: originalTemplate.doctorName,
         name: name || `${originalTemplate.name} (Copy)`,
         description: originalTemplate.description,
         difficulty: originalTemplate.difficulty,
-        durationWeeks: originalTemplate.durationWeeks,
-        exercises: originalTemplate.exercises,
+        durationWeeks: 7, // Fixed 7 days per week
+        weeklyPlan: originalTemplate.weeklyPlan, // ✅ Use weeklyPlan instead of exercises
         isPublic: false
       });
 
