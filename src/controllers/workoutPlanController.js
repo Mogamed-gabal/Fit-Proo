@@ -59,6 +59,21 @@ class WorkoutPlanController {
       // Run scheduler to ensure all plan statuses are up to date
       await WorkoutPlanScheduler.runScheduler();
       
+      // 🔒 ENFORCE: Workout plans must be exactly 7 days
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      const diffTime = Math.abs(end - start);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays !== 7) {
+        return res.status(400).json({
+          success: false,
+          error: 'Workout plans must be exactly 7 days duration. Current duration: ' + diffDays + ' days'
+        });
+      }
+      
+      console.log('🔍 [WORKOUT PLAN] Duration validated: ' + diffDays + ' days (exactly 7 days required)');
+      
       // Check if client can have a new workout plan (no overlapping dates)
       const canCreate = await WorkoutPlanScheduler.canCreateNewPlan(
         clientId, 
@@ -73,9 +88,8 @@ class WorkoutPlanController {
         });
       }
 
-      // Calculate duration (fixed 7 days per week)
-      const durationWeeks = 7; // Fixed 7 days per week
-      const totalDays = durationWeeks * 7;
+      // Fixed duration: exactly 7 days
+      const durationWeeks = 1; // 1 week = 7 days
 
       // ✅ Debug weekly plan
       console.log('🔍 Weekly plan structure:', JSON.stringify(weeklyPlan, null, 2));
@@ -138,13 +152,33 @@ class WorkoutPlanController {
       if (name) workoutPlan.name = name;
       if (description) workoutPlan.description = description;
       if (notes !== undefined) workoutPlan.notes = notes;
-      if (startDate) workoutPlan.startDate = new Date(startDate);
-      if (endDate) workoutPlan.endDate = new Date(endDate);
+      
+      // 🔒 ENFORCE: If dates are being updated, validate 7-day duration
+      if (startDate || endDate) {
+        const newStartDate = startDate ? new Date(startDate) : workoutPlan.startDate;
+        const newEndDate = endDate ? new Date(endDate) : workoutPlan.endDate;
+        
+        const diffTime = Math.abs(newEndDate - newStartDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays !== 7) {
+          return res.status(400).json({
+            success: false,
+            error: 'Workout plans must be exactly 7 days duration. Current duration: ' + diffDays + ' days'
+          });
+        }
+        
+        console.log('🔍 [WORKOUT PLAN UPDATE] Duration validated: ' + diffDays + ' days (exactly 7 days required)');
+        
+        workoutPlan.startDate = newStartDate;
+        workoutPlan.endDate = newEndDate;
+      }
+      
       if (difficulty) workoutPlan.difficulty = difficulty;
       if (weeklyPlan) workoutPlan.weeklyPlan = weeklyPlan;
       
-      // Duration is fixed to 7 days per week, don't update it
-      // workoutPlan.durationWeeks stays as default (7)
+      // Fixed duration: exactly 7 days
+      workoutPlan.durationWeeks = 1; // 1 week = 7 days
 
       workoutPlan.updatedAt = new Date();
       await workoutPlan.save();
