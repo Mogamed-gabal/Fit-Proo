@@ -158,6 +158,14 @@ class AuthService {
       throw new Error('Invalid credentials');
     }
 
+    // 🔒 DEBUG: Log login attempt
+    console.log('🔍 [AUTH SERVICE] Login attempt for email:', email);
+    console.log('🔍 [AUTH SERVICE] User found:', !!user);
+    console.log('🔍 [AUTH SERVICE] User ID:', user._id);
+    console.log('🔍 [AUTH SERVICE] User status:', user.status);
+    console.log('🔍 [AUTH SERVICE] User isBlocked:', user.isBlocked);
+    console.log('🔍 [AUTH SERVICE] User emailVerified:', user.emailVerified);
+
     if (user.isBlocked) {
       throw new Error('Account is blocked');
     }
@@ -177,6 +185,8 @@ class AuthService {
     }
 
     const isPasswordValid = await user.comparePassword(password);
+    console.log('🔍 [AUTH SERVICE] Password validation result:', isPasswordValid);
+    
     if (!isPasswordValid) {
       // Increment login attempts
       user.loginAttempts = (user.loginAttempts || 0) + 1;
@@ -187,6 +197,7 @@ class AuthService {
       }
       
       await user.save();
+      console.log('🔍 [AUTH SERVICE] Invalid password, login attempts:', user.loginAttempts);
       throw new Error('Invalid credentials');
     }
 
@@ -196,6 +207,7 @@ class AuthService {
     user.lastLogin = new Date();
     await user.save();
 
+    console.log('✅ [AUTH SERVICE] Login successful for user:', user._id);
     return user;
   }
 
@@ -368,20 +380,40 @@ class AuthService {
       // Validate new password using centralized validator
       validatePassword(newPassword);
       
-      const bcrypt = require('bcryptjs');
-      const saltRounds = 12;
-      const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+      // 🔒 DEBUG: Log password change attempt
+      console.log('🔍 [AUTH SERVICE] Changing password for user:', userId);
+      console.log('🔍 [AUTH SERVICE] Current password valid:', isCurrentPasswordValid);
       
-      user.password = hashedPassword;
+      // 🔒 FIX: Set the password directly and let pre-save middleware handle hashing
+      // Don't hash it manually here as the pre-save middleware will do it again
+      console.log('🔍 [AUTH SERVICE] Setting new password (will be hashed by pre-save middleware)');
+      user.password = newPassword; // Set plain text, middleware will hash it
+      
+      // 🔒 DEBUG: Save user and verify
       await user.save();
+      console.log('🔍 [AUTH SERVICE] User saved with new password');
       
+      // Verify the password was saved correctly
+      const savedUser = await User.findById(userId).select('+password');
+      const isPasswordSavedCorrectly = await savedUser.comparePassword(newPassword);
+      console.log('🔍 [AUTH SERVICE] Password verification after save:', isPasswordSavedCorrectly);
+      
+      if (!isPasswordSavedCorrectly) {
+        // 🔒 DEBUG: Show what went wrong
+        console.log('🔍 [AUTH SERVICE] Password hash in DB:', savedUser.password.substring(0, 50) + '...');
+        throw new Error('Password was not saved correctly');
+      }
+      
+      // Revoke all refresh tokens for security
       await RefreshToken.updateMany(
         { user: user._id, isRevoked: false },
         { isRevoked: true, revokedAt: new Date(), revocationReason: 'Password changed' }
       );
       
+      console.log('✅ [AUTH SERVICE] Password changed successfully for user:', userId);
       return user;
     } catch (error) {
+      console.error('🚨 [AUTH SERVICE] Password change error:', error.message);
       throw error;
     }
   }
