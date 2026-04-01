@@ -22,8 +22,7 @@ const exerciseSchema = new mongoose.Schema({
   equipment: {
     type: String,
     required: true,
-    enum: ['dumbbells', 'barbell', 'machine', 'cable', 'bodyweight', 'resistance_bands', 'kettlebell', 'medicine_ball', 'foam_roller', 'none'],
-    default: 'bodyweight'
+    trim: true
   },
   instructions: {
     type: String,
@@ -82,12 +81,12 @@ const dailyPlanSchema = new mongoose.Schema({
   bodyParts: [{
     type: String,
     required: true,
-    enum: ['chest', 'back', 'shoulders', 'biceps', 'triceps', 'legs', 'glutes', 'abs', 'calves', 'forearms', 'core', 'lower_back', 'traps', 'hamstrings', 'quads', 'adductors', 'abductors']
+    trim: true
   }],
   muscles: [{
     type: String,
     required: true,
-    enum: ['pectorals', 'lats', 'rhomboids', 'traps', 'deltoids', 'biceps', 'triceps', 'forearms', 'quads', 'hamstrings', 'glutes', 'calves', 'abs', 'obliques', 'erector_spinae']
+    trim: true
   }],
   exercises: [exerciseSchema],
   status: {

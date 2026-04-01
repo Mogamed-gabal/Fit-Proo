@@ -154,7 +154,7 @@ const createWorkoutPlan = [
             throw new Error('Each exercise must have a GIF URL');
           }
 
-          if (!exercise.equipment || !['dumbbells', 'barbell', 'machine', 'cable', 'bodyweight', 'resistance_bands', 'kettlebell', 'medicine_ball', 'foam_roller', 'none'].includes(exercise.equipment)) {
+          if (!exercise.equipment || typeof exercise.equipment !== 'string') {
             throw new Error('Each exercise must have valid equipment');
           }
 
@@ -299,7 +299,7 @@ const updateWorkoutPlan = [
             throw new Error('Each exercise must have a GIF URL');
           }
 
-          if (!exercise.equipment || !['dumbbells', 'barbell', 'machine', 'cable', 'bodyweight', 'resistance_bands', 'kettlebell', 'medicine_ball', 'foam_roller', 'none'].includes(exercise.equipment)) {
+          if (!exercise.equipment || typeof exercise.equipment !== 'string') {
             throw new Error('Each exercise must have valid equipment');
           }
 
