@@ -45,6 +45,15 @@ router.get('/templates',
 );
 
 /**
+ * Get published templates (for doctor's own published templates)
+ */
+router.get('/templates/published', 
+  requirePermission('manage_client_workout_plans'),
+  searchTemplates,
+  workoutTemplateController.getPublishedTemplates.bind(workoutTemplateController)
+);
+
+/**
  * Get a specific template
  */
 router.get('/templates/:templateId', 
@@ -87,15 +96,6 @@ router.post('/templates/duplicate',
   requirePermission('manage_client_workout_plans'),
   duplicateTemplate,
   workoutTemplateController.duplicateTemplate.bind(workoutTemplateController)
-);
-
-/**
- * Get published templates (for doctor's own published templates)
- */
-router.get('/templates/published', 
-  requirePermission('manage_client_workout_plans'),
-  searchTemplates,
-  workoutTemplateController.getPublishedTemplates.bind(workoutTemplateController)
 );
 
 module.exports = router;
