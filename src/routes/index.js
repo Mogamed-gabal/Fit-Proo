@@ -10,6 +10,9 @@ const workoutTemplateRoutes = require('./workoutTemplates');
 const notificationRoutes = require('./notifications');
 const exerciseProgressRoutes = require('./exerciseProgress');
 const schedulerRoutes = require('./scheduler');
+const dietProgressRoutes = require('./dietProgress');
+const dietPlanStatsRoutes = require('./dietPlanStats');
+const dietPlansRoutes = require('./dietPlans');
 
 router.use('/auth', authRoutes);
 router.use('/subscription', subscriptionRoutes);
@@ -21,5 +24,8 @@ router.use('/workout-templates', workoutTemplateRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/exercise-progress', exerciseProgressRoutes);
 router.use('/scheduler', schedulerRoutes);
+router.use('/progress', dietProgressRoutes);
+router.use('/diet-plans', dietPlansRoutes);
+router.use('/diet-plans', dietPlanStatsRoutes);
 
 module.exports = router;

@@ -27,7 +27,7 @@ const notificationSchema = new mongoose.Schema({
   type: {
     type: String,
     required: true,
-    enum: ['workout_plan', 'progress_update', 'system', 'reminder'],
+    enum: ['workout_plan', 'diet_plan', 'progress_update', 'system', 'reminder'],
     default: 'workout_plan'
   },
   relatedId: {
@@ -37,7 +37,7 @@ const notificationSchema = new mongoose.Schema({
   },
   relatedModel: {
     type: String,
-    enum: ['WorkoutPlan', 'ClientProgress', 'User'],
+    enum: ['WorkoutPlan', 'DietPlan', 'ClientProgress', 'User'],
     required: false
   },
   isRead: {
@@ -77,6 +77,21 @@ notificationSchema.statics.createWorkoutPlanNotification = async function(userId
     relatedModel: 'WorkoutPlan',
     priority: 'high',
     actionUrl: `/workout-plans/${workoutPlanId}`,
+    expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days
+  });
+};
+
+// Static method to create diet plan notification
+notificationSchema.statics.createDietPlanNotification = async function(userId, dietPlanId, planName) {
+  return this.create({
+    userId,
+    title: 'New Diet Plan Assigned',
+    message: `Your doctor has assigned a new diet plan: ${planName}`,
+    type: 'diet_plan',
+    relatedId: dietPlanId,
+    relatedModel: 'DietPlan',
+    priority: 'high',
+    actionUrl: `/diet-plans/${dietPlanId}`,
     expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days
   });
 };

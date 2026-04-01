@@ -299,14 +299,18 @@ class WorkoutTemplateController {
   }
 
   /**
-   * Get public templates (for all doctors)
+   * Get published templates (for doctor's own published templates)
    */
-  async getPublicTemplates(req, res, next) {
+  async getPublishedTemplates(req, res, next) {
     try {
       const { page = 1, limit = 10, search } = req.query;
+      const doctorId = req.user.userId;
 
-      // Build query
-      const query = { isPublic: true };
+      // Build query for doctor's own published templates (both active and inactive)
+      const query = { 
+        doctorId,
+        isPublic: true 
+      };
       
       // Add search filter
       if (search) {
@@ -321,7 +325,6 @@ class WorkoutTemplateController {
         .sort({ usageCount: -1, createdAt: -1 })
         .limit(limit * 1)
         .skip((page - 1) * limit)
-        .populate('doctorId', 'name email')
         .lean();
 
       // Get total count for pagination
@@ -335,7 +338,8 @@ class WorkoutTemplateController {
             currentPage: page,
             totalPages: Math.ceil(total / limit),
             totalTemplates: total,
-            hasNext: page * limit < total
+            hasNext: page * limit < total,
+            hasPrev: page > 1
           }
         }
       });

@@ -90,12 +90,12 @@ router.post('/templates/duplicate',
 );
 
 /**
- * Get public templates (for all doctors)
+ * Get published templates (for doctor's own published templates)
  */
-router.get('/templates/public', 
-  requirePermission('view_client_workout_plans'),
+router.get('/templates/published', 
+  requirePermission('manage_client_workout_plans'),
   searchTemplates,
-  workoutTemplateController.getPublicTemplates.bind(workoutTemplateController)
+  workoutTemplateController.getPublishedTemplates.bind(workoutTemplateController)
 );
 
 module.exports = router;
