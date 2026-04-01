@@ -22,7 +22,7 @@ const exerciseSchema = new mongoose.Schema({
   equipment: {
     type: String,
     required: true,
-    enum: ['stepmill machine','elliptical machine','trap bar','tire','stationary bike','wheel roller',
+    enum: ['stepmill machine','body weight','elliptical machine','trap bar','tire','stationary bike','wheel roller',
   'smith machine',
   'hammer',
   'skierg machine',
