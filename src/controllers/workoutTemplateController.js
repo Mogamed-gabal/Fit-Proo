@@ -6,6 +6,7 @@
 const WorkoutTemplate = require('../models/WorkoutTemplate');
 const WorkoutPlan = require('../models/WorkoutPlan');
 const User = require('../models/User');
+const Notification = require('../models/Notification');
 
 class WorkoutTemplateController {
   /**
@@ -300,46 +301,106 @@ class WorkoutTemplateController {
 
   /**
    * Get published templates (for doctor's own published templates)
+   * Returns all workouts that have been assigned to clients (from templates or direct plans)
    */
   async getPublishedTemplates(req, res, next) {
     try {
       const { page = 1, limit = 10, search } = req.query;
       const doctorId = req.user.userId;
 
-      // Build query for doctor's own published templates (both active and inactive)
-      const query = { 
+      // Get all workout plans assigned to clients by this doctor
+      const workoutPlans = await WorkoutPlan.find({ doctorId })
+        .populate('clientId', 'name email')
+        .sort({ createdAt: -1 })
+        .limit(limit * 1)
+        .skip((page - 1) * limit)
+        .lean();
+
+      // Get all published templates by this doctor
+      const templateQuery = { 
         doctorId,
         isPublic: true 
       };
       
       // Add search filter
       if (search) {
-        query.$or = [
+        templateQuery.$or = [
           { name: { $regex: search, $options: 'i' } },
           { description: { $regex: search, $options: 'i' } }
         ];
       }
 
-      // Get templates with pagination
-      const templates = await WorkoutTemplate.find(query)
+      const templates = await WorkoutTemplate.find(templateQuery)
         .sort({ usageCount: -1, createdAt: -1 })
         .limit(limit * 1)
         .skip((page - 1) * limit)
         .lean();
 
-      // Get total count for pagination
-      const total = await WorkoutTemplate.countDocuments(query);
+      // Combine and format the results
+      const allWorkouts = [
+        // Workout plans assigned directly to clients
+        ...workoutPlans.map(plan => ({
+          _id: plan._id,
+          name: plan.name,
+          description: plan.description || '',
+          difficulty: plan.difficulty,
+          type: 'workout_plan',
+          clientId: plan.clientId ? plan.clientId._id : null,
+          clientName: plan.clientId ? plan.clientId.name : null,
+          clientEmail: plan.clientId ? plan.clientId.email : null,
+          startDate: plan.startDate,
+          endDate: plan.endDate,
+          isActive: plan.isActive,
+          durationWeeks: plan.durationWeeks,
+          weeklyPlan: plan.weeklyPlan,
+          createdAt: plan.createdAt,
+          updatedAt: plan.updatedAt,
+          usageCount: 1 // Each assigned plan counts as usage
+        })),
+        // Published templates
+        ...templates.map(template => ({
+          _id: template._id,
+          name: template.name,
+          description: template.description || '',
+          difficulty: template.difficulty,
+          type: 'template',
+          clientId: null,
+          clientName: null,
+          clientEmail: null,
+          startDate: null,
+          endDate: null,
+          isActive: template.isPublic,
+          durationWeeks: template.durationWeeks,
+          weeklyPlan: template.weeklyPlan,
+          createdAt: template.createdAt,
+          updatedAt: template.updatedAt,
+          usageCount: template.usageCount
+        }))
+      ];
+
+      // Sort by creation date (newest first)
+      allWorkouts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+      // Get total counts
+      const totalWorkoutPlans = await WorkoutPlan.countDocuments({ doctorId });
+      const totalTemplates = await WorkoutTemplate.countDocuments(templateQuery);
+      const total = totalWorkoutPlans + totalTemplates;
 
       res.status(200).json({
         success: true,
         data: {
-          templates,
+          templates: allWorkouts,
           pagination: {
             currentPage: page,
             totalPages: Math.ceil(total / limit),
             totalTemplates: total,
             hasNext: page * limit < total,
             hasPrev: page > 1
+          },
+          summary: {
+            totalWorkoutPlans: totalWorkoutPlans,
+            totalTemplates: totalTemplates,
+            grandTotal: total
           }
         }
       });
