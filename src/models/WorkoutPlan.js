@@ -169,9 +169,9 @@ const workoutPlanSchema = new mongoose.Schema({
 
   durationWeeks: {
     type: Number,
-    default: 1, // Fixed 1 week = 7 days
-    min: [1, 'Duration must be exactly 1 week (7 days)'],
-    max: [1, 'Duration must be exactly 1 week (7 days)']
+    default: 1, // Default 1 week
+    min: [1, 'Duration must be between 1 and 7 days'],
+    max: [7, 'Duration must be between 1 and 7 days']
   },
 
   // Weekly workout plan structure

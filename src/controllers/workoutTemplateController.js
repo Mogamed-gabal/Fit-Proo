@@ -269,6 +269,12 @@ class WorkoutTemplateController {
         });
       }
 
+      // Calculate durationWeeks based on actual date difference
+      const startDateObj = new Date(startDate);
+      const endDateObj = new Date(endDate);
+      const diffTime = Math.abs(endDateObj - startDateObj);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
       // Create new workout plan from template
       const workoutPlan = new WorkoutPlan({
         clientId,
@@ -277,10 +283,10 @@ class WorkoutTemplateController {
         name: template.name,
         description: template.description,
         notes: `Created from template: ${template.name}`,
-        startDate: new Date(startDate),
-        endDate: new Date(endDate),
+        startDate: startDateObj,
+        endDate: endDateObj,
         difficulty: template.difficulty,
-        durationWeeks: 7, // Fixed 7 days per week
+        durationWeeks: diffDays, // Calculate based on actual date difference
         weeklyPlan: template.weeklyPlan
       });
 
