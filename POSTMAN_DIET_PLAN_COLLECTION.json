@@ -1,0 +1,221 @@
+{
+  "info": {
+    "name": "Diet Plan API Collection",
+    "description": "Complete Diet Plan API endpoints for testing",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create Diet Plan",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt_token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"clientId\": \"507f1f77bcf86cd799439011\",\n  \"name\": \"Weight Loss Plan - 7 Days\",\n  \"description\": \"7-day weight loss diet plan focusing on balanced nutrition\",\n  \"startDate\": \"2024-03-30\",\n  \"endDate\": \"2024-04-06\",\n  \"weeklyPlan\": [\n    {\n      \"dayName\": \"Monday\",\n      \"dailyPlanName\": \"High Protein Day\",\n      \"meals\": [\n        {\n          \"type\": \"breakfast\",\n          \"food\": [\n            {\n              \"name\": \"Greek Yogurt with Berries\",\n              \"calories\": 250,\n              \"protein\": 20,\n              \"carbs\": 30,\n              \"fat\": 8,\n              \"image\": \"https://example.com/yogurt.jpg\",\n              \"recipe\": \"Mix Greek yogurt with fresh berries and honey\"\n            }\n          ]\n        },\n        {\n          \"type\": \"lunch\",\n          \"food\": [\n            {\n              \"name\": \"Grilled Chicken Salad\",\n              \"calories\": 450,\n              \"protein\": 35,\n              \"carbs\": 25,\n              \"fat\": 20,\n              \"image\": \"https://example.com/chicken-salad.jpg\",\n              \"recipe\": \"Grilled chicken breast with mixed greens and olive oil dressing\"\n            }\n          ]\n        },\n        {\n          \"type\": \"dinner\",\n          \"food\": [\n            {\n              \"name\": \"Salmon with Vegetables\",\n              \"calories\": 550,\n              \"protein\": 40,\n              \"carbs\": 35,\n              \"fat\": 25,\n              \"image\": \"https://example.com/salmon.jpg\",\n              \"recipe\": \"Pan-seared salmon with roasted vegetables\"\n            }\n          ]\n        }\n      ]\n    },\n    {\n      \"dayName\": \"Tuesday\",\n      \"dailyPlanName\": \"Balanced Nutrition Day\",\n      \"meals\": [\n        {\n          \"type\": \"breakfast\",\n          \"food\": [\n            {\n              \"name\": \"Oatmeal with Nuts\",\n              \"calories\": 300,\n              \"protein\": 12,\n              \"carbs\": 45,\n              \"fat\": 10,\n              \"image\": \"https://example.com/oatmeal.jpg\",\n              \"recipe\": \"Steel-cut oats with mixed nuts and banana\"\n            }\n          ]\n        }\n      ]\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/diet-plans"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get All Diet Plans",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt_token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:5000/api/diet-plans?page=1&limit=10&search=weight"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Diet Plan by ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt_token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:5000/api/diet-plans/{{planId}}"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Diet Plan",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt_token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Updated Weight Loss Plan\",\n  \"description\": \"Updated 7-day weight loss diet plan\",\n  \"startDate\": \"2024-04-01\",\n  \"endDate\": \"2024-04-07\",\n  \"weeklyPlan\": [...]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/diet-plans/{{planId}}"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Diet Plan",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt_token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:5000/api/diet-plans/{{planId}}"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Diet Plans by Client",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt_token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:5000/api/diet-plans/client/{{clientId}}?page=1&limit=10"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Diet Progress",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt_token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:5000/api/diet-progress/client/{{clientId}}?startDate=2024-03-30&endDate=2024-04-06"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Mark Food as Eaten",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt_token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"planId\": \"{{planId}}\",\n  \"date\": \"2024-03-30\",\n  \"dayName\": \"Monday\",\n  \"mealType\": \"breakfast\",\n  \"foodIndex\": 0,\n  \"food\": {\n    \"name\": \"Greek Yogurt with Berries\",\n    \"calories\": 250,\n    \"protein\": 20,\n    \"carbs\": 30,\n    \"fat\": 8,\n    \"image\": \"https://example.com/yogurt.jpg\",\n    \"recipe\": \"Mix Greek yogurt with fresh berries and honey\"\n  }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/diet-progress/mark-eaten"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Diet Plan Statistics",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt_token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:5000/api/diet-plan-stats/client/{{clientId}}?startDate=2024-03-01&endDate=2024-03-31"
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "jwt_token",
+      "value": "YOUR_JWT_TOKEN_HERE",
+      "type": "string"
+    },
+    {
+      "key": "planId",
+      "value": "507f1f77bcf86cd799439012",
+      "type": "string"
+    },
+    {
+      "key": "clientId",
+      "value": "507f1f77bcf86cd799439011",
+      "type": "string"
+    }
+  ]
+}

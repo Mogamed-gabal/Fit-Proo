@@ -190,6 +190,164 @@ class DietProgressController {
   }
 
   /**
+   * Get diet progress for a client
+   * GET /progress/client/:clientId
+   */
+  async getDietProgress(req, res, next) {
+    try {
+      const { clientId } = req.params;
+      const userId = req.user.userId;
+      const userRole = req.user.role;
+
+      // Validate access - doctors can view their clients, clients can only view their own
+      if (userRole === 'client' && clientId !== userId) {
+        return res.status(403).json({
+          success: false,
+          error: 'Access denied - clients can only view their own progress'
+        });
+      }
+
+      if (userRole === 'doctor') {
+        // Verify the client belongs to the doctor
+        const client = await User.findOne({ 
+          _id: clientId, 
+          doctorId: userId 
+        });
+        
+        if (!client) {
+          return res.status(404).json({
+            success: false,
+            error: 'Client not found or access denied'
+          });
+        }
+      }
+
+      // Get active diet plan for the client
+      const dietPlan = await DietPlan.findOne({ 
+        clientId,
+        isActive: true 
+      }).sort({ createdAt: -1 });
+
+      if (!dietPlan) {
+        return res.status(404).json({
+          success: false,
+          error: 'No active diet plan found for this client'
+        });
+      }
+
+      // Get all progress entries for the client
+      const progressEntries = await DietProgress.find({
+        clientId,
+        dietPlanId: dietPlan._id
+      }).sort({ createdAt: 1 });
+
+      // Group progress by day
+      const dailyProgress = {};
+      progressEntries.forEach(entry => {
+        if (!dailyProgress[entry.dayName]) {
+          dailyProgress[entry.dayName] = {
+            dayName: entry.dayName,
+            meals: {
+              breakfast: [],
+              lunch: [],
+              dinner: []
+            },
+            totalNutrition: {
+              calories: 0,
+              protein: 0,
+              carbs: 0,
+              fat: 0
+            },
+            completionRate: 0
+          };
+        }
+
+        dailyProgress[entry.dayName].meals[entry.mealType].push({
+          foodName: entry.foodName,
+          isEaten: entry.isEaten,
+          nutrition: entry.nutrition,
+          eatenAt: entry.eatenAt
+        });
+
+        if (entry.isEaten) {
+          dailyProgress[entry.dayName].totalNutrition.calories += entry.nutrition.calories || 0;
+          dailyProgress[entry.dayName].totalNutrition.protein += entry.nutrition.protein || 0;
+          dailyProgress[entry.dayName].totalNutrition.carbs += entry.nutrition.carbs || 0;
+          dailyProgress[entry.dayName].totalNutrition.fat += entry.nutrition.fat || 0;
+        }
+      });
+
+      // Calculate completion rates
+      Object.keys(dailyProgress).forEach(dayName => {
+        const day = dailyProgress[dayName];
+        let totalFoods = 0;
+        let eatenFoods = 0;
+
+        Object.keys(day.meals).forEach(mealType => {
+          day.meals[mealType].forEach(food => {
+            totalFoods++;
+            if (food.isEaten) eatenFoods++;
+          });
+        });
+
+        day.completionRate = totalFoods > 0 ? Math.round((eatenFoods / totalFoods) * 100) : 0;
+      });
+
+      // Calculate overall progress
+      const totalDays = Object.keys(dailyProgress).length;
+      const overallCompletion = totalDays > 0 
+        ? Math.round(Object.values(dailyProgress).reduce((sum, day) => sum + day.completionRate, 0) / totalDays)
+        : 0;
+
+      // Get target nutrition from diet plan
+      const targetNutrition = {
+        calories: dietPlan.weeklyTotals?.calories || 0,
+        protein: dietPlan.weeklyTotals?.protein || 0,
+        carbs: dietPlan.weeklyTotals?.carbs || 0,
+        fat: dietPlan.weeklyTotals?.fat || 0
+      };
+
+      // Calculate consumed nutrition
+      const consumedNutrition = Object.values(dailyProgress).reduce((total, day) => ({
+        calories: total.calories + day.totalNutrition.calories,
+        protein: total.protein + day.totalNutrition.protein,
+        carbs: total.carbs + day.totalNutrition.carbs,
+        fat: total.fat + day.totalNutrition.fat
+      }), { calories: 0, protein: 0, carbs: 0, fat: 0 });
+
+      res.status(200).json({
+        success: true,
+        data: {
+          clientId,
+          dietPlan: {
+            id: dietPlan._id,
+            name: dietPlan.name,
+            startDate: dietPlan.startDate,
+            endDate: dietPlan.endDate,
+            durationWeeks: dietPlan.durationWeeks
+          },
+          dailyProgress: Object.values(dailyProgress),
+          overallStats: {
+            totalDays,
+            overallCompletion,
+            targetNutrition,
+            consumedNutrition,
+            remainingNutrition: {
+              calories: Math.max(0, targetNutrition.calories - consumedNutrition.calories),
+              protein: Math.max(0, targetNutrition.protein - consumedNutrition.protein),
+              carbs: Math.max(0, targetNutrition.carbs - consumedNutrition.carbs),
+              fat: Math.max(0, targetNutrition.fat - consumedNutrition.fat)
+            }
+          },
+          generatedAt: new Date()
+        }
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
    * Get real-time nutrition tracking
    * GET /progress/:dietPlanId/nutrition
    */

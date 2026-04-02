@@ -52,58 +52,84 @@ class DietPlanController {
         });
       }
 
-      // Validate weekly plan structure (7 days with 3 meals each)
-      if (!weeklyPlan || !Array.isArray(weeklyPlan) || weeklyPlan.length !== 7) {
+      // Validate weekly plan structure (1-7 days with 3 meals each)
+      if (!weeklyPlan || !Array.isArray(weeklyPlan) || weeklyPlan.length === 0 || weeklyPlan.length > 7) {
         return res.status(400).json({
           success: false,
-          error: 'Weekly plan must contain exactly 7 days (Monday through Sunday)'
+          error: 'Weekly plan must contain between 1 and 7 days'
         });
       }
 
       const requiredDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
       const providedDays = weeklyPlan.map(day => day.dayName);
       
-      if (!requiredDays.every(day => providedDays.includes(day))) {
+      // Check for duplicate days
+      const duplicateDays = providedDays.filter((day, index) => providedDays.indexOf(day) !== index);
+      if (duplicateDays.length > 0) {
         return res.status(400).json({
           success: false,
-          error: 'Weekly plan must include all 7 days: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday'
+          error: `Duplicate days found: ${duplicateDays.join(', ')}`
         });
       }
-
-      // Validate each day has exactly 3 meals (breakfast, lunch, dinner)
-      for (const day of weeklyPlan) {
-        if (!day.meals || !Array.isArray(day.meals) || day.meals.length !== 3) {
+      
+      // Check if provided days are valid
+      for (const day of providedDays) {
+        if (!requiredDays.includes(day)) {
           return res.status(400).json({
             success: false,
-            error: `Each day must contain exactly 3 meals (breakfast, lunch, dinner). Day ${day.dayName} has ${day.meals ? day.meals.length : 0} meals.`
+            error: `Invalid day name: ${day}. Must be one of: ${requiredDays.join(', ')}`
+          });
+        }
+      }
+
+      // Validate each day has 1-3 meals (breakfast, lunch, dinner)
+      for (const day of weeklyPlan) {
+        if (!day.meals || !Array.isArray(day.meals) || day.meals.length === 0 || day.meals.length > 3) {
+          return res.status(400).json({
+            success: false,
+            error: `Each day must contain between 1 and 3 meals. Day ${day.dayName} has ${day.meals ? day.meals.length : 0} meals.`
           });
         }
 
-        const requiredMeals = ['breakfast', 'lunch', 'dinner'];
-        const providedMeals = day.meals.map(meal => meal.mealType);
+        const validMeals = ['breakfast', 'lunch', 'dinner'];
+        const providedMeals = day.meals.map(meal => meal.type);
         
-        if (!requiredMeals.every(meal => providedMeals.includes(meal))) {
+        // Check for duplicate meal types (filter out undefined values first)
+        const duplicateMeals = providedMeals.filter((meal, index) => 
+          meal && providedMeals.indexOf(meal) !== index
+        );
+        if (duplicateMeals.length > 0) {
           return res.status(400).json({
             success: false,
-            error: `Each day must include all 3 meals: breakfast, lunch, dinner. Day ${day.dayName} is missing meals.`
+            error: `Duplicate meal types found for day ${day.dayName}: ${duplicateMeals.join(', ')}`
           });
+        }
+        
+        // Check if provided meal types are valid
+        for (const meal of providedMeals) {
+          if (meal && !validMeals.includes(meal)) {
+            return res.status(400).json({
+              success: false,
+              error: `Invalid meal type: ${meal}. Must be one of: ${validMeals.join(', ')}`
+            });
+          }
         }
 
         // Validate each meal has at least one food item
         for (const meal of day.meals) {
-          if (!meal.foods || !Array.isArray(meal.foods) || meal.foods.length === 0) {
+          if (!meal.food || !Array.isArray(meal.food) || meal.food.length === 0) {
             return res.status(400).json({
               success: false,
-              error: `Each meal must contain at least one food item. Day ${day.dayName}, ${meal.mealType} has no foods.`
+              error: `Each meal must contain at least one food item. Day ${day.dayName}, ${meal.type || 'unknown meal'} has no foods.`
             });
           }
 
           // Validate each food item
-          for (const food of meal.foods) {
-            if (!food.name || !food.quantity) {
+          for (const food of meal.food) {
+            if (!food.name || typeof food.calories !== 'number' || typeof food.protein !== 'number' || typeof food.carbs !== 'number' || typeof food.fat !== 'number') {
               return res.status(400).json({
                 success: false,
-                error: `Each food must have a name and quantity. Missing in Day ${day.dayName}, ${meal.mealType}.`
+                error: `Each food must have a name and numeric calories, protein, carbs, and fat. Missing in Day ${day.dayName}, ${meal.type || 'unknown meal'}.`
               });
             }
 
@@ -111,21 +137,21 @@ class DietPlanController {
             if (food.image && typeof food.image !== 'string') {
               return res.status(400).json({
                 success: false,
-                error: `Food image must be a string URL. Invalid in Day ${day.dayName}, ${meal.mealType}, ${food.name}.`
+                error: `Food image must be a string URL. Invalid in Day ${day.dayName}, ${meal.type || 'unknown meal'}, ${food.name}.`
               });
             }
 
             if (food.recipe && typeof food.recipe !== 'string') {
               return res.status(400).json({
                 success: false,
-                error: `Food recipe must be a string. Invalid in Day ${day.dayName}, ${meal.mealType}, ${food.name}.`
+                error: `Food recipe must be a string. Invalid in Day ${day.dayName}, ${meal.type || 'unknown meal'}, ${food.name}.`
               });
             }
 
             if (food.recipe && food.recipe.length > 1000) {
               return res.status(400).json({
                 success: false,
-                error: `Food recipe cannot exceed 1000 characters. Too long in Day ${day.dayName}, ${meal.mealType}, ${food.name}.`
+                error: `Food recipe cannot exceed 1000 characters. Too long in Day ${day.dayName}, ${meal.type || 'unknown meal'}, ${food.name}.`
               });
             }
           }
@@ -292,40 +318,66 @@ class DietPlanController {
 
       // Validate weekly plan structure if being updated
       if (weeklyPlan) {
-        if (!Array.isArray(weeklyPlan) || weeklyPlan.length !== 7) {
+        if (!Array.isArray(weeklyPlan) || weeklyPlan.length === 0 || weeklyPlan.length > 7) {
           return res.status(400).json({
             success: false,
-            error: 'Weekly plan must contain exactly 7 days (Monday through Sunday)'
+            error: 'Weekly plan must contain between 1 and 7 days'
           });
         }
 
         const requiredDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
         const providedDays = weeklyPlan.map(day => day.dayName);
         
-        if (!requiredDays.every(day => providedDays.includes(day))) {
+        // Check for duplicate days
+        const duplicateDays = providedDays.filter((day, index) => providedDays.indexOf(day) !== index);
+        if (duplicateDays.length > 0) {
           return res.status(400).json({
             success: false,
-            error: 'Weekly plan must include all 7 days: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday'
+            error: `Duplicate days found: ${duplicateDays.join(', ')}`
           });
         }
-
-        // Validate each day has exactly 3 meals (breakfast, lunch, dinner)
-        for (const day of weeklyPlan) {
-          if (!day.meals || !Array.isArray(day.meals) || day.meals.length !== 3) {
+        
+        // Check if provided days are valid
+        for (const day of providedDays) {
+          if (!requiredDays.includes(day)) {
             return res.status(400).json({
               success: false,
-              error: `Each day must contain exactly 3 meals (breakfast, lunch, dinner). Day ${day.dayName} has ${day.meals ? day.meals.length : 0} meals.`
+              error: `Invalid day name: ${day}. Must be one of: ${requiredDays.join(', ')}`
+            });
+          }
+        }
+
+        // Validate each day has 1-3 meals (breakfast, lunch, dinner)
+        for (const day of weeklyPlan) {
+          if (!day.meals || !Array.isArray(day.meals) || day.meals.length === 0 || day.meals.length > 3) {
+            return res.status(400).json({
+              success: false,
+              error: `Each day must contain between 1 and 3 meals. Day ${day.dayName} has ${day.meals ? day.meals.length : 0} meals.`
             });
           }
 
-          const requiredMeals = ['breakfast', 'lunch', 'dinner'];
+          const validMeals = ['breakfast', 'lunch', 'dinner'];
           const providedMeals = day.meals.map(meal => meal.mealType);
           
-          if (!requiredMeals.every(meal => providedMeals.includes(meal))) {
+          // Check for duplicate meal types (filter out undefined values first)
+          const duplicateMeals = providedMeals.filter((meal, index) => 
+            meal && providedMeals.indexOf(meal) !== index
+          );
+          if (duplicateMeals.length > 0) {
             return res.status(400).json({
               success: false,
-              error: `Each day must include all 3 meals: breakfast, lunch, dinner. Day ${day.dayName} is missing meals.`
+              error: `Duplicate meal types found for day ${day.dayName}: ${duplicateMeals.join(', ')}`
             });
+          }
+          
+          // Check if provided meal types are valid
+          for (const meal of providedMeals) {
+            if (meal && !validMeals.includes(meal)) {
+              return res.status(400).json({
+                success: false,
+                error: `Invalid meal type: ${meal}. Must be one of: ${validMeals.join(', ')}`
+              });
+            }
           }
         }
       }

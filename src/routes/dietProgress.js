@@ -52,6 +52,20 @@ router.get('/:dietPlanId/day/:dayName',
 );
 
 /**
+ * Get diet progress for a client
+ * GET /progress/client/:clientId
+ */
+router.get('/client/:clientId',
+  requirePermission('view_client_workout_plans'),
+  [
+    param('clientId')
+      .isMongoId()
+      .withMessage('Invalid client ID')
+  ],
+  dietProgressController.getDietProgress.bind(dietProgressController)
+);
+
+/**
  * Get real-time nutrition tracking
  * GET /progress/:dietPlanId/nutrition
  */

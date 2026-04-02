@@ -8,48 +8,40 @@ const foodSchema = new mongoose.Schema({
     trim: true,
     maxlength: [100, 'Food name cannot exceed 100 characters']
   },
-  quantity: {
-    type: String,
-    required: [true, 'Quantity is required'],
-    trim: true,
-    maxlength: [50, 'Quantity cannot exceed 50 characters']
+  calories: {
+    type: Number,
+    required: [true, 'Calories are required'],
+    min: [0, 'Calories cannot be negative']
   },
-  nutrition: {
-    calories: {
-      type: Number,
-      default: 0,
-      min: [0, 'Calories cannot be negative']
-    },
-    protein: {
-      type: Number,
-      default: 0,
-      min: [0, 'Protein cannot be negative']
-    },
-    carbs: {
-      type: Number,
-      default: 0,
-      min: [0, 'Carbs cannot be negative']
-    },
-    fat: {
-      type: Number,
-      default: 0,
-      min: [0, 'Fat cannot be negative']
-    },
-    fiber: {
-      type: Number,
-      default: 0,
-      min: [0, 'Fiber cannot be negative']
-    },
-    sugar: {
-      type: Number,
-      default: 0,
-      min: [0, 'Sugar cannot be negative']
-    },
-    sodium: {
-      type: Number,
-      default: 0,
-      min: [0, 'Sodium cannot be negative']
-    }
+  protein: {
+    type: Number,
+    required: [true, 'Protein is required'],
+    min: [0, 'Protein cannot be negative']
+  },
+  carbs: {
+    type: Number,
+    required: [true, 'Carbs are required'],
+    min: [0, 'Carbs cannot be negative']
+  },
+  fat: {
+    type: Number,
+    required: [true, 'Fat is required'],
+    min: [0, 'Fat cannot be negative']
+  },
+  fiber: {
+    type: Number,
+    default: 0,
+    min: [0, 'Fiber cannot be negative']
+  },
+  sugar: {
+    type: Number,
+    default: 0,
+    min: [0, 'Sugar cannot be negative']
+  },
+  sodium: {
+    type: Number,
+    default: 0,
+    min: [0, 'Sodium cannot be negative']
   },
   source: {
     type: String,
@@ -75,12 +67,12 @@ const foodSchema = new mongoose.Schema({
 
 // Meal schema for diet plans
 const mealSchema = new mongoose.Schema({
-  mealType: {
+  type: {
     type: String,
     required: [true, 'Meal type is required'],
     enum: ['breakfast', 'lunch', 'dinner']
   },
-  foods: [foodSchema],
+  food: [foodSchema],
   totalCalories: {
     type: Number,
     default: 0,
@@ -236,11 +228,11 @@ dietPlanSchema.pre('save', function(next) {
       meal.totalCarbs = 0;
       meal.totalFat = 0;
 
-      meal.foods.forEach(food => {
-        meal.totalCalories += food.nutrition.calories || 0;
-        meal.totalProtein += food.nutrition.protein || 0;
-        meal.totalCarbs += food.nutrition.carbs || 0;
-        meal.totalFat += food.nutrition.fat || 0;
+      meal.food.forEach(food => {
+        meal.totalCalories += food.calories || 0;
+        meal.totalProtein += food.protein || 0;
+        meal.totalCarbs += food.carbs || 0;
+        meal.totalFat += food.fat || 0;
       });
 
       day.dailyTotals.calories += meal.totalCalories;
@@ -248,6 +240,21 @@ dietPlanSchema.pre('save', function(next) {
       day.dailyTotals.carbs += meal.totalCarbs;
       day.dailyTotals.fat += meal.totalFat;
     });
+  });
+
+  // Calculate weekly totals
+  this.weeklyTotals = {
+    calories: 0,
+    protein: 0,
+    carbs: 0,
+    fat: 0
+  };
+
+  this.weeklyPlan.forEach(day => {
+    this.weeklyTotals.calories += day.dailyTotals.calories;
+    this.weeklyTotals.protein += day.dailyTotals.protein;
+    this.weeklyTotals.carbs += day.dailyTotals.carbs;
+    this.weeklyTotals.fat += day.dailyTotals.fat;
   });
 
   // Update timestamp
