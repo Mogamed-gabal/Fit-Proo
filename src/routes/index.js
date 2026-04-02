@@ -13,6 +13,7 @@ const schedulerRoutes = require('./scheduler');
 const dietProgressRoutes = require('./dietProgress');
 const dietPlanStatsRoutes = require('./dietPlanStats');
 const dietPlansRoutes = require('./dietPlans');
+const musclesRoutes = require('./muscles');
 
 router.use('/auth', authRoutes);
 router.use('/subscription', subscriptionRoutes);
@@ -27,5 +28,6 @@ router.use('/scheduler', schedulerRoutes);
 router.use('/progress', dietProgressRoutes);
 router.use('/diet-plans', dietPlansRoutes);
 router.use('/diet-plans', dietPlanStatsRoutes);
+router.use('/muscles', musclesRoutes);
 
 module.exports = router;
