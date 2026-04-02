@@ -145,7 +145,8 @@ class WorkoutTemplateController {
    */
   async updateTemplate(req, res, next) {
     try {
-      const { templateId, name, description, difficulty, weeklyPlan, isPublic } = req.body;
+      const { templateId } = req.params;
+      const { name, description, difficulty, weeklyPlan, isPublic } = req.body;
       const doctorId = req.user.userId;
 
       // Find template
