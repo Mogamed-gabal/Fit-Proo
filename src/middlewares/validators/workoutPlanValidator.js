@@ -467,9 +467,9 @@ const clientId = [
   handleValidationErrors
 ];
 
-// Workout plan ID validation for params  ← تم تعديله
+// Workout plan ID validation for params
 const workoutPlanId = [
-  param('workoutPlanId')
+  param('planId')
     .isMongoId()
     .withMessage('Invalid workout plan ID format'),
   handleValidationErrors
