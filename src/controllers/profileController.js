@@ -153,7 +153,7 @@ class ProfileController {
       const userId = req.user.userId;
 
       const user = await User.findById(userId)
-        .select('-password -emailVerificationToken -passwordResetToken -passwordResetExpires -certificates');
+        .select('-password -emailVerificationToken -passwordResetToken -passwordResetExpires');
       
       if (!user) {
         return res.status(404).json({
@@ -162,10 +162,17 @@ class ProfileController {
         });
       }
 
+      const userData = user.toJSON();
+      
+      // Include certificates for doctors
+      if (userData.role === 'doctor' && userData.certificates) {
+        userData.certificates = userData.certificates;
+      }
+
       res.status(200).json({
         success: true,
         data: {
-          user: user.toJSON()
+          user: userData
         }
       });
     } catch (error) {
