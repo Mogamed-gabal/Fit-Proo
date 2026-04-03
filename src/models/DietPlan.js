@@ -100,7 +100,13 @@ const dailyPlanSchema = new mongoose.Schema({
   dayName: {
     type: String,
     required: [true, 'Day name is required'],
-    enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    trim: true,
+    maxlength: [50, 'Day name cannot exceed 50 characters']
+  },
+  dayNumber: {
+    type: Number,
+    required: [true, 'Day number is required'],
+    min: [1, 'Day number must be at least 1']
   },
   meals: [mealSchema],
   dailyTotals: {
@@ -182,15 +188,15 @@ const dietPlanSchema = new mongoose.Schema({
     default: true
   },
 
-  // Duration in weeks (fixed to 1 week = 7 days)
+  // Duration in days (flexible 1-30 days)
   durationWeeks: {
     type: Number,
-    default: 1, // Fixed 1 week = 7 days
-    min: [1, 'Duration must be exactly 1 week (7 days)'],
-    max: [1, 'Duration must be exactly 1 week (7 days)']
+    default: 7, // Default 7 days
+    min: [1, 'Duration must be between 1 and 30 days'],
+    max: [30, 'Duration must be between 1 and 30 days']
   },
 
-  // Weekly diet plan structure (7 days with 3 meals each)
+  // Daily diet plan structure (flexible number of days)
   weeklyPlan: [dailyPlanSchema],
 
   // Timestamps

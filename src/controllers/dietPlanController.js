@@ -39,24 +39,11 @@ class DietPlanController {
         });
       }
 
-      // 🔒 ENFORCE: Diet plans must be exactly 7 days
-      const start = new Date(startDate);
-      const end = new Date(endDate);
-      const diffTime = Math.abs(end - start);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-      if (diffDays !== 7) {
+      // Validate weekly plan structure (flexible 1-30 days)
+      if (!weeklyPlan || !Array.isArray(weeklyPlan) || weeklyPlan.length === 0 || weeklyPlan.length > 30) {
         return res.status(400).json({
           success: false,
-          error: 'Diet plans must be exactly 7 days duration. Current duration: ' + diffDays + ' days'
-        });
-      }
-
-      // Validate weekly plan structure (1-7 days with 3 meals each)
-      if (!weeklyPlan || !Array.isArray(weeklyPlan) || weeklyPlan.length === 0 || weeklyPlan.length > 7) {
-        return res.status(400).json({
-          success: false,
-          error: 'Weekly plan must contain between 1 and 7 days'
+          error: 'Weekly plan must contain between 1 and 30 days'
         });
       }
 
@@ -158,6 +145,12 @@ class DietPlanController {
         }
       }
 
+      // Calculate durationWeeks based on actual date difference
+      const startDateObj = new Date(startDate);
+      const endDateObj = new Date(endDate);
+      const durationTimeDiff = Math.abs(endDateObj - startDateObj);
+      const durationDays = Math.ceil(durationTimeDiff / (1000 * 60 * 60 * 24));
+
       // Create new diet plan
       const dietPlan = new DietPlan({
         clientId,
@@ -165,9 +158,9 @@ class DietPlanController {
         doctorName: doctor.name,
         name,
         description,
-        startDate: new Date(startDate),
-        endDate: new Date(endDate),
-        durationWeeks: 1, // Fixed 1 week = 7 days
+        startDate: startDateObj,
+        endDate: endDateObj,
+        durationWeeks: durationDays, // Calculate based on actual date difference
         weeklyPlan
       });
 
@@ -297,18 +290,18 @@ class DietPlanController {
         });
       }
 
-      // 🔒 ENFORCE: If dates are being updated, validate 7-day duration
+      // 🔒 ENFORCE: If dates are being updated, validate 1-30 day duration
       if (startDate || endDate) {
         const newStartDate = startDate ? new Date(startDate) : dietPlan.startDate;
         const newEndDate = endDate ? new Date(endDate) : dietPlan.endDate;
         
-        const diffTime = Math.abs(newEndDate - newStartDate);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        const updateTimeDiff = Math.abs(newEndDate - newStartDate);
+        const updateDays = Math.ceil(updateTimeDiff / (1000 * 60 * 60 * 24));
         
-        if (diffDays !== 7) {
+        if (updateDays < 1 || updateDays > 30) {
           return res.status(400).json({
             success: false,
-            error: 'Diet plans must be exactly 7 days duration. Current duration: ' + diffDays + ' days'
+            error: 'Diet plans must be between 1 and 30 days duration. Current duration: ' + updateDays + ' days'
           });
         }
         
@@ -318,14 +311,14 @@ class DietPlanController {
 
       // Validate weekly plan structure if being updated
       if (weeklyPlan) {
-        if (!Array.isArray(weeklyPlan) || weeklyPlan.length === 0 || weeklyPlan.length > 7) {
+        if (!Array.isArray(weeklyPlan) || weeklyPlan.length === 0 || weeklyPlan.length > 30) {
           return res.status(400).json({
             success: false,
-            error: 'Weekly plan must contain between 1 and 7 days'
+            error: 'Weekly plan must contain between 1 and 30 days'
           });
         }
 
-        const requiredDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        // Check for duplicate days (flexible day names allowed)
         const providedDays = weeklyPlan.map(day => day.dayName);
         
         // Check for duplicate days
@@ -333,52 +326,8 @@ class DietPlanController {
         if (duplicateDays.length > 0) {
           return res.status(400).json({
             success: false,
-            error: `Duplicate days found: ${duplicateDays.join(', ')}`
+            error: 'Duplicate day names found: ' + duplicateDays.join(', ')
           });
-        }
-        
-        // Check if provided days are valid
-        for (const day of providedDays) {
-          if (!requiredDays.includes(day)) {
-            return res.status(400).json({
-              success: false,
-              error: `Invalid day name: ${day}. Must be one of: ${requiredDays.join(', ')}`
-            });
-          }
-        }
-
-        // Validate each day has 1-3 meals (breakfast, lunch, dinner)
-        for (const day of weeklyPlan) {
-          if (!day.meals || !Array.isArray(day.meals) || day.meals.length === 0 || day.meals.length > 3) {
-            return res.status(400).json({
-              success: false,
-              error: `Each day must contain between 1 and 3 meals. Day ${day.dayName} has ${day.meals ? day.meals.length : 0} meals.`
-            });
-          }
-
-          const validMeals = ['breakfast', 'lunch', 'dinner'];
-          const providedMeals = day.meals.map(meal => meal.mealType);
-          
-          // Check for duplicate meal types (filter out undefined values first)
-          const duplicateMeals = providedMeals.filter((meal, index) => 
-            meal && providedMeals.indexOf(meal) !== index
-          );
-          if (duplicateMeals.length > 0) {
-            return res.status(400).json({
-              success: false,
-              error: `Duplicate meal types found for day ${day.dayName}: ${duplicateMeals.join(', ')}`
-            });
-          }
-          
-          // Check if provided meal types are valid
-          for (const meal of providedMeals) {
-            if (meal && !validMeals.includes(meal)) {
-              return res.status(400).json({
-                success: false,
-                error: `Invalid meal type: ${meal}. Must be one of: ${validMeals.join(', ')}`
-              });
-            }
-          }
         }
       }
 
@@ -387,8 +336,14 @@ class DietPlanController {
       if (description) dietPlan.description = description;
       if (weeklyPlan) dietPlan.weeklyPlan = weeklyPlan;
 
-      // Fixed duration: exactly 7 days
-      dietPlan.durationWeeks = 1;
+      // Calculate durationWeeks based on actual date difference
+      if (startDate || endDate) {
+        const startDateObj = startDate ? new Date(startDate) : dietPlan.startDate;
+        const endDateObj = endDate ? new Date(endDate) : dietPlan.endDate;
+        const finalTimeDiff = Math.abs(endDateObj - startDateObj);
+        const finalDays = Math.ceil(finalTimeDiff / (1000 * 60 * 60 * 24));
+        dietPlan.durationWeeks = finalDays;
+      }
 
       dietPlan.updatedAt = new Date();
       await dietPlan.save();
