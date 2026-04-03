@@ -24,6 +24,12 @@ const exerciseSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
+  instructions: {
+    type: String,
+    required: true,
+    trim: true,
+    maxlength: [1000, 'Exercise instructions cannot exceed 1000 characters']
+  },
   sets: {
     type: Number,
     required: true,
