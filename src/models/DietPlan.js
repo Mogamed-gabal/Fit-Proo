@@ -15,7 +15,7 @@ const foodSchema = new mongoose.Schema({
   },
   protein: {
     type: Number,
-    required: [true, 'Protein is required'],
+    required: [true, 'Protein are required'],
     min: [0, 'Protein cannot be negative']
   },
   carbs: {
@@ -25,32 +25,13 @@ const foodSchema = new mongoose.Schema({
   },
   fat: {
     type: Number,
-    required: [true, 'Fat is required'],
+    required: [true, 'Fat are required'],
     min: [0, 'Fat cannot be negative']
-  },
-  fiber: {
-    type: Number,
-    default: 0,
-    min: [0, 'Fiber cannot be negative']
-  },
-  sugar: {
-    type: Number,
-    default: 0,
-    min: [0, 'Sugar cannot be negative']
-  },
-  sodium: {
-    type: Number,
-    default: 0,
-    min: [0, 'Sodium cannot be negative']
   },
   source: {
     type: String,
     enum: ['smart_input', 'selector', 'manual'],
     default: 'manual'
-  },
-  edamamId: {
-    type: String,
-    default: null
   },
   // Optional food image
   image: {
@@ -70,7 +51,7 @@ const mealSchema = new mongoose.Schema({
   type: {
     type: String,
     required: [true, 'Meal type is required'],
-    enum: ['breakfast', 'lunch', 'dinner']
+    enum: ['breakfast', 'lunch', 'dinner', 'snack']
   },
   food: [foodSchema],
   totalCalories: {
@@ -92,6 +73,20 @@ const mealSchema = new mongoose.Schema({
     type: Number,
     default: 0,
     min: [0, 'Total fat cannot be negative']
+  },
+  // Optional video link for the meal
+  videoLink: {
+    type: String,
+    default: null,
+    validate: {
+      validator: function(v) {
+        // Allow null/empty or valid URL
+        if (!v) return true;
+        // Basic URL validation
+        return /^https?:\/\/.+/.test(v);
+      },
+      message: 'Meal video link must be a valid URL'
+    }
   }
 }, { _id: false });
 
@@ -198,6 +193,21 @@ const dietPlanSchema = new mongoose.Schema({
 
   // Daily diet plan structure (flexible number of days)
   weeklyPlan: [dailyPlanSchema],
+
+  // Optional video link for the diet plan
+  videoLink: {
+    type: String,
+    default: null,
+    validate: {
+      validator: function(v) {
+        // Allow null/empty or valid URL
+        if (!v) return true;
+        // Basic URL validation
+        return /^https?:\/\/.+/.test(v);
+      },
+      message: 'Video link must be a valid URL'
+    }
+  },
 
   // Timestamps
   createdAt: {

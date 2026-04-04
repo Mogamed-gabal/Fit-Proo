@@ -69,16 +69,16 @@ class DietPlanController {
         }
       }
 
-      // Validate each day has 1-3 meals (breakfast, lunch, dinner)
+      // Validate each day has meals (flexible meal types including snacks)
       for (const day of weeklyPlan) {
-        if (!day.meals || !Array.isArray(day.meals) || day.meals.length === 0 || day.meals.length > 3) {
+        if (!day.meals || !Array.isArray(day.meals) || day.meals.length === 0) {
           return res.status(400).json({
             success: false,
-            error: `Each day must contain between 1 and 3 meals. Day ${day.dayName} has ${day.meals ? day.meals.length : 0} meals.`
+            error: `Each day must contain at least 1 meal. Day ${day.dayName} has no meals.`
           });
         }
 
-        const validMeals = ['breakfast', 'lunch', 'dinner'];
+        const validMeals = ['breakfast', 'lunch', 'dinner', 'snack'];
         const providedMeals = day.meals.map(meal => meal.type);
         
         // Check for duplicate meal types (filter out undefined values first)
@@ -92,7 +92,7 @@ class DietPlanController {
           });
         }
         
-        // Check if provided meal types are valid
+        // Check if all meal types are valid
         for (const meal of providedMeals) {
           if (meal && !validMeals.includes(meal)) {
             return res.status(400).json({
@@ -101,8 +101,10 @@ class DietPlanController {
             });
           }
         }
+      }
 
-        // Validate each meal has at least one food item
+      // Validate each meal has at least one food item
+      for (const day of weeklyPlan) {
         for (const meal of day.meals) {
           if (!meal.food || !Array.isArray(meal.food) || meal.food.length === 0) {
             return res.status(400).json({
@@ -309,7 +311,7 @@ class DietPlanController {
         dietPlan.endDate = newEndDate;
       }
 
-      // Validate weekly plan structure if being updated
+        // Validate weekly plan structure if being updated
       if (weeklyPlan) {
         if (!Array.isArray(weeklyPlan) || weeklyPlan.length === 0 || weeklyPlan.length > 30) {
           return res.status(400).json({
@@ -318,16 +320,38 @@ class DietPlanController {
           });
         }
 
-        // Check for duplicate days (flexible day names allowed)
-        const providedDays = weeklyPlan.map(day => day.dayName);
-        
-        // Check for duplicate days
-        const duplicateDays = providedDays.filter((day, index) => providedDays.indexOf(day) !== index);
-        if (duplicateDays.length > 0) {
-          return res.status(400).json({
-            success: false,
-            error: 'Duplicate day names found: ' + duplicateDays.join(', ')
-          });
+        // Validate each day has meals (flexible meal types including snacks)
+        for (const day of weeklyPlan) {
+          if (!day.meals || !Array.isArray(day.meals) || day.meals.length === 0) {
+            return res.status(400).json({
+              success: false,
+              error: `Each day must contain at least 1 meal. Day ${day.dayName} has no meals.`
+            });
+          }
+
+          const validMeals = ['breakfast', 'lunch', 'dinner', 'snack'];
+          const providedMeals = day.meals.map(meal => meal.type);
+          
+          // Check for duplicate meal types (filter out undefined values first)
+          const duplicateMeals = providedMeals.filter((meal, index) => 
+            meal && providedMeals.indexOf(meal) !== index
+          );
+          if (duplicateMeals.length > 0) {
+            return res.status(400).json({
+              success: false,
+              error: `Duplicate meal types found for day ${day.dayName}: ${duplicateMeals.join(', ')}`
+            });
+          }
+          
+          // Check if all meal types are valid
+          for (const meal of providedMeals) {
+            if (meal && !validMeals.includes(meal)) {
+              return res.status(400).json({
+                success: false,
+                error: `Invalid meal type: ${meal}. Must be one of: ${validMeals.join(', ')}`
+              });
+            }
+          }
         }
       }
 
