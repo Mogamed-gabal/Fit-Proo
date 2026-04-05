@@ -144,6 +144,34 @@ const requirePermission = (action) => {
       });
     }
 
+    // Special handling for view_client_workout_plans
+    if (action === 'view_client_workout_plans') {
+      // Allow admin and doctor based on existing permissions
+      if (req.user.role === 'admin' || req.user.role === 'doctor') {
+        return next();
+      }
+      
+      // Allow client to access their own workout plans
+      if (req.user.role === 'client') {
+        const clientId = req.params.clientId;
+        if (clientId === req.user.userId.toString()) {
+          return next();
+        } else {
+          // Client trying to access other client's data
+          return res.status(403).json({
+            success: false,
+            error: 'Access denied. You can only view your own workout plans.'
+          });
+        }
+      }
+      
+      // If we reach here, it means access was not allowed
+      return res.status(403).json({
+        success: false,
+        error: 'Access denied. You can only view your own workout plans.'
+      });
+    }
+
     // Check if user has permission for the action
     if (!hasPermission(req.user, action)) {
       return res.status(403).json({

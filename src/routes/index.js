@@ -15,6 +15,7 @@ const dietPlanStatsRoutes = require('./dietPlanStats');
 const dietPlansRoutes = require('./dietPlans');
 const musclesRoutes = require('./muscles');
 const nutritionRoutes = require('./nutrition');
+const exercisesRoutes = require('./exercises');
 
 router.use('/auth', authRoutes);
 router.use('/subscription', subscriptionRoutes);
@@ -31,5 +32,6 @@ router.use('/diet-plans', dietPlansRoutes);
 router.use('/diet-plans', dietPlanStatsRoutes);
 router.use('/muscles', musclesRoutes);
 router.use('/nutrition', nutritionRoutes);
+router.use('/exercises', exercisesRoutes);
 
 module.exports = router;

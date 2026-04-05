@@ -199,13 +199,23 @@ class WorkoutPlanController {
   async getClientWorkoutPlans(req, res, next) {
     try {
       const { clientId } = req.params;
-      const doctorId = req.user.userId;
+      const userId = req.user.userId;
 
-      // Verify doctor owns the client's plans
-      const workoutPlans = await WorkoutPlan.find({ clientId, doctorId })
-        .sort({ createdAt: -1 })
-        .populate('clientId', 'name email')
-        .lean();
+      let workoutPlans;
+
+      if (req.user.role === 'doctor') {
+        // Doctor viewing client's plans
+        const doctorId = userId;
+        workoutPlans = await WorkoutPlan.find({ clientId, doctorId })
+          .sort({ createdAt: -1 })
+          .populate('clientId', 'name email')
+          .lean();
+      } else if (req.user.role === 'client') {
+        // Client viewing their own plans
+        workoutPlans = await WorkoutPlan.find({ clientId: userId })
+          .sort({ createdAt: -1 })
+          .lean();
+      }
 
       res.status(200).json({
         success: true,
