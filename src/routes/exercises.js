@@ -19,7 +19,7 @@ router.get('/', exerciseController.getAllExercises);
  * Get all unique body parts
  * GET /api/exercises/body-parts
  */
-router.get('/body-parts', exerciseController.getAllBodyParts);
+router.get('/body-parts', exerciseController.getBodyParts);
 
 /**
  * Get all unique muscles

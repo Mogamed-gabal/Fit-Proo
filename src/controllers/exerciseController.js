@@ -1,4 +1,5 @@
 const Exercise = require('../models/Exercise');
+const BodyPart = require('../models/BodyPart');
 const { body, param, query } = require('express-validator');
 
 class ExerciseController {
@@ -17,30 +18,104 @@ class ExerciseController {
       }
 
       const fetch = require('node-fetch');
-      const API_BASE_URL = 'https://exercisedb.dev/api/v1/';
+      const API_BASE_URL = 'https://edb-with-videos-and-images-by-ascendapi.p.rapidapi.com/api/v1/';
 
       console.log('🌐 Starting exercises import from external API...');
 
+      // API headers
+      const headers = {
+        'x-rapidapi-key': '284faaa28cmsh4e6c577d3af80afp135006jsne1b23f584a56',
+        'x-rapidapi-host': 'edb-with-videos-and-images-by-ascendapi.p.rapidapi.com',
+        'Content-Type': 'application/json'
+      };
+
+      // Import body parts first
+      console.log('🦴 Fetching body parts...');
+      const bodyPartsResponse = await fetch(`${API_BASE_URL}bodyparts`, {
+        method: 'GET',
+        headers: headers
+      });
+      
+      if (!bodyPartsResponse.ok) {
+        throw new Error(`Failed to fetch body parts: ${bodyPartsResponse.status}`);
+      }
+      
+      const bodyPartsData = await bodyPartsResponse.json();
+      
+      // Handle API response structure
+      let bodyParts = [];
+      if (bodyPartsData.data && Array.isArray(bodyPartsData.data)) {
+        bodyParts = bodyPartsData.data;
+      } else if (Array.isArray(bodyPartsData)) {
+        bodyParts = bodyPartsData;
+      } else {
+        throw new Error('Invalid body parts API response structure');
+      }
+      
+      console.log(`🦴 Found ${bodyParts.length} body parts`);
+
+      // Normalize and save body parts
+      const normalizedBodyParts = bodyParts.map(bodyPart => ({
+        name: bodyPart.name ? bodyPart.name.toLowerCase().trim() : '',
+        imageUrl: bodyPart.imageUrl ? bodyPart.imageUrl.trim() : ''
+      }));
+
+      // Filter out body parts with missing required fields
+      const validBodyParts = normalizedBodyParts.filter(bodyPart => 
+        bodyPart.name && bodyPart.imageUrl
+      );
+
+      // Use safe upsert to prevent duplicates
+      console.log('💾 Saving body parts...');
+      const bodyPartsResult = await BodyPart.safeUpsertMany(validBodyParts);
+      console.log(`✅ Body parts saved: Inserted ${bodyPartsResult.upsertedCount || 0}, Modified ${bodyPartsResult.modifiedCount || 0}`);
+
       // Only fetch exercises (bodyParts and muscles can be derived)
       console.log('🏋 Fetching exercises...');
-      const exercisesResponse = await fetch(`${API_BASE_URL}exercises`);
+      const exercisesResponse = await fetch(`${API_BASE_URL}exercises`, {
+        method: 'GET',
+        headers: headers
+      });
       
       if (!exercisesResponse.ok) {
         throw new Error(`Failed to fetch exercises: ${exercisesResponse.status}`);
       }
       
-      const exercises = await exercisesResponse.json();
+      const exercisesData = await exercisesResponse.json();
+      
+      // Handle the new API response structure
+      let exercises = [];
+      if (exercisesData.data && Array.isArray(exercisesData.data)) {
+        exercises = exercisesData.data;
+      } else if (Array.isArray(exercisesData)) {
+        exercises = exercisesData;
+      } else {
+        throw new Error('Invalid API response structure');
+      }
+      
       console.log(`📊 Found ${exercises.length} exercises`);
 
       // Normalize and prepare exercises for storage
       const normalizedExercises = exercises.map(exercise => ({
         name: exercise.name ? exercise.name.toLowerCase().trim() : '',
-        bodyPart: exercise.bodyPart ? exercise.bodyPart.toLowerCase().trim() : '',
-        target: exercise.target ? exercise.target.toLowerCase().trim() : '',
-        equipment: exercise.equipment ? exercise.equipment.toLowerCase().trim() : '',
+        bodyPart: exercise.bodyParts && Array.isArray(exercise.bodyParts) ? 
+          exercise.bodyParts[0]?.toLowerCase().trim() : '',
+        target: exercise.targetMuscles && Array.isArray(exercise.targetMuscles) ? 
+          exercise.targetMuscles[0]?.toLowerCase().trim() : '',
+        equipment: exercise.equipments && Array.isArray(exercise.equipments) ? 
+          exercise.equipments[0]?.toLowerCase().trim() : '',
         gifUrl: exercise.gifUrl ? exercise.gifUrl.trim() : '',
-        secondaryMuscles: exercise.secondaryMuscles ? 
+        imageUrl: exercise.imageUrl ? exercise.imageUrl.trim() : '',
+        exerciseId: exercise.exerciseId ? exercise.exerciseId.trim() : '',
+        exerciseType: exercise.exerciseType ? exercise.exerciseType.toLowerCase().trim() : 'strength',
+        bodyParts: exercise.bodyParts && Array.isArray(exercise.bodyParts) ? 
+          exercise.bodyParts.map(part => part.toLowerCase().trim()) : [],
+        targetMuscles: exercise.targetMuscles && Array.isArray(exercise.targetMuscles) ? 
+          exercise.targetMuscles.map(muscle => muscle.toLowerCase().trim()) : [],
+        secondaryMuscles: exercise.secondaryMuscles && Array.isArray(exercise.secondaryMuscles) ? 
           exercise.secondaryMuscles.map(muscle => muscle.toLowerCase().trim()) : [],
+        keywords: exercise.keywords && Array.isArray(exercise.keywords) ? 
+          exercise.keywords.map(keyword => keyword.toLowerCase().trim()) : [],
         instructions: exercise.instructions && Array.isArray(exercise.instructions) ?
           exercise.instructions.map(instruction => instruction.trim()) : 
           (exercise.instructions ? [exercise.instructions.trim()] : [])
@@ -48,7 +123,7 @@ class ExerciseController {
 
       // Filter out exercises with missing required fields
       const validExercises = normalizedExercises.filter(exercise => 
-        exercise.name && exercise.bodyPart && exercise.target && exercise.equipment && exercise.gifUrl
+        exercise.name && exercise.bodyPart && exercise.target && exercise.equipment
       );
 
       console.log(`🔄 Normalized ${validExercises.length} valid exercises (removed ${normalizedExercises.length - validExercises.length} invalid)`);
@@ -58,21 +133,44 @@ class ExerciseController {
       const result = await Exercise.safeUpsertMany(validExercises);
 
       console.log('✅ Exercises import completed successfully!');
-      console.log(`� Inserted: ${result.upsertedCount || 0}, Modified: ${result.modifiedCount || 0}`);
+      console.log(`📊 Inserted: ${result.upsertedCount || 0}, Modified: ${result.modifiedCount || 0}`);
 
       res.status(200).json({
         success: true,
-        message: 'Exercises imported and stored successfully',
+        message: 'Exercises and body parts imported successfully',
         data: {
-          exercisesFound: exercises.length,
-          exercisesImported: validExercises.length,
-          exercisesInvalid: normalizedExercises.length - validExercises.length,
-          inserted: result.upsertedCount || 0,
-          modified: result.modifiedCount || 0
+          exercises: {
+            imported: result.upsertedCount || 0,
+            modified: result.modifiedCount || 0,
+            total: validExercises.length
+          },
+          bodyParts: {
+            imported: bodyPartsResult.upsertedCount || 0,
+            modified: bodyPartsResult.modifiedCount || 0,
+            total: validBodyParts.length
+          }
         }
       });
     } catch (error) {
-      console.error('❌ Exercise import error:', error);
+      console.error('❌ Error importing exercises:', error);
+      next(error);
+    }
+  }
+
+  /**
+   * Get all body parts
+   * GET /api/exercises/body-parts
+   */
+  async getBodyParts(req, res, next) {
+    try {
+      const bodyParts = await BodyPart.getAll();
+      
+      res.status(200).json({
+        success: true,
+        data: bodyParts
+      });
+    } catch (error) {
+      console.error('❌ Error fetching body parts:', error);
       next(error);
     }
   }
@@ -332,6 +430,24 @@ class ExerciseController {
       });
     } catch (error) {
       console.error('❌ Search exercises error:', error);
+      next(error);
+    }
+  }
+
+  /**
+   * Get all unique body parts
+   * GET /api/exercises/body-parts
+   */
+  async getBodyParts(req, res, next) {
+    try {
+      const bodyParts = await BodyPart.getAll();
+      
+      res.status(200).json({
+        success: true,
+        data: bodyParts
+      });
+    } catch (error) {
+      console.error('❌ Error fetching body parts:', error);
       next(error);
     }
   }

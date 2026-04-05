@@ -32,10 +32,40 @@ const exerciseSchema = new mongoose.Schema({
     trim: true,
     maxlength: [500, 'GIF URL cannot exceed 500 characters']
   },
+  imageUrl: {
+    type: String,
+    trim: true,
+    maxlength: [500, 'Image URL cannot exceed 500 characters']
+  },
+  exerciseId: {
+    type: String,
+    trim: true,
+    maxlength: [50, 'Exercise ID cannot exceed 50 characters']
+  },
+  exerciseType: {
+    type: String,
+    trim: true,
+    maxlength: [50, 'Exercise type cannot exceed 50 characters']
+  },
+  bodyParts: [{
+    type: String,
+    trim: true,
+    maxlength: [50, 'Body part cannot exceed 50 characters']
+  }],
+  targetMuscles: [{
+    type: String,
+    trim: true,
+    maxlength: [50, 'Target muscle cannot exceed 50 characters']
+  }],
   secondaryMuscles: [{
     type: String,
     trim: true,
     maxlength: [50, 'Secondary muscle cannot exceed 50 characters']
+  }],
+  keywords: [{
+    type: String,
+    trim: true,
+    maxlength: [100, 'Keyword cannot exceed 100 characters']
   }],
   instructions: [{
     type: String,
