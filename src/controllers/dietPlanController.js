@@ -188,28 +188,57 @@ class DietPlanController {
   async getClientDietPlans(req, res, next) {
     try {
       const { clientId } = req.params;
-      const doctorId = req.user.userId;
+      const userId = req.user.userId;
+      const userRole = req.user.role;
       const { page = 1, limit = 10 } = req.query;
 
-      // Verify doctor owns the client's diet plans
-      const client = await User.findById(clientId);
-      if (!client || client.role !== 'client') {
-        return res.status(404).json({
-          success: false,
-          error: 'Client not found'
-        });
+      let dietPlans;
+      let total;
+
+      if (userRole === 'client') {
+        // Client accessing their own diet plans
+        if (clientId !== userId.toString()) {
+          return res.status(403).json({
+            success: false,
+            error: 'Access denied - clients can only view their own diet plans'
+          });
+        }
+        
+        dietPlans = await DietPlan.find({ clientId })
+          .sort({ createdAt: -1 })
+          .limit(limit * 1)
+          .skip((page - 1) * limit)
+          .populate('clientId', 'name email')
+          .lean();
+
+        total = await DietPlan.countDocuments({ clientId });
+      } else if (userRole === 'doctor') {
+        // Doctor accessing client's diet plans
+        const client = await User.findById(clientId);
+        if (!client || client.role !== 'client') {
+          return res.status(404).json({
+            success: false,
+            error: 'Client not found'
+          });
+        }
+
+        // Verify client belongs to doctor
+        if (client.doctorId && client.doctorId.toString() !== userId) {
+          return res.status(403).json({
+            success: false,
+            error: 'Access denied - client does not belong to this doctor'
+          });
+        }
+
+        dietPlans = await DietPlan.find({ clientId, doctorId: userId })
+          .sort({ createdAt: -1 })
+          .limit(limit * 1)
+          .skip((page - 1) * limit)
+          .populate('clientId', 'name email')
+          .lean();
+
+        total = await DietPlan.countDocuments({ clientId, doctorId: userId });
       }
-
-      // Get diet plans with pagination
-      const dietPlans = await DietPlan.find({ clientId, doctorId })
-        .sort({ createdAt: -1 })
-        .limit(limit * 1)
-        .skip((page - 1) * limit)
-        .populate('clientId', 'name email')
-        .lean();
-
-      // Get total count for pagination
-      const total = await DietPlan.countDocuments({ clientId, doctorId });
 
       res.status(200).json({
         success: true,
