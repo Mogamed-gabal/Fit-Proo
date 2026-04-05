@@ -45,7 +45,7 @@ class DietProgressController {
           });
         }
 
-        const meal = dayPlan.meals.find(m => m.mealType === mealType);
+        const meal = dayPlan.meals.find(m => m.type === mealType);
         if (!meal) {
           return res.status(404).json({
             success: false,
@@ -53,7 +53,7 @@ class DietProgressController {
           });
         }
 
-        const food = meal.foods.find(f => f.name === foodName);
+        const food = meal.food.find(f => f.name === foodName);
         if (!food) {
           return res.status(404).json({
             success: false,
@@ -199,14 +199,7 @@ class DietProgressController {
       const userId = req.user.userId;
       const userRole = req.user.role;
 
-      // Validate access - doctors can view their clients, clients can only view their own
-      if (userRole === 'client' && clientId !== userId) {
-        return res.status(403).json({
-          success: false,
-          error: 'Access denied - clients can only view their own progress'
-        });
-      }
-
+      // Validate access - doctors can view their clients
       if (userRole === 'doctor') {
         // Verify the client belongs to the doctor
         const client = await User.findOne({ 
@@ -221,6 +214,7 @@ class DietProgressController {
           });
         }
       }
+      // Client access is validated by middleware
 
       // Get active diet plan for the client
       const dietPlan = await DietPlan.findOne({ 

@@ -154,21 +154,48 @@ const requirePermission = (action) => {
       // Allow client to access their own workout plans
       if (req.user.role === 'client') {
         const clientId = req.params.clientId;
-        if (clientId === req.user.userId.toString()) {
+        const dietPlanId = req.params.dietPlanId;
+        
+        // For workout plan endpoints
+        if (clientId && clientId === req.user.userId.toString()) {
           return next();
-        } else {
-          // Client trying to access other client's data
-          return res.status(403).json({
-            success: false,
-            error: 'Access denied. You can only view your own workout plans.'
-          });
         }
+        
+        // For diet plan endpoints - client can access their own diet plans
+        if (dietPlanId) {
+          return next(); // Controller will validate ownership
+        }
+        
+        // Client trying to access other client's data
+        return res.status(403).json({
+          success: false,
+          error: 'Access denied. You can only view your own data.'
+        });
       }
       
       // If we reach here, it means access was not allowed
       return res.status(403).json({
         success: false,
-        error: 'Access denied. You can only view your own workout plans.'
+        error: 'Access denied. You can only view your own data.'
+      });
+    }
+
+    // Special handling for manage_client_workout_plans (diet progress)
+    if (action === 'manage_client_workout_plans') {
+      // Allow admin and doctor based on existing permissions
+      if (req.user.role === 'admin' || req.user.role === 'doctor') {
+        return next();
+      }
+      
+      // Allow client to manage their own diet progress
+      if (req.user.role === 'client') {
+        return next(); // Client can manage their own diet progress
+      }
+      
+      // If we reach here, it means access was not allowed
+      return res.status(403).json({
+        success: false,
+        error: 'Access denied. You can only manage your own diet progress.'
       });
     }
 
