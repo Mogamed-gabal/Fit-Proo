@@ -154,14 +154,14 @@ const requirePermission = (action) => {
       // Allow client to access their own workout plans
       if (req.user.role === 'client') {
         const clientId = req.params.clientId;
-        const dietPlanId = req.params.dietPlanId;
+        const dietPlanId = req.params.id; // Changed from dietPlanId to id to match route
         
         // For workout plan endpoints
         if (clientId && clientId === req.user.userId.toString()) {
           return next();
         }
         
-        // For diet plan endpoints - client can access their own diet plans
+        // For diet plan endpoints - client can access their own diet plans by ID
         if (dietPlanId) {
           return next(); // Controller will validate ownership
         }
@@ -196,6 +196,25 @@ const requirePermission = (action) => {
       return res.status(403).json({
         success: false,
         error: 'Access denied. You can only manage your own diet progress.'
+      });
+    }
+
+    // Special handling for manage_doctors (admin only)
+    if (action === 'manage_doctors') {
+      // Allow admin only
+      if (req.user.role === 'admin') {
+        return next();
+      }
+      
+      // Allow supervisor if they have permission
+      if (req.user.role === 'supervisor' && req.user.permissions && req.user.permissions.includes('manage_doctors')) {
+        return next();
+      }
+      
+      // If we reach here, it means access was not allowed
+      return res.status(403).json({
+        success: false,
+        error: 'Access denied. Only admin can manage doctors.'
       });
     }
 

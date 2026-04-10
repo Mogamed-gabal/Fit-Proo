@@ -451,9 +451,10 @@ class DietPlanController {
       let dietPlan;
       if (userRole === 'doctor') {
         // Doctor can get their own diet plans
-        dietPlan = await DietPlan.findOne({ _id: id, doctorId: userId });
+        dietPlan = await DietPlan.findOne({ _id: id, doctorId: userId })
+          .populate('clientId', 'name email');
       } else if (userRole === 'client') {
-        // Client can only get their own diet plans
+        // Client can get their own diet plans with doctor info
         dietPlan = await DietPlan.findOne({ _id: id, clientId: userId })
           .populate('doctorId', 'name email');
       }
@@ -465,9 +466,118 @@ class DietPlanController {
         });
       }
 
+      // Get progress data for this diet plan
+      const DietProgress = require('../models/DietProgress');
+      const progressEntries = await DietProgress.find({
+        dietPlanId: id
+      }).sort({ dayName: 1, mealType: 1 });
+
+      // Group progress by day and meal type
+      const progressByDay = {};
+      progressEntries.forEach(entry => {
+        if (!progressByDay[entry.dayName]) {
+          progressByDay[entry.dayName] = {};
+        }
+        if (!progressByDay[entry.dayName][entry.mealType]) {
+          progressByDay[entry.dayName][entry.mealType] = [];
+        }
+        progressByDay[entry.dayName][entry.mealType].push({
+          foodName: entry.foodName,
+          nutrition: entry.nutrition,
+          image: entry.image,
+          recipe: entry.recipe,
+          isEaten: entry.isEaten,
+          eatenAt: entry.eatenAt
+        });
+      });
+
+      // Calculate overall progress statistics
+      const totalFoods = progressEntries.length;
+      const eatenFoods = progressEntries.filter(p => p.isEaten).length;
+      const completionRate = totalFoods > 0 ? Math.round((eatenFoods / totalFoods) * 100) : 0;
+
+      // Calculate nutrition totals from eaten foods
+      const nutritionTotals = {
+        calories: 0,
+        protein: 0,
+        carbs: 0,
+        fat: 0
+      };
+
+      progressEntries.forEach(entry => {
+        if (entry.isEaten) {
+          nutritionTotals.calories += entry.nutrition.calories || 0;
+          nutritionTotals.protein += entry.nutrition.protein || 0;
+          nutritionTotals.carbs += entry.nutrition.carbs || 0;
+          nutritionTotals.fat += entry.nutrition.fat || 0;
+        }
+      });
+
+      // Enrich weekly plan with progress data
+      const enrichedWeeklyPlan = dietPlan.weeklyPlan.map(day => {
+        const dayProgress = progressByDay[day.dayName] || {};
+        
+        return {
+          ...day.toObject(),
+          meals: day.meals.map(meal => {
+            const mealProgress = dayProgress[meal.type] || [];
+            
+            return {
+              ...meal.toObject(),
+              foods: meal.food.map(food => {
+                const foodProgress = mealProgress.find(p => p.foodName === food.name);
+                
+                return {
+                  ...food.toObject(),
+                  isEaten: foodProgress ? foodProgress.isEaten : false,
+                  eatenAt: foodProgress ? foodProgress.eatenAt : null,
+                  actualNutrition: foodProgress ? foodProgress.nutrition : food.nutrition
+                };
+              }),
+              mealProgress: {
+                totalFoods: meal.food.length,
+                eatenFoods: mealProgress.filter(p => p.isEaten).length,
+                completionRate: meal.food.length > 0 ? Math.round((mealProgress.filter(p => p.isEaten).length / meal.food.length) * 100) : 0
+              }
+            };
+          }),
+          dayProgress: {
+            totalFoods: day.meals.reduce((sum, meal) => sum + meal.food.length, 0),
+            eatenFoods: Object.values(dayProgress).reduce((sum, mealProg) => sum + mealProg.filter(p => p.isEaten).length, 0),
+            completionRate: day.meals.reduce((sum, meal) => sum + meal.food.length, 0) > 0 
+              ? Math.round((Object.values(dayProgress).reduce((sum, mealProg) => sum + mealProg.filter(p => p.isEaten).length, 0) / day.meals.reduce((sum, meal) => sum + meal.food.length, 0)) * 100)
+              : 0
+          }
+        };
+      });
+
       res.status(200).json({
         success: true,
-        data: { dietPlan }
+        data: {
+          dietPlan: {
+            ...dietPlan.toObject(),
+            weeklyPlan: enrichedWeeklyPlan
+          },
+          progress: {
+            totalFoods,
+            eatenFoods,
+            completionRate,
+            nutritionTotals,
+            progressEntries: progressEntries.length,
+            lastUpdated: progressEntries.length > 0 ? Math.max(...progressEntries.map(p => p.updatedAt || p.createdAt)) : dietPlan.updatedAt
+          },
+          summary: {
+            planDuration: `${dietPlan.durationWeeks} days`,
+            daysCompleted: Object.keys(progressByDay).length,
+            averageDailyCompletion: Object.keys(progressByDay).length > 0 
+              ? Math.round(Object.values(progressByDay).reduce((sum, day) => {
+                  const dayTotal = Object.values(day).reduce((daySum, meal) => daySum + meal.length, 0);
+                  const dayEaten = Object.values(day).reduce((daySum, meal) => daySum + meal.filter(p => p.isEaten).length, 0);
+                  return sum + (dayTotal > 0 ? (dayEaten / dayTotal) * 100 : 0);
+                }, 0) / Object.keys(progressByDay).length)
+              : 0
+          }
+        }
       });
     } catch (error) {
       next(error);

@@ -22,7 +22,7 @@ router.post('/food',
       .isIn(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'])
       .withMessage('Invalid day name'),
     body('mealType')
-      .isIn(['breakfast', 'lunch', 'dinner'])
+      .isIn(['breakfast', 'lunch', 'dinner', 'snack'])
       .withMessage('Invalid meal type'),
     body('foodName')
       .trim()
