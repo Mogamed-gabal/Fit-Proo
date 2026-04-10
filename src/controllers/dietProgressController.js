@@ -135,7 +135,8 @@ class DietProgressController {
       const groupedProgress = {
         breakfast: { eaten: [], notEaten: [] },
         lunch: { eaten: [], notEaten: [] },
-        dinner: { eaten: [], notEaten: [] }
+        dinner: { eaten: [], notEaten: [] },
+        snack: { eaten: [], notEaten: [] }
       };
 
       progressEntries.forEach(entry => {

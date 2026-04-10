@@ -154,7 +154,8 @@ const requirePermission = (action) => {
       // Allow client to access their own workout plans
       if (req.user.role === 'client') {
         const clientId = req.params.clientId;
-        const dietPlanId = req.params.id; // Changed from dietPlanId to id to match route
+        const dietPlanId = req.params.id; // For /api/diet-plans/:id
+        const progressDietPlanId = req.params.dietPlanId; // For /api/progress/:dietPlanId/day/:dayName
         
         // For workout plan endpoints
         if (clientId && clientId === req.user.userId.toString()) {
@@ -163,6 +164,11 @@ const requirePermission = (action) => {
         
         // For diet plan endpoints - client can access their own diet plans by ID
         if (dietPlanId) {
+          return next(); // Controller will validate ownership
+        }
+        
+        // For diet progress endpoints - client can access their own progress
+        if (progressDietPlanId) {
           return next(); // Controller will validate ownership
         }
         
