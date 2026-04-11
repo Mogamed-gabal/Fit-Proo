@@ -172,9 +172,10 @@ const softDeleteUserWithCleanup = async (userId, deletedBy) => {
  * Block user with subscription handling in transaction
  * @param {String} userId - User ID to block
  * @param {String} blockedBy - User ID performing blocking
+ * @param {String} reason - Reason for blocking
  * @returns {Promise} - Blocking result
  */
- const blockUserWithSubscriptionHandling = async (userId, blockedBy) => {
+ const blockUserWithSubscriptionHandling = async (userId, blockedBy, reason = null) => {
    return withTransaction(async (session) => {
      const User = mongoose.model('User');
      const Subscription = mongoose.model('Subscription');
@@ -193,6 +194,7 @@ const softDeleteUserWithCleanup = async (userId, deletedBy) => {
     user.isBlocked = true;
     user.blockedAt = new Date();
     user.blockedBy = blockedBy;
+    user.blockReason = reason;
     await user.save({ session });
 
     // Deactivate all user's active subscriptions

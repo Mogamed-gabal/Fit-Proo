@@ -103,13 +103,14 @@ const blockUser = async (req, res) => {
       }
 
       // Use transaction helper for user blocking with subscription handling
-      const result = await blockUserWithSubscriptionHandling(targetUser._id, req.user.userId);
+      const result = await blockUserWithSubscriptionHandling(targetUser._id, req.user.userId, reason);
 
       res.status(200).json({
         success: true,
         message: 'User blocked successfully',
         data: {
-          user: result.user
+          user: result.user,
+          blockReason: reason
         }
       });
     } catch (error) {

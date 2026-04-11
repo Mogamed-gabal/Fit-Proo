@@ -100,6 +100,10 @@ phone: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
+  blockReason: {
+    type: String,
+    maxlength: [500, 'Block reason cannot exceed 500 characters']
+  },
   isDeleted: {
     type: Boolean,
     default: false
