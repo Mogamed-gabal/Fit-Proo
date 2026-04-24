@@ -69,7 +69,12 @@ const corsOptions = {
   credentials: true
 };
 app.use(cors({
-  origin: ['http://localhost:4200','https://fit-front-three.vercel.app'],
+  origin: [
+    'http://localhost:4200',
+    'http://localhost:3000', 
+    'https://fit-front-three.vercel.app',
+    'https://fit-proo.vercel.app'
+  ],
   credentials: true
 }));
 

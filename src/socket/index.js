@@ -9,7 +9,12 @@ class SocketServer {
   constructor(httpServer) {
     this.io = new Server(httpServer, {
       cors: {
-        origin: process.env.FRONTEND_URL || ["http://localhost:3000", "http://localhost:4200"],
+        origin: [
+          "http://localhost:3000", 
+          "http://localhost:4200",
+          "https://fit-front-three.vercel.app",
+          "https://fit-proo.vercel.app"
+        ],
         methods: ["GET", "POST"],
         credentials: true
       },
