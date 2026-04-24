@@ -825,3 +825,7 @@
 {"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-04-24 14:45:54"}
 {"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-24 14:50:00"}
 {"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-24 14:50:00"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-04-24 21:28:29"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-04-24 21:28:29"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-24 21:30:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-24 21:30:00"}
