@@ -145,7 +145,7 @@ router.post('/admin/create-supervisor',
   handleValidationErrors,
   asyncErrorHandler(authController.createSupervisor)
 );
-
+// Admn approve doctor 
 router.post('/admin/approve/:userId', 
   authenticate, 
   requirePermission('manage_users_limited'),
@@ -153,7 +153,7 @@ router.post('/admin/approve/:userId',
   handleValidationErrors,
   asyncErrorHandler(authController.approveUser)
 );
-
+//Admin reject doctor
 router.post('/admin/reject/:userId', 
   authenticate, 
   requirePermission('manage_users_limited'),

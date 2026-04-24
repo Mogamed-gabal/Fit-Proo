@@ -14,6 +14,10 @@ const logger = require('./src/config/logger');
 const routes = require('./src/routes');
 const autoScheduler = require('./src/utils/autoScheduler');
 const { secureErrorHandler, notFoundHandler } = require('./src/middlewares/secureErrorHandler');
+const SocketServer = require('./src/socket');
+
+// Import cron for scheduled tasks
+const cron = require('node-cron');
 
 // Load environment variables
 dotenv.config();
@@ -166,6 +170,16 @@ app.get('/api/health', (req, res) => {
 
 /*
 ========================================
+GLOBAL SUPERVISOR AUDIT MIDDLEWARE
+========================================
+*/
+const GlobalSupervisorAudit = require('./src/middleware/globalSupervisorAudit');
+
+// Apply global supervisor audit middleware to capture all supervisor actions
+app.use('/api', GlobalSupervisorAudit.globalAuditMiddleware());
+
+/*
+========================================
 API ROUTES
 ========================================
 */
@@ -207,13 +221,119 @@ const startServer = async () => {
       );
     });
 
+    // Initialize socket server
+    const socketServer = new SocketServer(server);
+    
+    // Make socket server available globally
+    global.socketServer = socketServer;
+
+    // Initialize subscription lifecycle cron job
+    const subscriptionCronJob = cron.schedule('*/5 * * * *', async () => {
+      try {
+        logger.info('Running subscription lifecycle sync...');
+        
+        // Lock expired chats
+        await ChatService.lockExpiredChats();
+        
+        logger.info('Subscription lifecycle sync completed');
+      } catch (error) {
+        logger.error('Error in subscription lifecycle cron job:', error);
+      }
+    }, {
+      scheduled: true,
+      timezone: 'UTC'
+    });
+
+    // Initialize orphan chat prevention cron job
+    const orphanChatCronJob = cron.schedule('0 */6 * * *', async () => {
+      try {
+        logger.info('Running orphan chat prevention check...');
+        
+        const Chat = require('./src/models/Chat');
+        const Subscription = require('./src/models/Subscription');
+        
+        // Find chats with invalid subscription bindings or insufficient participants
+        const invalidChats = await Chat.aggregate([
+          {
+            $match: {
+              isDeleted: false,
+              status: { $ne: 'LOCKED' }
+            }
+          },
+          {
+            $lookup: {
+              from: 'subscriptions',
+              localField: 'subscriptionBinding.subscriptionId',
+              foreignField: '_id',
+              as: 'subscription'
+            }
+          },
+          {
+            $match: {
+              $or: [
+                { 'subscriptionBinding.subscriptionId': { $exists: false } },
+                { subscription: { $size: 0 } }, // No subscription found
+                { 
+                  $and: [
+                    { subscription: { $ne: [] } },
+                    { 'subscription.0.status': { $ne: 'ACTIVE' } } // Subscription not active
+                  ]
+                },
+                { participants: { $size: { $lt: 2 } } } // Less than 2 participants
+              ]
+            }
+          }
+        ]);
+        
+        if (invalidChats.length > 0) {
+          logger.info(`Found ${invalidChats.length} invalid chats, locking them...`);
+          
+          // Lock all invalid chats
+          const chatIds = invalidChats.map(chat => chat.chatId);
+          await Chat.updateMany(
+            { chatId: { $in: chatIds } },
+            { 
+              $set: { 
+                status: 'LOCKED', 
+                updatedAt: new Date(),
+                'metadata.lockReason': 'Invalid subscription or participants'
+              }
+            }
+          );
+          
+          logger.info(`Locked ${invalidChats.length} invalid chats`);
+        }
+        
+        logger.info('Orphan chat prevention check completed');
+      } catch (error) {
+        logger.error('Error in orphan chat prevention cron job:', error);
+      }
+    }, {
+      scheduled: true,
+      timezone: 'UTC'
+    });
+
     process.on('unhandledRejection', (err) => {
       logger.error('Unhandled Promise Rejection:', err);
+      
+      // Flush any pending supervisor audit logs before shutdown
+      const GlobalSupervisorAudit = require('./src/middleware/globalSupervisorAudit');
+      GlobalSupervisorAudit.flushLogs().catch(error => {
+        logger.error('Error flushing audit logs during shutdown:', error);
+      });
+      
       server.close(() => process.exit(1));
     });
 
     process.on('uncaughtException', (err) => {
       logger.error('Uncaught Exception:', err);
+      
+      // Flush any pending supervisor audit logs before shutdown
+      const GlobalSupervisorAudit = require('./src/middleware/globalSupervisorAudit');
+      GlobalSupervisorAudit.flushLogs().catch(error => {
+        logger.error('Error flushing audit logs during shutdown:', error);
+      });
+      
       process.exit(1);
     });
 

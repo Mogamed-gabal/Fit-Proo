@@ -12,7 +12,12 @@ const SUPERVISOR_ALLOWED_ACTIONS = [
   'read_user_details',
   'manage_users_limited',
   'manage_supervisors',
-  'read_audit_logs'
+  'read_audit_logs',
+  'read_supervisor_audit',
+  'export_supervisor_audit',
+  'manage_supervisor_audit',
+  'read_permissions',
+  'manage_permissions'
   
 ];
 
@@ -36,12 +41,15 @@ const CLIENT_ALLOWED_ACTIONS = [
   'read_own_profile',
   'manage_own_subscriptions',
   'read_own_subscriptions',
-  'manage_own_weight',
-  'read_own_weight',
+  'manage_own_certificates',
+  'manage_own_packages',
+  'manage_own_bio',
   'update_own_profile',
   'manage_own_profile_picture',
+  'read_own_weight',
   'manage_own_progress',
-  'view_own_progress'
+  'view_own_progress',
+  'manage_workout_templates'
 ];
 
 /**
@@ -69,6 +77,11 @@ const hasPermission = (user, action) => {
 
   // Admin has full access to all actions
   if (role === 'admin') {
+    return true;
+  }
+
+  // Check dynamic permissions first
+  if (user.dynamicPermissions && user.dynamicPermissions.includes(action)) {
     return true;
   }
 

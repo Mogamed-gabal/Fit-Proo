@@ -798,3 +798,8 @@
 {"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-04-11 21:41:11"}
 {"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-04-11 23:34:19"}
 {"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-04-11 23:36:04"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-04-11 23:37:07"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-04-12 00:56:30"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-04-12 00:56:49"}
+{"level":"error","message":"Failed to start server: SocketServer is not defined","service":"fitness-platform","stack":"ReferenceError: SocketServer is not defined\n    at startServer (C:\\Users\\user\\Desktop\\fitness-app\\backend\\server.js:224:26)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)","timestamp":"2026-04-24 14:11:45"}
+{"level":"error","message":"Failed to start server: SocketServer is not defined","service":"fitness-platform","stack":"ReferenceError: SocketServer is not defined\n    at startServer (C:\\Users\\user\\Desktop\\fitness-app\\backend\\server.js:224:26)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)","timestamp":"2026-04-24 14:13:28"}
