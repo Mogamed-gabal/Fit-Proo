@@ -15,6 +15,7 @@ const routes = require('./src/routes');
 const autoScheduler = require('./src/utils/autoScheduler');
 const { secureErrorHandler, notFoundHandler } = require('./src/middlewares/secureErrorHandler');
 const SocketServer = require('./src/socket');
+const ChatService = require('./src/services/chatService');
 
 // Import cron for scheduled tasks
 const cron = require('node-cron');
