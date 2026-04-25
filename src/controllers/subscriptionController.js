@@ -408,6 +408,143 @@ class SubscriptionController {
       });
     }
   }
-}
+
+  async getAllSubscriptions(req, res) {
+    try {
+      // Only admin can access this endpoint
+      if (req.user.role !== 'admin') {
+        return res.status(403).json({
+          success: false,
+          error: 'Access denied. Admin privileges required.'
+        });
+      }
+
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const skip = (page - 1) * limit;
+
+      // Validate limit
+      if (limit > 100) {
+        return res.status(400).json({
+          success: false,
+          error: 'Limit cannot exceed 100'
+        });
+      }
+
+      // Build query
+      const query = {};
+      
+      // Add filters if provided
+      if (req.query.paymentStatus) {
+        query.paymentStatus = req.query.paymentStatus;
+      }
+      
+      if (req.query.isActive !== undefined) {
+        query.isActive = req.query.isActive === 'true';
+      }
+
+      if (req.query.duration) {
+        query.duration = parseInt(req.query.duration);
+      }
+
+      if (req.query.clientId) {
+        query.clientId = req.query.clientId;
+      }
+
+      if (req.query.doctorId) {
+        query.doctorId = req.query.doctorId;
+      }
+
+      // Date range filters
+      if (req.query.dateFrom || req.query.dateTo) {
+        query.createdAt = {};
+        if (req.query.dateFrom) {
+          query.createdAt.$gte = new Date(req.query.dateFrom);
+        }
+        if (req.query.dateTo) {
+          query.createdAt.$lte = new Date(req.query.dateTo);
+        }
+      }
+
+      // End date filter for expired/expiring subscriptions
+      if (req.query.endDateFrom || req.query.endDateTo) {
+        query.endDate = {};
+        if (req.query.endDateFrom) {
+          query.endDate.$gte = new Date(req.query.endDateFrom);
+        }
+        if (req.query.endDateTo) {
+          query.endDate.$lte = new Date(req.query.endDateTo);
+        }
+      }
+
+      const subscriptions = await Subscription.find(query)
+        .populate('clientId', 'name email role isBlocked')
+        .populate('doctorId', 'name email role status isBlocked')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
+
+      const total = await Subscription.countDocuments(query);
+
+      // Calculate statistics
+      const stats = await Subscription.aggregate([
+        { $match: query },
+        {
+          $group: {
+            _id: null,
+            totalSubscriptions: { $sum: 1 },
+            activeSubscriptions: { $sum: { $cond: ['$isActive', 1, 0] } },
+            paidSubscriptions: { $sum: { $cond: [{ $eq: ['$paymentStatus', 'paid'] }, 1, 0] } },
+            pendingSubscriptions: { $sum: { $cond: [{ $eq: ['$paymentStatus', 'pending'] }, 1, 0] } },
+            failedSubscriptions: { $sum: { $cond: [{ $eq: ['$paymentStatus', 'failed'] }, 1, 0] } },
+            totalRevenue: { $sum: { $cond: [{ $eq: ['$paymentStatus', 'paid'] }, '$totalPrice', 0] } },
+            avgDuration: { $avg: '$duration' }
+          }
+        }
+      ]);
+
+      res.status(200).json({
+        success: true,
+        data: {
+          subscriptions,
+          pagination: {
+            page,
+            limit,
+            total,
+            pages: Math.ceil(total / limit),
+            hasNext: page < Math.ceil(total / limit),
+            hasPrev: page > 1
+          },
+          statistics: stats[0] || {
+            totalSubscriptions: 0,
+            activeSubscriptions: 0,
+            paidSubscriptions: 0,
+            pendingSubscriptions: 0,
+            failedSubscriptions: 0,
+            totalRevenue: 0,
+            avgDuration: 0
+          },
+          filters: {
+            paymentStatus: req.query.paymentStatus || null,
+            isActive: req.query.isActive !== undefined ? req.query.isActive === 'true' : null,
+            duration: req.query.duration ? parseInt(req.query.duration) : null,
+            clientId: req.query.clientId || null,
+            doctorId: req.query.doctorId || null,
+            dateFrom: req.query.dateFrom || null,
+            dateTo: req.query.dateTo || null,
+            endDateFrom: req.query.endDateFrom || null,
+            endDateTo: req.query.endDateTo || null
+          }
+        }
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
+  }
+
+  }
 
 module.exports = new SubscriptionController();

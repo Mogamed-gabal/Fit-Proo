@@ -25,4 +25,8 @@ router.get('/doctor-subscriptions', requirePermission('read_subscriptions'), sub
 // Cancel subscription (client only)
 router.delete('/:subscriptionId', requirePermission('manage_own_subscriptions'), subscriptionController.cancelSubscription.bind(subscriptionController));
 
+// Admin only endpoints
+// Get all subscriptions with filtering and statistics
+router.get('/admin/all', subscriptionController.getAllSubscriptions.bind(subscriptionController));
+
 module.exports = router;

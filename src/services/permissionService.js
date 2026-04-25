@@ -389,7 +389,9 @@ class PermissionService {
         'view_system_reports',
         'read_supervisor_audit',
         'export_supervisor_audit',
-        'manage_supervisor_audit'
+        'manage_supervisor_audit',
+        'read_permissions',
+        'manage_permissions'
       ],
       supervisor: [
         // These will be replaced by dynamic permissions

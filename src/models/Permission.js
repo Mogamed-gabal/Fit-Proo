@@ -56,7 +56,11 @@ const permissionSchema = new mongoose.Schema({
       'MANAGE',
       'VIEW',
       'ACCESS',
-      'MODIFY'
+      'MODIFY',
+      'CANCEL',
+      'RESTORE',
+      'RECOMMEND',
+      'UNRECOMMEND'
     ]
   },
   resource: {
@@ -194,6 +198,30 @@ permissionSchema.statics.createDefaultPermissions = async function() {
       resource: 'USERS',
       level: 2
     },
+    {
+      name: 'view_deleted_users',
+      description: 'Ability to view and search deleted users',
+      category: 'USER_MANAGEMENT',
+      action: 'VIEW',
+      resource: 'USERS',
+      level: 3
+    },
+    {
+      name: 'permanent_delete_users',
+      description: 'Ability to permanently delete users from the system',
+      category: 'USER_MANAGEMENT',
+      action: 'DELETE',
+      resource: 'USERS',
+      level: 5
+    },
+    {
+      name: 'restore_deleted_users',
+      description: 'Ability to restore soft-deleted users',
+      category: 'USER_MANAGEMENT',
+      action: 'RESTORE',
+      resource: 'USERS',
+      level: 4
+    },
 
     // Doctor Management
     {
@@ -207,7 +235,7 @@ permissionSchema.statics.createDefaultPermissions = async function() {
     },
     {
       name: 'approve_doctor',
-      description: 'Ability to approve doctor registrations',
+      description: 'Ability to approve doctor registration',
       category: 'DOCTOR_MANAGEMENT',
       action: 'APPROVE',
       resource: 'DOCTORS',
@@ -215,7 +243,7 @@ permissionSchema.statics.createDefaultPermissions = async function() {
     },
     {
       name: 'reject_doctor',
-      description: 'Ability to reject doctor registrations',
+      description: 'Ability to reject doctor registration',
       category: 'DOCTOR_MANAGEMENT',
       action: 'REJECT',
       resource: 'DOCTORS',
@@ -223,22 +251,52 @@ permissionSchema.statics.createDefaultPermissions = async function() {
     },
     {
       name: 'restore_doctor',
-      description: 'Ability to restore soft-deleted doctors',
+      description: 'Ability to restore deleted doctors',
       category: 'DOCTOR_MANAGEMENT',
-      action: 'MANAGE',
+      action: 'RESTORE',
       resource: 'DOCTORS',
       level: 4
     },
     {
       name: 'view_doctor_profile',
-      description: 'Ability to view doctor profile information',
+      description: 'Ability to view doctor profiles',
       category: 'DOCTOR_MANAGEMENT',
       action: 'VIEW',
       resource: 'DOCTORS',
       level: 2
     },
-
-    // Diet Plan Management
+    {
+      name: 'update_doctor_status',
+      description: 'Ability to update doctor status',
+      category: 'DOCTOR_MANAGEMENT',
+      action: 'UPDATE',
+      resource: 'DOCTORS',
+      level: 3
+    },
+    {
+      name: 'view_doctor_certificates',
+      description: 'Ability to view doctor certificates',
+      category: 'DOCTOR_MANAGEMENT',
+      action: 'VIEW',
+      resource: 'DOCTORS',
+      level: 2
+    },
+    {
+      name: 'recommend_doctor',
+      description: 'Ability to recommend doctors to clients',
+      category: 'DOCTOR_MANAGEMENT',
+      action: 'RECOMMEND',
+      resource: 'DOCTORS',
+      level: 3
+    },
+    {
+      name: 'unrecommend_doctor',
+      description: 'Ability to remove doctor recommendations',
+      category: 'DOCTOR_MANAGEMENT',
+      action: 'UNRECOMMEND',
+      resource: 'DOCTORS',
+      level: 3
+    },
     {
       name: 'manage_diet_plans',
       description: 'Full access to diet plan operations',
@@ -279,6 +337,80 @@ permissionSchema.statics.createDefaultPermissions = async function() {
       action: 'VIEW',
       resource: 'DIET_PLANS',
       level: 2
+    },
+
+    // Subscription Management
+    {
+      name: 'read_subscriptions',
+      description: 'Ability to read and view subscriptions',
+      category: 'SUBSCRIPTION_MANAGEMENT',
+      action: 'READ',
+      resource: 'SUBSCRIPTIONS',
+      level: 2
+    },
+    {
+      name: 'manage_subscriptions',
+      description: 'Ability to manage subscriptions',
+      category: 'SUBSCRIPTION_MANAGEMENT',
+      action: 'MANAGE',
+      resource: 'SUBSCRIPTIONS',
+      level: 4
+    },
+    {
+      name: 'export_subscriptions',
+      description: 'Ability to export subscription data',
+      category: 'SUBSCRIPTION_MANAGEMENT',
+      action: 'EXPORT',
+      resource: 'SUBSCRIPTIONS',
+      level: 3
+    },
+    {
+      name: 'approve_subscriptions',
+      description: 'Ability to approve subscription requests',
+      category: 'SUBSCRIPTION_MANAGEMENT',
+      action: 'APPROVE',
+      resource: 'SUBSCRIPTIONS',
+      level: 3
+    },
+    {
+      name: 'cancel_subscriptions',
+      description: 'Ability to cancel subscriptions',
+      category: 'SUBSCRIPTION_MANAGEMENT',
+      action: 'CANCEL',
+      resource: 'SUBSCRIPTIONS',
+      level: 3
+    },
+    {
+      name: 'view_subscription_details',
+      description: 'Ability to view detailed subscription information',
+      category: 'SUBSCRIPTION_MANAGEMENT',
+      action: 'VIEW',
+      resource: 'SUBSCRIPTIONS',
+      level: 2
+    },
+    {
+      name: 'modify_subscription_status',
+      description: 'Ability to modify subscription status',
+      category: 'SUBSCRIPTION_MANAGEMENT',
+      action: 'MODIFY',
+      resource: 'SUBSCRIPTIONS',
+      level: 3
+    },
+    {
+      name: 'access_subscription_reports',
+      description: 'Ability to access subscription reports and analytics',
+      category: 'SUBSCRIPTION_MANAGEMENT',
+      action: 'ACCESS',
+      resource: 'REPORTS',
+      level: 3
+    },
+    {
+      name: 'manage_own_subscriptions',
+      description: 'Ability to manage own subscriptions',
+      category: 'SUBSCRIPTION_MANAGEMENT',
+      action: 'MANAGE',
+      resource: 'SUBSCRIPTIONS',
+      level: 1
     },
 
     // System Access

@@ -87,4 +87,60 @@ router.get('/stats',
   userController.getUserStats
 );
 
+/**
+ * Get all deleted users (admin/supervisor with permissions)
+ * GET /api/users/deleted
+ * Query params: page, limit, search, role, deletedFrom, deletedTo
+ */
+router.get('/deleted',
+  requirePermission('view_deleted_users'),
+  [
+    query('page')
+      .optional()
+      .isInt({ min: 1 })
+      .withMessage('Page must be a positive integer'),
+    query('limit')
+      .optional()
+      .isInt({ min: 1, max: 100 })
+      .withMessage('Limit must be between 1 and 100'),
+    query('search')
+      .optional()
+      .trim()
+      .isLength({ max: 100 })
+      .withMessage('Search term cannot exceed 100 characters'),
+    query('role')
+      .optional()
+      .isIn(['client', 'doctor', 'supervisor', 'admin'])
+      .withMessage('Role must be one of: client, doctor, supervisor, admin'),
+    query('deletedFrom')
+      .optional()
+      .isISO8601()
+      .withMessage('Deleted from must be a valid date'),
+    query('deletedTo')
+      .optional()
+      .isISO8601()
+      .withMessage('Deleted to must be a valid date')
+  ],
+  userController.getDeletedUsers
+);
+
+/**
+ * Permanently delete a user (admin/supervisor with permissions)
+ * DELETE /api/users/:userId/permanent
+ */
+router.delete('/:userId/permanent',
+  requirePermission('permanent_delete_users'),
+  [
+    param('userId')
+      .isMongoId()
+      .withMessage('Invalid user ID'),
+    body('reason')
+      .optional()
+      .trim()
+      .isLength({ min: 3, max: 500 })
+      .withMessage('Reason must be between 3 and 500 characters')
+  ],
+  userController.permanentDeleteUser
+);
+
 module.exports = router;

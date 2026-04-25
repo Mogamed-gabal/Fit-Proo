@@ -140,4 +140,70 @@ router.get('/stats',
   doctorController.getDoctorStats
 );
 
+/**
+ * Recommend a doctor (admin/supervisor with permissions)
+ * POST /api/doctors/:doctorId/recommend
+ */
+router.post('/:doctorId/recommend',
+  requirePermission('recommend_doctor'),
+  [
+    param('doctorId')
+      .isMongoId()
+      .withMessage('Invalid doctor ID'),
+    body('reason')
+      .optional()
+      .trim()
+      .isLength({ min: 3, max: 500 })
+      .withMessage('Reason must be between 3 and 500 characters')
+  ],
+  doctorController.recommendDoctor
+);
+
+/**
+ * Unrecommend a doctor (admin/supervisor with permissions)
+ * DELETE /api/doctors/:doctorId/recommend
+ */
+router.delete('/:doctorId/recommend',
+  requirePermission('unrecommend_doctor'),
+  [
+    param('doctorId')
+      .isMongoId()
+      .withMessage('Invalid doctor ID'),
+    body('reason')
+      .optional()
+      .trim()
+      .isLength({ min: 3, max: 500 })
+      .withMessage('Reason must be between 3 and 500 characters')
+  ],
+  doctorController.unrecommendDoctor
+);
+
+/**
+ * Get recommended doctors
+ * GET /api/doctors/recommended
+ */
+router.get('/recommended',
+  [
+    query('page')
+      .optional()
+      .isInt({ min: 1 })
+      .withMessage('Page must be a positive integer'),
+    query('limit')
+      .optional()
+      .isInt({ min: 1, max: 100 })
+      .withMessage('Limit must be between 1 and 100'),
+    query('specialization')
+      .optional()
+      .trim()
+      .isLength({ max: 50 })
+      .withMessage('Specialization cannot exceed 50 characters'),
+    query('search')
+      .optional()
+      .trim()
+      .isLength({ max: 100 })
+      .withMessage('Search term cannot exceed 100 characters')
+  ],
+  doctorController.getRecommendedDoctors
+);
+
 module.exports = router;

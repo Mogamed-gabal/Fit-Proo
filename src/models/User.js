@@ -120,6 +120,33 @@ phone: {
       return this.role === 'client' ? 'approved' : 'pending';
     }
   },
+  isRecommended: {
+    type: Boolean,
+    default: false,
+    required: function() {
+      return this.role === 'doctor';
+    }
+  },
+  recommendedAt: {
+    type: Date,
+    required: function() {
+      return this.isRecommended && this.role === 'doctor';
+    }
+  },
+  recommendedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: function() {
+      return this.isRecommended && this.role === 'doctor';
+    }
+  },
+  recommendationReason: {
+    type: String,
+    maxlength: [500, 'Recommendation reason cannot exceed 500 characters'],
+    required: function() {
+      return this.isRecommended && this.role === 'doctor';
+    }
+  },
   packages: [{
     duration: {
       type: Number,
@@ -343,6 +370,11 @@ userSchema.index({ specialization: 1, role: 1 });
 userSchema.index({ 'weightHistory.date': -1 });
 userSchema.index({ createdAt: -1 });
 userSchema.index({ updatedAt: -1 });
+
+// 🔒 PERFORMANCE FIX: Indexes for doctor recommendations
+userSchema.index({ role: 1, isRecommended: 1 });
+userSchema.index({ isRecommended: 1, recommendedAt: -1 });
+userSchema.index({ recommendedBy: 1, recommendedAt: -1 });
 
 // 🔒 PERFORMANCE FIX: Compound indexes for common queries
 userSchema.index({ role: 1, status: 1, isDeleted: 1 });
