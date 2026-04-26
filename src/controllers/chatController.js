@@ -430,6 +430,165 @@ class ChatController {
       });
     }
   }
+
+  /**
+   * Upload file and send message with attachment
+   * POST /api/chat/upload-file
+   */
+  static async uploadFile(req, res) {
+    try {
+      const { chatId, messageType = 'FILE' } = req.body;
+      const senderId = req.user.userId;
+      
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
+          error: 'No file uploaded'
+        });
+      }
+
+      // Use ChatService to handle file upload and message sending
+      const result = await ChatService.sendFileWithAttachment(senderId, chatId, req.file, messageType);
+
+      res.status(200).json({
+        success: true,
+        data: result
+      });
+
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
+  }
+
+  /**
+   * Upload image and send message with image attachment
+   * POST /api/chat/upload-image
+   */
+  static async uploadImage(req, res) {
+    try {
+      const { chatId } = req.body;
+      const senderId = req.user.userId;
+      
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
+          error: 'No image uploaded'
+        });
+      }
+
+      // Validate that it's an image
+      if (!req.file.mimetype.startsWith('image/')) {
+        return res.status(400).json({
+          success: false,
+          error: 'File must be an image'
+        });
+      }
+
+      // Use ChatService to handle image upload and message sending
+      const result = await ChatService.sendImageWithAttachment(senderId, chatId, req.file);
+
+      res.status(200).json({
+        success: true,
+        data: result
+      });
+
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
+  }
+
+  /**
+   * Admin: Get all chats in the system
+   * GET /api/chat/admin/all-chats
+   */
+  static async getAllChats(req, res) {
+    try {
+      const { page = 1, limit = 20, status } = req.query;
+      
+      // Use ChatService to get all chats
+      const result = await ChatService.getAllChats({
+        page: parseInt(page),
+        limit: parseInt(limit),
+        status
+      });
+
+      res.status(200).json({
+        success: true,
+        data: result
+      });
+
+    } catch (error) {
+      console.error('Error getting all chats:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
+  }
+
+  /**
+   * Admin: Get chat messages for any chat
+   * GET /api/chat/admin/:chatId/messages
+   */
+  static async getAdminChatMessages(req, res) {
+    try {
+      const { chatId } = req.params;
+      const { page = 1, limit = 50, before, after } = req.query;
+      
+      // Use ChatService to get chat messages (admin view)
+      const result = await ChatService.getAdminChatMessages(chatId, {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        before,
+        after
+      });
+
+      res.status(200).json({
+        success: true,
+        data: result
+      });
+
+    } catch (error) {
+      console.error('Error getting chat messages (admin):', error);
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
+  }
+
+  /**
+   * Admin: Get chat statistics for any chat
+   * GET /api/chat/admin/:chatId/statistics
+   */
+  static async getAdminChatStatistics(req, res) {
+    try {
+      const { chatId } = req.params;
+      
+      // Use ChatService to get chat statistics
+      const result = await ChatService.getChatStatistics(chatId);
+
+      res.status(200).json({
+        success: true,
+        data: result
+      });
+
+    } catch (error) {
+      console.error('Error getting chat statistics (admin):', error);
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
+  }
 }
 
 module.exports = ChatController;

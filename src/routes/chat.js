@@ -1,10 +1,12 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
 const { authenticate } = require('../middlewares/auth');
 const DynamicPermissionMiddleware = require('../middleware/dynamicPermissionMiddleware');
 const ChatController = require('../controllers/chatController');
 const { body, query } = require('express-validator');
 const { asyncErrorHandler } = require('../middlewares/userErrorMiddleware');
+const { uploadImage } = require('../services/cloudinaryService');
 
 /**
  * Chat Routes
@@ -45,6 +47,52 @@ const validateReaction = [
   body('reactionType').isIn(['LIKE', 'LOVE', 'LAUGH', 'ANGRY', 'SAD']).withMessage('Invalid reaction type')
 ];
 
+// Multer configuration for file uploads
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 25 * 1024 * 1024, // 25MB limit
+    files: 1
+  },
+  fileFilter: (req, file, cb) => {
+    // Allowed file types
+    const allowedMimes = [
+      // Images
+      'image/jpeg',
+      'image/jpg', 
+      'image/png',
+      'image/gif',
+      'image/webp',
+      // Documents
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'text/plain',
+      // Audio
+      'audio/mpeg',
+      'audio/wav',
+      'audio/mp3',
+      'audio/m4a',
+      // Video
+      'video/mp4',
+      'video/quicktime',
+      'video/x-msvideo'
+    ];
+    
+    if (allowedMimes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type. Only images, PDFs, documents, audio, and video files are allowed.'), false);
+    }
+  }
+});
+
+// Validation for file upload
+const validateFileUpload = [
+  body('chatId').isString().notEmpty().withMessage('Chat ID is required'),
+  body('messageType').optional().isIn(['IMAGE', 'FILE']).withMessage('Invalid message type')
+];
+
 // Create a new chat
 router.post('/create',
   authenticate,
@@ -57,6 +105,22 @@ router.post('/send-message',
   authenticate,
   validateSendMessage,
   asyncErrorHandler(ChatController.sendMessage)
+);
+
+// Upload file and send message with attachment
+router.post('/upload-file',
+  authenticate,
+  upload.single('file'),
+  validateFileUpload,
+  asyncErrorHandler(ChatController.uploadFile)
+);
+
+// Upload image specifically (for better image handling)
+router.post('/upload-image',
+  authenticate,
+  upload.single('image'),
+  validateFileUpload,
+  asyncErrorHandler(ChatController.uploadImage)
 );
 
 // Get chat messages
@@ -144,43 +208,7 @@ router.get('/admin/all-chats',
     query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
     query('status').optional().isIn(['ACTIVE', 'SUSPENDED', 'CLOSED']).withMessage('Invalid status')
   ],
-  asyncErrorHandler(async (req, res) => {
-    try {
-      // Admin can view all chats
-      const Chat = require('../models/Chat');
-      const { page = 1, limit = 20, status } = req.query;
-      
-      const query = status ? { status, isDeleted: false } : { isDeleted: false };
-      
-      const chats = await Chat.find(query)
-        .populate('participants.userId', 'name email role')
-        .populate('subscriptionBinding.subscriptionId')
-        .sort({ updatedAt: -1 })
-        .limit(parseInt(limit))
-        .skip((parseInt(page) - 1) * parseInt(limit));
-      
-      const total = await Chat.countDocuments(query);
-      
-      res.status(200).json({
-        success: true,
-        data: {
-          chats: chats.map(chat => chat.getChatInfo()),
-          pagination: {
-            page: parseInt(page),
-            limit: parseInt(limit),
-            total,
-            pages: Math.ceil(total / parseInt(limit))
-          }
-        }
-      });
-    } catch (error) {
-      console.error('Error getting all chats:', error);
-      res.status(500).json({
-        success: false,
-        error: error.message
-      });
-    }
-  })
+  asyncErrorHandler(ChatController.getAllChats)
 );
 
 // Admin view chat messages
@@ -193,61 +221,14 @@ router.get('/admin/:chatId/messages',
     query('before').optional().isISO8601().withMessage('Invalid date format'),
     query('after').optional().isISO8601().withMessage('Invalid date format')
   ],
-  asyncErrorHandler(async (req, res) => {
-    try {
-      const { chatId } = req.params;
-      const { page = 1, limit = 50, before, after } = req.query;
-      
-      // Admin can view any chat messages
-      const ChatMessage = require('../models/ChatMessage');
-      const messages = await ChatMessage.getChatMessages(chatId, {
-        page: parseInt(page),
-        limit: parseInt(limit),
-        before,
-        after,
-        markAsRead: false // Admin doesn't affect read status
-      });
-      
-      res.status(200).json({
-        success: true,
-        data: {
-          messages,
-          page: parseInt(page),
-          limit: parseInt(limit)
-        }
-      });
-    } catch (error) {
-      console.error('Error getting chat messages (admin):', error);
-      res.status(500).json({
-        success: false,
-        error: error.message
-      });
-    }
-  })
+  asyncErrorHandler(ChatController.getAdminChatMessages)
 );
 
 // Admin get chat statistics
 router.get('/admin/:chatId/statistics',
   authenticate,
   DynamicPermissionMiddleware.requireAdminOrPermission('VIEW_ALL_CHATS'),
-  asyncErrorHandler(async (req, res) => {
-    try {
-      const { chatId } = req.params;
-      
-      const result = await ChatService.getChatStatistics(chatId);
-      
-      res.status(200).json({
-        success: true,
-        data: result
-      });
-    } catch (error) {
-      console.error('Error getting chat statistics (admin):', error);
-      res.status(500).json({
-        success: false,
-        error: error.message
-      });
-    }
-  })
+  asyncErrorHandler(ChatController.getAdminChatStatistics)
 );
 
 module.exports = router;

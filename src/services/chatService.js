@@ -817,6 +817,216 @@ class ChatService {
       return 0;
     }
   }
+
+  /**
+   * Send file with attachment
+   * @param {String} senderId - Sender user ID
+   * @param {String} chatId - Chat ID
+   * @param {Object} file - File object from multer
+   * @param {String} messageType - Message type (FILE or IMAGE)
+   * @returns {Promise<Object>} Result with message and upload info
+   */
+  static async sendFileWithAttachment(senderId, chatId, file, messageType = 'FILE') {
+    try {
+      // Import cloudinary service
+      const { uploadImage } = require('./cloudinaryService');
+
+      // Determine message type based on file mimetype
+      let finalMessageType = messageType;
+      if (file.mimetype.startsWith('image/')) {
+        finalMessageType = 'IMAGE';
+      } else {
+        finalMessageType = 'FILE';
+      }
+
+      // Upload file to Cloudinary
+      const uploadResult = await uploadImage(file.buffer, {
+        folder: 'chat-attachments',
+        resource_type: finalMessageType === 'IMAGE' ? 'image' : 'auto',
+        public_id: `chat_${chatId}_${Date.now()}`
+      });
+
+      // Create message content
+      const messageContent = `Shared ${finalMessageType === 'IMAGE' ? 'image' : 'file'}: ${file.originalname}`;
+      
+      // Create attachment object
+      const attachment = {
+        url: uploadResult.secure_url,
+        filename: file.originalname,
+        mimeType: file.mimetype,
+        size: file.size,
+        publicId: uploadResult.public_id
+      };
+
+      // Send message with attachment
+      const messageResult = await this.sendMessage(senderId, chatId, {
+        content: messageContent,
+        type: finalMessageType,
+        attachment
+      });
+
+      // Return result with upload info
+      return {
+        ...messageResult,
+        uploadInfo: {
+          originalName: file.originalname,
+          mimeType: file.mimetype,
+          size: file.size,
+          url: uploadResult.secure_url
+        }
+      };
+
+    } catch (error) {
+      console.error('Error sending file with attachment:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Send image with attachment (optimized for images)
+   * @param {String} senderId - Sender user ID
+   * @param {String} chatId - Chat ID
+   * @param {Object} imageFile - Image file object from multer
+   * @returns {Promise<Object>} Result with message and upload info
+   */
+  static async sendImageWithAttachment(senderId, chatId, imageFile) {
+    try {
+      // Import cloudinary service
+      const { uploadImage } = require('./cloudinaryService');
+
+      // Upload image to Cloudinary with image-specific options
+      const uploadResult = await uploadImage(imageFile.buffer, {
+        folder: 'chat-images',
+        resource_type: 'image',
+        public_id: `chat_${chatId}_img_${Date.now()}`,
+        quality: 'auto',
+        fetch_format: 'auto'
+      });
+
+      // Create message content
+      const messageContent = `Shared image: ${imageFile.originalname}`;
+      
+      // Create attachment object with image-specific info
+      const attachment = {
+        url: uploadResult.secure_url,
+        filename: imageFile.originalname,
+        mimeType: imageFile.mimetype,
+        size: imageFile.size,
+        publicId: uploadResult.public_id,
+        thumbnailUrl: uploadResult.secure_url // Cloudinary auto-generates thumbnails
+      };
+
+      // Send message with image attachment
+      const messageResult = await this.sendMessage(senderId, chatId, {
+        content: messageContent,
+        type: 'IMAGE',
+        attachment
+      });
+
+      // Return result with image info
+      return {
+        ...messageResult,
+        uploadInfo: {
+          originalName: imageFile.originalname,
+          mimeType: imageFile.mimetype,
+          size: imageFile.size,
+          url: uploadResult.secure_url,
+          thumbnailUrl: uploadResult.secure_url
+        }
+      };
+
+    } catch (error) {
+      console.error('Error sending image with attachment:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Admin: Get all chats in the system
+   * @param {Object} options - Query options
+   * @returns {Promise<Object>} All chats with pagination
+   */
+  static async getAllChats(options = {}) {
+    try {
+      const { page = 1, limit = 20, status } = options;
+      const Chat = require('../models/Chat');
+      
+      // Build query
+      const query = status ? { status, isDeleted: false } : { isDeleted: false };
+      
+      // Get chats with pagination
+      const chats = await Chat.find(query)
+        .populate('participants.userId', 'name email role')
+        .populate('subscriptionBinding.subscriptionId')
+        .sort({ updatedAt: -1 })
+        .limit(parseInt(limit))
+        .skip((parseInt(page) - 1) * parseInt(limit));
+      
+      const total = await Chat.countDocuments(query);
+      
+      return {
+        chats: chats.map(chat => chat.getChatInfo()),
+        pagination: {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          total,
+          pages: Math.ceil(total / parseInt(limit))
+        }
+      };
+
+    } catch (error) {
+      console.error('Error getting all chats:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Admin: Get chat messages for any chat (bypasses access control)
+   * @param {String} chatId - Chat ID
+   * @param {Object} options - Query options
+   * @returns {Promise<Object>} Messages with pagination
+   */
+  static async getAdminChatMessages(chatId, options = {}) {
+    try {
+      const { page = 1, limit = 50, before, after } = options;
+      const ChatMessage = require('../models/ChatMessage');
+      
+      // Get messages without access control (admin view)
+      const messages = await ChatMessage.getChatMessages(chatId, {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        before,
+        after,
+        markAsRead: false // Admin doesn't affect read status
+      });
+      
+      return {
+        messages,
+        page: parseInt(page),
+        limit: parseInt(limit)
+      };
+
+    } catch (error) {
+      console.error('Error getting admin chat messages:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Admin: Get chat statistics for any chat
+   * @param {String} chatId - Chat ID
+   * @returns {Promise<Object>} Chat statistics
+   */
+  static async getAdminChatStatistics(chatId) {
+    try {
+      // Use existing getChatStatistics method (admin has full access)
+      return await this.getChatStatistics(chatId);
+
+    } catch (error) {
+      console.error('Error getting admin chat statistics:', error);
+      throw error;
+    }
+  }
 }
 
 module.exports = ChatService;
