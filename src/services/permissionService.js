@@ -383,6 +383,7 @@ class PermissionService {
         'manage_users',
         'manage_doctors',
         'manage_diet_plans',
+        'MANAGE_BUNDLES',
         'access_admin_panel',
         'view_sensitive_data',
         'export_user_data',

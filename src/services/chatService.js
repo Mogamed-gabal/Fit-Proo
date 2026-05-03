@@ -11,13 +11,13 @@ const Subscription = require('../models/Subscription');
  */
 class ChatService {
   /**
-   * Create a new chat with subscription binding
+   * Create a new chat with subscription binding or free trial
    * @param {String} creatorId - User creating the chat
    * @param {Object} chatData - Chat configuration
-   * @param {String} subscriptionId - Subscription for binding
+   * @param {String} subscriptionId - Subscription for binding (optional)
    * @returns {Promise<Object>} Created chat information
    */
-  static async createChat(creatorId, chatData, subscriptionId) {
+  static async createChat(creatorId, chatData, subscriptionId = null) {
     try {
       // Validate creator exists
       const creator = await User.findById(creatorId);
@@ -25,13 +25,63 @@ class ChatService {
         throw new Error('Creator not found');
       }
 
-      // Validate subscription and create bound chat
-      const result = await EnhancedChatAccessService.createBoundChat(creatorId, chatData, subscriptionId);
+      let result;
+      
+      if (subscriptionId) {
+        // Create chat with subscription binding
+        result = await EnhancedChatAccessService.createBoundChat(creatorId, chatData, subscriptionId);
+      } else {
+        // Create free chat for trial users
+        result = await this._createFreeChat(creatorId, chatData);
+      }
       
       return result;
 
     } catch (error) {
       console.error('Error creating chat:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Create a free chat for trial users
+   * @param {String} creatorId - User creating the chat
+   * @param {Object} chatData - Chat configuration
+   * @returns {Promise<Object>} Created chat information
+   */
+  static async _createFreeChat(creatorId, chatData) {
+    try {
+      const Chat = require('../models/Chat');
+      
+      // Create free chat without subscription binding
+      const chat = await Chat.create({
+        ...chatData,
+        subscriptionBinding: {
+          subscriptionId: null,
+          accessType: 'FREE',
+          allowedParticipantsSource: 'FREE_USERS',
+          validatedAt: new Date()
+        },
+        status: 'ACTIVE',
+        createdBy: creatorId,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
+
+      console.log(`Created free chat ${chat.chatId} for user ${creatorId}`);
+      
+      return {
+        success: true,
+        chat: chat.getChatInfo(),
+        subscription: {
+          id: null,
+          type: 'FREE_TRIAL',
+          accessType: 'FREE'
+        }
+      };
+
+    } catch (error) {
+      console.error('Error creating free chat:', error);
       throw error;
     }
   }

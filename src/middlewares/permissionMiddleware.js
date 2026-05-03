@@ -20,7 +20,8 @@ const SUPERVISOR_ALLOWED_ACTIONS = [
   'manage_permissions',
   'restore_deleted_users',
   'permanent_delete_users',
-  'view_deleted_users'
+  'view_deleted_users',
+  'MANAGE_BUNDLES'
   
 ];
 
@@ -86,6 +87,14 @@ const hasPermission = (user, action) => {
   // Check dynamic permissions first
   if (user.dynamicPermissions && user.dynamicPermissions.includes(action)) {
     return true;
+  }
+
+  // Special handling for MANAGE_BUNDLES permission
+  if (action === 'MANAGE_BUNDLES') {
+    if (role === 'supervisor') {
+      return SUPERVISOR_ALLOWED_ACTIONS.includes(action);
+    }
+    return false; // Only admin and supervisor can manage bundles
   }
 
   // Supervisor has limited access

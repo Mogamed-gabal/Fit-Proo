@@ -19,7 +19,7 @@ const validateChatCreation = [
   body('chatData.type').isIn(['ONE_TO_ONE', 'GROUP']).withMessage('Invalid chat type'),
   body('chatData.participants').isArray().withMessage('Participants must be an array'),
   body('chatData.participants.*.userId').isMongoId().withMessage('Invalid participant ID'),
-  body('subscriptionId').isMongoId().withMessage('Subscription ID is required')
+  body('subscriptionId').optional().isMongoId().withMessage('Invalid subscription ID format')
 ];
 
 const validateSendMessage = [

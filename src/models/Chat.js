@@ -31,7 +31,7 @@ const chatSchema = new mongoose.Schema({
     subscriptionId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Subscription',
-      required: true,
+      required: false,
       index: true
     },
     accessType: {
@@ -336,6 +336,11 @@ chatSchema.statics._determineParticipantsSource = function(accessType, subscript
 chatSchema.statics._validateSubscriptionBinding = async function(chat, userId) {
   try {
     const subscription = chat.subscriptionBinding.subscriptionId;
+    
+    // Handle free chats without subscription
+    if (!subscription && chat.subscriptionBinding.accessType === 'FREE') {
+      return { valid: true, reason: 'FREE_CHAT_ACCESS' };
+    }
     
     // Check if subscription is active or in grace period
     const now = new Date();

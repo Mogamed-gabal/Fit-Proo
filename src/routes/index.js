@@ -23,6 +23,7 @@ const nutritionRoutes = require('./nutrition');
 const exercisesRoutes = require('./exercises');
 const usersRoutes = require('./users');
 const doctorsRoutes = require('./doctors');
+const bundleRoutes = require('./bundles');
 
 router.use('/auth', authRoutes);
 router.use('/subscription', subscriptionRoutes);
@@ -47,5 +48,6 @@ router.use('/nutrition', nutritionRoutes);
 router.use('/exercises', exercisesRoutes);
 router.use('/users', usersRoutes);
 router.use('/doctors', doctorsRoutes);
+router.use('/bundles', bundleRoutes);
 
 module.exports = router;
