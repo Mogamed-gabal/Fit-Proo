@@ -1069,3 +1069,317 @@
 {"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-04-26 14:32:02"}
 {"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-04-26 14:32:13"}
 {"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-04-26 14:32:13"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-26 14:35:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-26 14:35:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-26 14:40:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-26 14:40:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-26 14:45:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-26 14:45:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-26 14:50:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-26 14:50:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-26 14:55:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-26 14:55:00"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-04-26 14:59:52"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-04-26 14:59:52"}
+{"level":"info","message":"Running orphan chat prevention check...","service":"fitness-platform","timestamp":"2026-04-26 15:00:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-26 15:00:00"}
+{"$clusterTime":{"clusterTime":{"$timestamp":"7633036464229449766"},"signature":{"hash":"SuCsWXuC5bg/BN2QbRLDcZ789/U=","keyId":{"high":1765834449,"low":3,"unsigned":false}}},"code":2,"codeName":"BadValue","errorLabelSet":{},"errorResponse":{"$clusterTime":{"clusterTime":{"$timestamp":"7633036464229449766"},"signature":{"hash":"SuCsWXuC5bg/BN2QbRLDcZ789/U=","keyId":{"high":1765834449,"low":3,"unsigned":false}}},"code":2,"codeName":"BadValue","errmsg":"Failed to parse $size. Expected a number in: $size: { $lt: 2 }","ok":0,"operationTime":{"$timestamp":"7633036464229449766"}},"level":"error","message":"Error in orphan chat prevention cron job: Failed to parse $size. Expected a number in: $size: { $lt: 2 }","ok":0,"operationTime":{"$timestamp":"7633036464229449766"},"service":"fitness-platform","stack":"MongoServerError: Failed to parse $size. Expected a number in: $size: { $lt: 2 }\n    at Connection.sendCommand (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\cmap\\connection.js:306:27)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Connection.command (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\cmap\\connection.js:334:26)\n    at async Server.command (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\sdam\\server.js:194:29)\n    at async tryOperation (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\operations\\execute_operation.js:213:32)\n    at async executeOperation (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\operations\\execute_operation.js:78:16)\n    at async AggregationCursor._initialize (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\cursor\\aggregation_cursor.js:57:26)\n    at async AggregationCursor.cursorInit (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:632:27)\n    at async AggregationCursor.fetchBatch (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:666:13)\n    at async AggregationCursor.next (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:342:17)","timestamp":"2026-04-26 15:00:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-26 15:00:00"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-04-26 15:00:20"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-04-26 15:00:20"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-04-26 15:07:56"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-04-26 15:07:56"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-04-26 15:09:39"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-04-26 15:09:39"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-26 15:10:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-26 15:10:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-26 15:15:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-26 15:15:00"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-04-26 15:18:49"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-04-26 15:18:49"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-04-26 15:19:01"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-04-26 15:19:01"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-26 15:20:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-26 15:20:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-26 15:25:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-26 15:25:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-26 15:30:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-26 15:30:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-26 15:35:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-26 15:35:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-26 15:40:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-26 15:40:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-26 15:45:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-26 15:45:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-26 15:50:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-26 15:50:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-26 15:55:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-26 15:55:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-26 16:00:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-26 16:00:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-26 16:05:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-26 16:05:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-26 16:10:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-26 16:10:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-26 16:15:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-26 16:15:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-26 16:20:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-26 16:20:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-26 16:25:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-26 16:25:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-26 16:30:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-26 16:30:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-26 16:35:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-26 16:35:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-26 16:40:00"}
+{"cause":{"beforeHandshake":false,"errorLabelSet":{}},"errorLabelSet":{},"level":"error","message":"Error in subscription lifecycle cron job: connect ETIMEDOUT 89.195.226.196:27017","reason":{"commonWireVersion":0,"compatible":true,"heartbeatFrequencyMS":10000,"localThresholdMS":15,"logicalSessionTimeoutMinutes":null,"maxElectionId":{"$oid":"7fffffff000000000000012e"},"maxSetVersion":34,"servers":{"ac-kwzmg0b-shard-00-00.vedmn40.mongodb.net:27017":{"$clusterTime":null,"address":"ac-kwzmg0b-shard-00-00.vedmn40.mongodb.net:27017","arbiters":[],"electionId":null,"error":{"beforeHandshake":false,"errorLabelSet":{}},"hosts":[],"iscryptd":false,"lastUpdateTime":2656886729,"lastWriteDate":0,"logicalSessionTimeoutMinutes":null,"maxBsonObjectSize":null,"maxMessageSizeBytes":null,"maxWireVersion":0,"maxWriteBatchSize":null,"me":null,"minRoundTripTime":0,"minWireVersion":0,"passives":[],"primary":null,"roundTripTime":-1,"setName":null,"setVersion":null,"tags":{},"topologyVersion":null,"type":"Unknown"},"ac-kwzmg0b-shard-00-01.vedmn40.mongodb.net:27017":{"$clusterTime":null,"address":"ac-kwzmg0b-shard-00-01.vedmn40.mongodb.net:27017","arbiters":[],"electionId":null,"error":{"beforeHandshake":false,"errorLabelSet":{}},"hosts":[],"iscryptd":false,"lastUpdateTime":2656892418,"lastWriteDate":0,"logicalSessionTimeoutMinutes":null,"maxBsonObjectSize":null,"maxMessageSizeBytes":null,"maxWireVersion":0,"maxWriteBatchSize":null,"me":null,"minRoundTripTime":0,"minWireVersion":0,"passives":[],"primary":null,"roundTripTime":-1,"setName":null,"setVersion":null,"tags":{},"topologyVersion":null,"type":"Unknown"},"ac-kwzmg0b-shard-00-02.vedmn40.mongodb.net:27017":{"$clusterTime":null,"address":"ac-kwzmg0b-shard-00-02.vedmn40.mongodb.net:27017","arbiters":[],"electionId":null,"error":{"beforeHandshake":false,"errorLabelSet":{}},"hosts":[],"iscryptd":false,"lastUpdateTime":2656918930,"lastWriteDate":0,"logicalSessionTimeoutMinutes":null,"maxBsonObjectSize":null,"maxMessageSizeBytes":null,"maxWireVersion":0,"maxWriteBatchSize":null,"me":null,"minRoundTripTime":0,"minWireVersion":0,"passives":[],"primary":null,"roundTripTime":-1,"setName":null,"setVersion":null,"tags":{},"topologyVersion":null,"type":"Unknown"}},"setName":"atlas-52omr9-shard-0","stale":false,"type":"ReplicaSetNoPrimary"},"service":"fitness-platform","stack":"MongoServerSelectionError: connect ETIMEDOUT 89.195.226.196:27017\n    at Topology.selectServer (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\sdam\\topology.js:327:38)\n    at async tryOperation (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\operations\\execute_operation.js:148:18)\n    at async executeOperation (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\operations\\execute_operation.js:78:16)\n    at async FindCursor._initialize (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\cursor\\find_cursor.js:62:26)\n    at async FindCursor.cursorInit (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:632:27)\n    at async FindCursor.fetchBatch (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:666:13)\n    at async FindCursor.next (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:342:17)\n    at async [Symbol.asyncIterator] (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:250:34)\n    at async FindCursor.toArray (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:422:26)\n    at async model.Query._find (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongoose\\lib\\query.js:2430:14)","timestamp":"2026-04-26 16:40:05"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-26 16:45:00"}
+{"cause":{"beforeHandshake":false,"errorLabelSet":{}},"errorLabelSet":{},"level":"error","message":"Error in subscription lifecycle cron job: Socket 'secureConnect' timed out after 34348ms (connectTimeoutMS: 30000)","reason":{"commonWireVersion":0,"compatible":true,"heartbeatFrequencyMS":10000,"localThresholdMS":15,"logicalSessionTimeoutMinutes":null,"maxElectionId":{"$oid":"7fffffff000000000000012e"},"maxSetVersion":34,"servers":{"ac-kwzmg0b-shard-00-00.vedmn40.mongodb.net:27017":{"$clusterTime":null,"address":"ac-kwzmg0b-shard-00-00.vedmn40.mongodb.net:27017","arbiters":[],"electionId":null,"error":{"beforeHandshake":false,"errorLabelSet":{}},"hosts":[],"iscryptd":false,"lastUpdateTime":2657196648,"lastWriteDate":0,"logicalSessionTimeoutMinutes":null,"maxBsonObjectSize":null,"maxMessageSizeBytes":null,"maxWireVersion":0,"maxWriteBatchSize":null,"me":null,"minRoundTripTime":0,"minWireVersion":0,"passives":[],"primary":null,"roundTripTime":-1,"setName":null,"setVersion":null,"tags":{},"topologyVersion":null,"type":"Unknown"},"ac-kwzmg0b-shard-00-01.vedmn40.mongodb.net:27017":{"$clusterTime":null,"address":"ac-kwzmg0b-shard-00-01.vedmn40.mongodb.net:27017","arbiters":[],"electionId":null,"error":{"beforeHandshake":false,"errorLabelSet":{}},"hosts":[],"iscryptd":false,"lastUpdateTime":2657196388,"lastWriteDate":0,"logicalSessionTimeoutMinutes":null,"maxBsonObjectSize":null,"maxMessageSizeBytes":null,"maxWireVersion":0,"maxWriteBatchSize":null,"me":null,"minRoundTripTime":0,"minWireVersion":0,"passives":[],"primary":null,"roundTripTime":-1,"setName":null,"setVersion":null,"tags":{},"topologyVersion":null,"type":"Unknown"},"ac-kwzmg0b-shard-00-02.vedmn40.mongodb.net:27017":{"$clusterTime":null,"address":"ac-kwzmg0b-shard-00-02.vedmn40.mongodb.net:27017","arbiters":[],"electionId":null,"error":{"beforeHandshake":false,"errorLabelSet":{}},"hosts":[],"iscryptd":false,"lastUpdateTime":2657197479,"lastWriteDate":0,"logicalSessionTimeoutMinutes":null,"maxBsonObjectSize":null,"maxMessageSizeBytes":null,"maxWireVersion":0,"maxWriteBatchSize":null,"me":null,"minRoundTripTime":0,"minWireVersion":0,"passives":[],"primary":null,"roundTripTime":-1,"setName":null,"setVersion":null,"tags":{},"topologyVersion":null,"type":"Unknown"}},"setName":"atlas-52omr9-shard-0","stale":false,"type":"ReplicaSetNoPrimary"},"service":"fitness-platform","stack":"MongoServerSelectionError: Socket 'secureConnect' timed out after 34348ms (connectTimeoutMS: 30000)\n    at Topology.selectServer (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\sdam\\topology.js:327:38)\n    at async tryOperation (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\operations\\execute_operation.js:148:18)\n    at async executeOperation (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\operations\\execute_operation.js:78:16)\n    at async FindCursor._initialize (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\cursor\\find_cursor.js:62:26)\n    at async FindCursor.cursorInit (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:632:27)\n    at async FindCursor.fetchBatch (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:666:13)\n    at async FindCursor.next (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:342:17)\n    at async [Symbol.asyncIterator] (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:250:34)\n    at async FindCursor.toArray (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:422:26)\n    at async model.Query._find (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongoose\\lib\\query.js:2430:14)","timestamp":"2026-04-26 16:45:05"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-26 16:50:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-26 16:50:02"}
+{"level":"info","message":"User 69eb51928c5f34603f96294f connected (admin)","service":"fitness-platform","timestamp":"2026-04-26 16:54:35"}
+{"level":"info","message":"Auto-rejoined 0 chats for user 69eb51928c5f34603f96294f","service":"fitness-platform","timestamp":"2026-04-26 16:54:36"}
+{"level":"info","message":"User 69eb51928c5f34603f96294f disconnected","service":"fitness-platform","timestamp":"2026-04-26 16:54:50"}
+{"level":"info","message":"User 69eb51928c5f34603f96294f connected (admin)","service":"fitness-platform","timestamp":"2026-04-26 16:54:53"}
+{"level":"info","message":"Auto-rejoined 0 chats for user 69eb51928c5f34603f96294f","service":"fitness-platform","timestamp":"2026-04-26 16:54:54"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-26 16:55:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-26 16:55:00"}
+{"level":"info","message":"User 69eb51928c5f34603f96294f disconnected","service":"fitness-platform","timestamp":"2026-04-26 16:55:53"}
+{"level":"info","message":"User 69eb51928c5f34603f96294f connected (admin)","service":"fitness-platform","timestamp":"2026-04-27 21:38:11"}
+{"level":"info","message":"Auto-rejoined 0 chats for user 69eb51928c5f34603f96294f","service":"fitness-platform","timestamp":"2026-04-27 21:38:12"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-27 21:40:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-27 21:40:00"}
+{"level":"info","message":"User 69eb51928c5f34603f96294f disconnected","service":"fitness-platform","timestamp":"2026-04-27 21:44:35"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-27 21:45:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-27 21:45:00"}
+{"level":"info","message":"User 69eb51928c5f34603f96294f connected (admin)","service":"fitness-platform","timestamp":"2026-04-27 21:46:22"}
+{"level":"info","message":"Auto-rejoined 0 chats for user 69eb51928c5f34603f96294f","service":"fitness-platform","timestamp":"2026-04-27 21:46:23"}
+{"level":"info","message":"User 69eb51928c5f34603f96294f disconnected","service":"fitness-platform","timestamp":"2026-04-27 21:49:11"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-27 21:50:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-27 21:50:12"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-27 21:55:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-27 21:55:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-27 22:00:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-27 22:00:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-27 22:05:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-27 22:05:00"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-04-27 22:09:36"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-04-27 22:09:36"}
+{"level":"info","message":"User 69eb51928c5f34603f96294f connected (admin)","service":"fitness-platform","timestamp":"2026-04-27 22:09:37"}
+{"level":"info","message":"Auto-rejoined 0 chats for user 69eb51928c5f34603f96294f","service":"fitness-platform","timestamp":"2026-04-27 22:09:38"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-27 22:10:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-27 22:10:00"}
+{"level":"info","message":"User 69eb51928c5f34603f96294f disconnected","service":"fitness-platform","timestamp":"2026-04-27 22:13:47"}
+{"expiredAt":"2026-04-27T19:12:22.000Z","level":"error","message":"Socket authentication error: jwt expired","name":"TokenExpiredError","service":"fitness-platform","stack":"TokenExpiredError: jwt expired\n    at C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\jsonwebtoken\\verify.js:190:21\n    at getSecret (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\jsonwebtoken\\verify.js:97:14)\n    at module.exports [as verify] (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\jsonwebtoken\\verify.js:101:10)\n    at ChatSocketHandler.authenticateSocket (C:\\Users\\user\\Desktop\\fitness-app\\backend\\src\\socket\\chatSocketHandler.js:48:27)\n    at run (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\socket.io\\dist\\namespace.js:133:19)\n    at Namespace.run (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\socket.io\\dist\\namespace.js:144:9)\n    at Namespace._add (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\socket.io\\dist\\namespace.js:221:14)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)","timestamp":"2026-04-27 22:58:53"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-27 23:00:00"}
+{"cause":{"beforeHandshake":false,"errorLabelSet":{}},"errorLabelSet":{},"level":"error","message":"Error in subscription lifecycle cron job: getaddrinfo ENOTFOUND ac-kwzmg0b-shard-00-00.vedmn40.mongodb.net","reason":{"commonWireVersion":0,"compatible":true,"heartbeatFrequencyMS":10000,"localThresholdMS":15,"logicalSessionTimeoutMinutes":null,"maxElectionId":{"$oid":"7fffffff000000000000012e"},"maxSetVersion":34,"servers":{"ac-kwzmg0b-shard-00-00.vedmn40.mongodb.net:27017":{"$clusterTime":null,"address":"ac-kwzmg0b-shard-00-00.vedmn40.mongodb.net:27017","arbiters":[],"electionId":null,"error":{"beforeHandshake":false,"errorLabelSet":{}},"hosts":[],"iscryptd":false,"lastUpdateTime":2766132928,"lastWriteDate":0,"logicalSessionTimeoutMinutes":null,"maxBsonObjectSize":null,"maxMessageSizeBytes":null,"maxWireVersion":0,"maxWriteBatchSize":null,"me":null,"minRoundTripTime":0,"minWireVersion":0,"passives":[],"primary":null,"roundTripTime":-1,"setName":null,"setVersion":null,"tags":{},"topologyVersion":null,"type":"Unknown"},"ac-kwzmg0b-shard-00-01.vedmn40.mongodb.net:27017":{"$clusterTime":null,"address":"ac-kwzmg0b-shard-00-01.vedmn40.mongodb.net:27017","arbiters":[],"electionId":null,"error":{"beforeHandshake":false,"errorLabelSet":{}},"hosts":[],"iscryptd":false,"lastUpdateTime":2766132936,"lastWriteDate":0,"logicalSessionTimeoutMinutes":null,"maxBsonObjectSize":null,"maxMessageSizeBytes":null,"maxWireVersion":0,"maxWriteBatchSize":null,"me":null,"minRoundTripTime":0,"minWireVersion":0,"passives":[],"primary":null,"roundTripTime":-1,"setName":null,"setVersion":null,"tags":{},"topologyVersion":null,"type":"Unknown"},"ac-kwzmg0b-shard-00-02.vedmn40.mongodb.net:27017":{"$clusterTime":null,"address":"ac-kwzmg0b-shard-00-02.vedmn40.mongodb.net:27017","arbiters":[],"electionId":null,"error":{"beforeHandshake":false,"errorLabelSet":{}},"hosts":[],"iscryptd":false,"lastUpdateTime":2766132935,"lastWriteDate":0,"logicalSessionTimeoutMinutes":null,"maxBsonObjectSize":null,"maxMessageSizeBytes":null,"maxWireVersion":0,"maxWriteBatchSize":null,"me":null,"minRoundTripTime":0,"minWireVersion":0,"passives":[],"primary":null,"roundTripTime":-1,"setName":null,"setVersion":null,"tags":{},"topologyVersion":null,"type":"Unknown"}},"setName":"atlas-52omr9-shard-0","stale":false,"type":"ReplicaSetNoPrimary"},"service":"fitness-platform","stack":"MongoServerSelectionError: getaddrinfo ENOTFOUND ac-kwzmg0b-shard-00-00.vedmn40.mongodb.net\n    at Topology.selectServer (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\sdam\\topology.js:327:38)\n    at async tryOperation (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\operations\\execute_operation.js:148:18)\n    at async executeOperation (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\operations\\execute_operation.js:78:16)\n    at async FindCursor._initialize (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\cursor\\find_cursor.js:62:26)\n    at async FindCursor.cursorInit (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:632:27)\n    at async FindCursor.fetchBatch (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:666:13)\n    at async FindCursor.next (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:342:17)\n    at async [Symbol.asyncIterator] (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:250:34)\n    at async FindCursor.toArray (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:422:26)\n    at async model.Query._find (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongoose\\lib\\query.js:2430:14)","timestamp":"2026-04-27 23:00:05"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-27 23:05:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-27 23:05:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-27 23:10:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-27 23:10:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-27 23:15:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-27 23:15:07"}
+{"level":"info","message":"User 69eb51928c5f34603f96294f connected (admin)","service":"fitness-platform","timestamp":"2026-04-27 23:17:25"}
+{"level":"info","message":"Auto-rejoined 0 chats for user 69eb51928c5f34603f96294f","service":"fitness-platform","timestamp":"2026-04-27 23:17:26"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-04-27 23:20:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-04-27 23:20:00"}
+{"level":"info","message":"User 69eb51928c5f34603f96294f disconnected","service":"fitness-platform","timestamp":"2026-04-27 23:24:01"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-02 14:00:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-02 14:00:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-02 14:05:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-02 14:05:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-02 14:10:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-02 14:10:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-02 14:15:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-02 14:15:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-02 14:20:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-02 14:20:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-02 14:25:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-02 14:25:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-02 14:30:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-02 14:30:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-02 14:35:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-02 14:35:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-02 14:40:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-02 14:40:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-02 14:45:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-02 14:45:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-02 14:50:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-02 14:50:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-02 14:55:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-02 14:55:00"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-02 14:58:06"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-02 14:58:06"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-02 15:00:00"}
+{"level":"info","message":"Running orphan chat prevention check...","service":"fitness-platform","timestamp":"2026-05-02 15:00:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-02 15:00:00"}
+{"$clusterTime":{"clusterTime":{"$timestamp":"7635262962390794241"},"signature":{"hash":"eQDm/WEhNoFQhDGaliMLOPr9u/I=","keyId":{"high":1765834449,"low":3,"unsigned":false}}},"code":2,"codeName":"BadValue","errorLabelSet":{},"errorResponse":{"$clusterTime":{"clusterTime":{"$timestamp":"7635262962390794241"},"signature":{"hash":"eQDm/WEhNoFQhDGaliMLOPr9u/I=","keyId":{"high":1765834449,"low":3,"unsigned":false}}},"code":2,"codeName":"BadValue","errmsg":"Failed to parse $size. Expected a number in: $size: { $lt: 2 }","ok":0,"operationTime":{"$timestamp":"7635262962390794241"}},"level":"error","message":"Error in orphan chat prevention cron job: Failed to parse $size. Expected a number in: $size: { $lt: 2 }","ok":0,"operationTime":{"$timestamp":"7635262962390794241"},"service":"fitness-platform","stack":"MongoServerError: Failed to parse $size. Expected a number in: $size: { $lt: 2 }\n    at Connection.sendCommand (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\cmap\\connection.js:306:27)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Connection.command (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\cmap\\connection.js:334:26)\n    at async Server.command (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\sdam\\server.js:194:29)\n    at async tryOperation (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\operations\\execute_operation.js:213:32)\n    at async executeOperation (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\operations\\execute_operation.js:78:16)\n    at async AggregationCursor._initialize (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\cursor\\aggregation_cursor.js:57:26)\n    at async AggregationCursor.cursorInit (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:632:27)\n    at async AggregationCursor.fetchBatch (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:666:13)\n    at async AggregationCursor.next (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\cursor\\abstract_cursor.js:342:17)","timestamp":"2026-05-02 15:00:00"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-02 15:01:03"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-02 15:01:03"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-02 15:01:20"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-02 15:01:20"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-02 15:04:30"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-02 15:04:30"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-02 15:05:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-02 15:05:00"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-02 15:06:20"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-02 15:06:20"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-02 15:10:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-02 15:10:00"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-02 15:10:48"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-02 15:10:48"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-02 15:11:16"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-02 15:11:16"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-02 15:15:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-02 15:15:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-02 15:20:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-02 15:20:00"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-02 15:22:19"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-02 15:22:19"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-02 15:24:03"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-02 15:24:03"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-02 15:25:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-02 15:25:00"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-02 15:29:31"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-02 15:29:31"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-02 15:29:51"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-02 15:29:51"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-02 15:30:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-02 15:30:00"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-02 15:32:13"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-02 15:32:13"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-02 15:33:17"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-02 15:33:17"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-02 15:35:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-02 15:35:00"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-02 15:37:40"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-02 15:37:40"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-02 15:40:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-02 15:40:00"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-02 15:43:54"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-02 15:43:54"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-02 15:45:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-02 15:45:00"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-02 15:45:49"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-02 15:45:50"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-02 15:49:44"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-02 15:49:44"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-02 15:50:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-02 15:50:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-02 15:55:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-02 15:55:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-02 16:00:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-02 16:00:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-02 19:05:00"}
+{"beforeHandshake":false,"cause":{"code":"ENOTFOUND","errno":-3008,"hostname":"ac-kwzmg0b-shard-00-01.vedmn40.mongodb.net","syscall":"getaddrinfo"},"connectionGeneration":1,"errorLabelSet":{},"level":"error","message":"Error in subscription lifecycle cron job: getaddrinfo ENOTFOUND ac-kwzmg0b-shard-00-01.vedmn40.mongodb.net","service":"fitness-platform","stack":"MongoNetworkError: getaddrinfo ENOTFOUND ac-kwzmg0b-shard-00-01.vedmn40.mongodb.net\n    at TLSSocket.<anonymous> (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\mongodb\\lib\\cmap\\connect.js:286:44)\n    at Object.onceWrapper (node:events:632:26)\n    at TLSSocket.emit (node:events:517:28)\n    at emitErrorNT (node:internal/streams/destroy:151:8)\n    at emitErrorCloseNT (node:internal/streams/destroy:116:3)\n    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)","timestamp":"2026-05-02 22:53:59"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-02 22:55:09"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-02 22:55:09"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-02 22:58:31"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-02 22:58:31"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-02 23:00:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-02 23:00:00"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-02 23:01:09"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-02 23:01:09"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-02 23:02:09"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-02 23:02:09"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-02 23:05:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-02 23:05:00"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-02 23:09:20"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-02 23:09:20"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-02 23:09:55"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-02 23:09:55"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-02 23:10:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-02 23:10:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-02 23:15:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-02 23:15:00"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-02 23:16:06"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-02 23:16:06"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-02 23:20:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-02 23:20:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-02 23:25:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-02 23:25:00"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-02 23:27:28"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-02 23:27:28"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-02 23:28:15"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-02 23:28:16"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-03 15:10:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-03 15:10:01"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-03 15:12:29"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-03 15:12:29"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-03 15:15:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-03 15:15:00"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-03 15:15:22"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-03 15:15:22"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-03 15:15:37"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-03 15:15:37"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-03 15:15:55"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-03 15:15:55"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-03 15:17:42"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-03 15:17:42"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-03 15:17:54"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-03 15:17:54"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-03 15:20:06"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-03 15:20:06"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-03 15:20:34"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-03 15:20:34"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-03 15:20:54"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-03 15:20:54"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-03 15:25:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-03 15:25:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-03 15:30:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-03 15:30:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-03 15:35:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-03 15:35:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-03 15:40:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-03 15:40:00"}
+{"expiredAt":"2026-05-03T12:29:52.000Z","level":"error","message":"Socket authentication error: jwt expired","name":"TokenExpiredError","service":"fitness-platform","stack":"TokenExpiredError: jwt expired\n    at C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\jsonwebtoken\\verify.js:190:21\n    at getSecret (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\jsonwebtoken\\verify.js:97:14)\n    at module.exports [as verify] (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\jsonwebtoken\\verify.js:101:10)\n    at ChatSocketHandler.authenticateSocket (C:\\Users\\user\\Desktop\\fitness-app\\backend\\src\\socket\\chatSocketHandler.js:48:27)\n    at run (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\socket.io\\dist\\namespace.js:133:19)\n    at Namespace.run (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\socket.io\\dist\\namespace.js:144:9)\n    at Namespace._add (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\socket.io\\dist\\namespace.js:221:14)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)","timestamp":"2026-05-03 15:41:14"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-03 15:45:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-03 15:45:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-03 15:50:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-03 15:50:00"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-03 15:54:48"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-03 15:54:48"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-03 15:55:07"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-03 15:55:07"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-03 15:55:32"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-03 15:55:32"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-03 16:00:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-03 16:00:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-03 16:05:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-03 16:05:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-03 16:10:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-03 16:10:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-03 16:15:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-03 16:15:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-03 16:20:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-03 16:20:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-03 16:25:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-03 16:25:00"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-03 16:27:49"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-03 16:27:50"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-03 16:30:04"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-03 16:30:04"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-03 16:30:21"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-03 16:30:21"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-03 16:32:12"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-03 16:32:12"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-03 16:34:45"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-03 16:34:45"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-03 16:34:58"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-03 16:34:58"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-03 16:35:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-03 16:35:00"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-03 16:39:14"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-03 16:39:14"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-03 16:40:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-03 16:40:00"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-03 16:40:50"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-03 16:40:50"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-03 16:43:56"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-03 16:43:56"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-03 16:45:09"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-03 16:45:09"}
+{"level":"info","message":"User 69eb51928c5f34603f96294f connected (admin)","service":"fitness-platform","timestamp":"2026-05-03 16:45:20"}
+{"level":"info","message":"Auto-rejoined 0 chats for user 69eb51928c5f34603f96294f","service":"fitness-platform","timestamp":"2026-05-03 16:45:21"}
+{"level":"info","message":"User 69eb51928c5f34603f96294f disconnected","service":"fitness-platform","timestamp":"2026-05-03 16:46:22"}
+{"expiredAt":"2026-05-03T13:54:18.000Z","level":"error","message":"Socket authentication error: jwt expired","name":"TokenExpiredError","service":"fitness-platform","stack":"TokenExpiredError: jwt expired\n    at C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\jsonwebtoken\\verify.js:190:21\n    at getSecret (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\jsonwebtoken\\verify.js:97:14)\n    at module.exports [as verify] (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\jsonwebtoken\\verify.js:101:10)\n    at ChatSocketHandler.authenticateSocket (C:\\Users\\user\\Desktop\\fitness-app\\backend\\src\\socket\\chatSocketHandler.js:48:27)\n    at run (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\socket.io\\dist\\namespace.js:133:19)\n    at Namespace.run (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\socket.io\\dist\\namespace.js:144:9)\n    at Namespace._add (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\socket.io\\dist\\namespace.js:221:14)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)","timestamp":"2026-05-03 20:57:15"}

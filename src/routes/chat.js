@@ -206,7 +206,11 @@ router.get('/admin/all-chats',
   [
     query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
     query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
-    query('status').optional().isIn(['ACTIVE', 'SUSPENDED', 'CLOSED']).withMessage('Invalid status')
+    query('status').optional().isIn(['ACTIVE', 'SUSPENDED', 'CLOSED']).withMessage('Invalid status'),
+    query('search').optional().isString().trim().isLength({ min: 1, max: 100 }).withMessage('Search term must be between 1 and 100 characters'),
+    query('participantRole').optional().isIn(['client', 'doctor', 'nutritionist', 'therapist', 'coach']).withMessage('Invalid participant role'),
+    query('specialization').optional().isString().trim().isLength({ min: 1, max: 50 }).withMessage('Specialization must be between 1 and 50 characters'),
+    query('chatType').optional().isIn(['ONE_TO_ONE', 'GROUP']).withMessage('Invalid chat type')
   ],
   asyncErrorHandler(ChatController.getAllChats)
 );

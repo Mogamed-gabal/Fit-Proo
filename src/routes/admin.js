@@ -7,6 +7,13 @@ const {
   canManageUser, 
   preventPrivilegeEscalation 
 } = require('../middlewares/permissionMiddleware');
+const { 
+  auditSoftDeleteUser, 
+  auditBlockUser, 
+  auditUnblockUser, 
+  auditCreateSupervisor, 
+  auditDeleteSupervisor 
+} = require('../middlewares/auditMiddleware');
 
 // Apply authentication to all admin routes
 router.use(authenticate);
@@ -39,6 +46,7 @@ router.get('/users/:userId',
 router.post('/users/:userId/block', 
   requirePermission('block_client'),
   canManageUser('userId'),
+  auditBlockUser,
   adminController.blockUser
 );
 
@@ -46,6 +54,7 @@ router.post('/users/:userId/block',
 router.post('/users/:userId/unblock', 
   requirePermission('unblock_client'),
   canManageUser('userId'),
+  auditUnblockUser,
   adminController.unblockUser
 );
 
@@ -54,17 +63,24 @@ router.delete('/users/:userId',
   requirePermission('delete_user'),
   canManageUser('userId'),
   preventPrivilegeEscalation('userId'),
+  auditSoftDeleteUser,
   adminController.softDeleteUser
 );
 
 // Create supervisor
 router.post('/supervisors', 
   requirePermission('manage_supervisors'),
+  auditCreateSupervisor,
   adminController.createSupervisor
 );
 
 // Delete supervisor
-router.delete('/supervisors/:userId', requirePermission('manage_supervisors'),canManageUser('userId'),preventPrivilegeEscalation('userId'),adminController.deleteSupervisor
+router.delete('/supervisors/:userId', 
+  requirePermission('manage_supervisors'),
+  canManageUser('userId'),
+  preventPrivilegeEscalation('userId'),
+  auditDeleteSupervisor,
+  adminController.deleteSupervisor
 );
 router.get('/supervisors',requirePermission('read_supervisors'),adminController.getAllSupervisors);
 

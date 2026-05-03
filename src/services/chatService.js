@@ -942,35 +942,190 @@ class ChatService {
   }
 
   /**
-   * Admin: Get all chats in the system
+   * Admin: Get all chats in the system with advanced search and filtering
    * @param {Object} options - Query options
    * @returns {Promise<Object>} All chats with pagination
    */
   static async getAllChats(options = {}) {
     try {
-      const { page = 1, limit = 20, status } = options;
+      const { 
+        page = 1, 
+        limit = 20, 
+        status, 
+        search, 
+        participantRole, 
+        specialization, 
+        chatType 
+      } = options;
+      
       const Chat = require('../models/Chat');
+      const User = require('../models/User');
       
-      // Build query
-      const query = status ? { status, isDeleted: false } : { isDeleted: false };
+      // Build base query
+      let query = { isDeleted: false };
       
-      // Get chats with pagination
-      const chats = await Chat.find(query)
-        .populate('participants.userId', 'name email role')
-        .populate('subscriptionBinding.subscriptionId')
-        .sort({ updatedAt: -1 })
-        .limit(parseInt(limit))
-        .skip((parseInt(page) - 1) * parseInt(limit));
+      // Add status filter
+      if (status) {
+        query.status = status;
+      }
       
-      const total = await Chat.countDocuments(query);
+      // Add chat type filter
+      if (chatType) {
+        query.type = chatType;
+      }
+      
+      // Build aggregation pipeline for advanced search
+      let pipeline = [
+        // Match base criteria
+        { $match: query },
+        
+        // Lookup participants to get user details
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'participants.userId',
+            foreignField: '_id',
+            as: 'participantDetails'
+          }
+        },
+        
+        // Lookup subscription details
+        {
+          $lookup: {
+            from: 'subscriptions',
+            localField: 'subscriptionBinding.subscriptionId',
+            foreignField: '_id',
+            as: 'subscriptionDetails'
+          }
+        }
+      ];
+      
+      // Add search filter (by participant name or email)
+      if (search) {
+        const searchRegex = new RegExp(search, 'i'); // Case-insensitive search
+        pipeline.push({
+          $match: {
+            'participantDetails': {
+              $elemMatch: {
+                $or: [
+                  { name: searchRegex },
+                  { email: searchRegex }
+                ]
+              }
+            }
+          }
+        });
+      }
+      
+      // Add participant role filter
+      if (participantRole) {
+        pipeline.push({
+          $match: {
+            'participantDetails': {
+              $elemMatch: {
+                role: participantRole
+              }
+            }
+          }
+        });
+      }
+      
+      // Add specialization filter (for doctors/nutritionists)
+      if (specialization) {
+        const specializationRegex = new RegExp(specialization, 'i');
+        pipeline.push({
+          $match: {
+            'participantDetails': {
+              $elemMatch: {
+                $or: [
+                  { specialization: specializationRegex },
+                  { 'packages.specialization': specializationRegex }
+                ]
+              }
+            }
+          }
+        });
+      }
+      
+      // Add sorting
+      pipeline.push({ $sort: { updatedAt: -1 } });
+      
+      // Add pagination
+      const skip = (parseInt(page) - 1) * parseInt(limit);
+      pipeline.push(
+        { $skip: skip },
+        { $limit: parseInt(limit) }
+      );
+      
+      // Execute aggregation
+      const chats = await Chat.aggregate(pipeline);
+      
+      // Get total count for pagination
+      const countPipeline = pipeline.slice(0, -2); // Remove skip and limit
+      const countResult = await Chat.aggregate([
+        ...countPipeline,
+        { $count: 'total' }
+      ]);
+      const total = countResult[0]?.total || 0;
+      
+      // Process and format results
+      const formattedChats = chats.map(chat => {
+        // Merge participant details back into participants array
+        const participants = chat.participants.map(participant => {
+          const participantDetail = chat.participantDetails.find(
+            detail => detail._id.toString() === participant.userId.toString()
+          );
+          
+          return {
+            ...participant,
+            user: participantDetail || null
+          };
+        });
+        
+        return {
+          chatId: chat.chatId,
+          type: chat.type,
+          status: chat.status,
+          participants: participants,
+          subscriptionBinding: chat.subscriptionBinding,
+          createdAt: chat.createdAt,
+          updatedAt: chat.updatedAt,
+          lastMessage: chat.lastMessage,
+          // Add computed fields for easier filtering
+          participantNames: participants
+            .map(p => p.user?.name || 'Unknown')
+            .filter(name => name !== 'Unknown'),
+          participantRoles: participants
+            .map(p => p.user?.role)
+            .filter(role => role),
+          hasDoctor: participants.some(p => p.user?.role === 'doctor'),
+          hasClient: participants.some(p => p.user?.role === 'client')
+        };
+      });
       
       return {
-        chats: chats.map(chat => chat.getChatInfo()),
+        chats: formattedChats,
         pagination: {
           page: parseInt(page),
           limit: parseInt(limit),
           total,
-          pages: Math.ceil(total / parseInt(limit))
+          pages: Math.ceil(total / parseInt(limit)),
+          hasNext: page * limit < total,
+          hasPrev: page > 1
+        },
+        filters: {
+          applied: {
+            status: status || null,
+            search: search || null,
+            participantRole: participantRole || null,
+            specialization: specialization || null,
+            chatType: chatType || null
+          },
+          available: {
+            statuses: ['ACTIVE', 'SUSPENDED', 'CLOSED'],
+            participantRoles: ['client', 'doctor', 'nutritionist', 'therapist', 'coach'],
+            chatTypes: ['ONE_TO_ONE', 'GROUP']
+          }
         }
       };
 

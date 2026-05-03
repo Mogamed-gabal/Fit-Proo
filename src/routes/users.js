@@ -34,6 +34,53 @@ router.get('/',
 );
 
 /**
+ * Get user statistics
+ * GET /api/users/stats
+ */
+router.get('/stats',
+  requirePermission('view_client_workout_plans'),
+  userController.getUserStats
+);
+
+/**
+ * Get all blocked users AND deleted supervisors (admin/supervisor with permissions)
+ * GET /api/users/deleted
+ * Query params: page, limit, search, role, blockedFrom, blockedTo
+ * Returns: Users with isBlocked=true + supervisors with isDeleted=true
+ */
+router.get('/deleted',
+  requirePermission('view_deleted_users'),
+  [
+    query('page')
+      .optional()
+      .isInt({ min: 1 })
+      .withMessage('Page must be a positive integer'),
+    query('limit')
+      .optional()
+      .isInt({ min: 1, max: 100 })
+      .withMessage('Limit must be between 1 and 100'),
+    query('search')
+      .optional()
+      .trim()
+      .isLength({ max: 100 })
+      .withMessage('Search term cannot exceed 100 characters'),
+    query('role')
+      .optional()
+      .isIn(['client', 'doctor', 'supervisor', 'admin'])
+      .withMessage('Role must be one of: client, doctor, supervisor, admin'),
+    query('blockedFrom')
+      .optional()
+      .isISO8601()
+      .withMessage('Blocked from must be a valid date'),
+    query('blockedTo')
+      .optional()
+      .isISO8601()
+      .withMessage('Blocked to must be a valid date')
+  ],
+  userController.getDeletedUsers
+);
+
+/**
  * Get user by ID
  * GET /api/users/:id
  */
@@ -79,52 +126,6 @@ router.delete('/:id',
 );
 
 /**
- * Get user statistics
- * GET /api/users/stats
- */
-router.get('/stats',
-  requirePermission('view_client_workout_plans'),
-  userController.getUserStats
-);
-
-/**
- * Get all deleted users (admin/supervisor with permissions)
- * GET /api/users/deleted
- * Query params: page, limit, search, role, deletedFrom, deletedTo
- */
-router.get('/deleted',
-  requirePermission('view_deleted_users'),
-  [
-    query('page')
-      .optional()
-      .isInt({ min: 1 })
-      .withMessage('Page must be a positive integer'),
-    query('limit')
-      .optional()
-      .isInt({ min: 1, max: 100 })
-      .withMessage('Limit must be between 1 and 100'),
-    query('search')
-      .optional()
-      .trim()
-      .isLength({ max: 100 })
-      .withMessage('Search term cannot exceed 100 characters'),
-    query('role')
-      .optional()
-      .isIn(['client', 'doctor', 'supervisor', 'admin'])
-      .withMessage('Role must be one of: client, doctor, supervisor, admin'),
-    query('deletedFrom')
-      .optional()
-      .isISO8601()
-      .withMessage('Deleted from must be a valid date'),
-    query('deletedTo')
-      .optional()
-      .isISO8601()
-      .withMessage('Deleted to must be a valid date')
-  ],
-  userController.getDeletedUsers
-);
-
-/**
  * Permanently delete a user (admin/supervisor with permissions)
  * DELETE /api/users/:userId/permanent
  */
@@ -141,6 +142,25 @@ router.delete('/:userId/permanent',
       .withMessage('Reason must be between 3 and 500 characters')
   ],
   userController.permanentDeleteUser
+);
+
+/**
+ * Restore deleted user
+ * POST /api/users/:userId/restore
+ */
+router.post('/:userId/restore',
+  requirePermission('restore_deleted_users'),
+  [
+    param('userId')
+      .isMongoId()
+      .withMessage('Invalid user ID'),
+    body('reason')
+      .optional()
+      .trim()
+      .isLength({ min: 3, max: 500 })
+      .withMessage('Reason must be between 3 and 500 characters')
+  ],
+  userController.restoreUser
 );
 
 module.exports = router;

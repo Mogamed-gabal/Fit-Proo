@@ -511,13 +511,25 @@ class ChatController {
    */
   static async getAllChats(req, res) {
     try {
-      const { page = 1, limit = 20, status } = req.query;
+      const { 
+        page = 1, 
+        limit = 20, 
+        status, 
+        search, 
+        participantRole, 
+        specialization, 
+        chatType 
+      } = req.query;
       
-      // Use ChatService to get all chats
+      // Use ChatService to get all chats with search and filters
       const result = await ChatService.getAllChats({
         page: parseInt(page),
         limit: parseInt(limit),
-        status
+        status,
+        search: search ? search.trim() : undefined,
+        participantRole,
+        specialization: specialization ? specialization.trim() : undefined,
+        chatType
       });
 
       res.status(200).json({

@@ -141,7 +141,7 @@ const unblockUser = async (req, res) => {
       }
 
       
-      // ❌ Disabled transaction بسبب إن السيرفر مش Replica Set
+      // ✅ Transaction enabled for data integrity
       const result = await withTransaction(async (session) => {
         const user = await User.findById(targetUser._id).session(session);
         if (!user) {
@@ -176,11 +176,9 @@ const unblockUser = async (req, res) => {
  * Soft delete user (admin or super_admin)
  */
 const softDeleteUser = async (req, res) => {
-  // Apply audit middleware
-  auditSoftDeleteUser(req, res, async () => {
-    try {
-      const targetUser = req.targetUser;
-      const { reason } = req.body; // Capture deletion reason
+  try {
+    const targetUser = req.targetUser;
+    const { reason } = req.body; // Capture deletion reason
 
       /*
       // ================= OLD LOGIC =================
@@ -263,8 +261,7 @@ const softDeleteUser = async (req, res) => {
       error: error.message
     });
   }
-    });
-  }
+};
 
 /**
  * Create admin (only super_admin)
@@ -400,6 +397,40 @@ const createSupervisor = async (req, res) => {
 
     await supervisor.save();
 
+    // Create audit log for supervisor creation
+    const AuditLog = require('../models/AuditLog');
+    await AuditLog.createLog({
+      adminId: req.user.userId,
+      actionType: 'create_supervisor',
+      targetId: supervisor._id,
+      targetType: 'Supervisor',
+      details: {
+        reason: 'Supervisor creation by admin',
+        changes: {
+          oldValues: null,
+          newValues: {
+            name: supervisor.name,
+            email: supervisor.email,
+            role: supervisor.role,
+            status: supervisor.status,
+            emailVerified: supervisor.emailVerified
+          }
+        },
+        metadata: {
+          supervisorName: supervisor.name,
+          supervisorEmail: supervisor.email,
+          createdBy: {
+            id: req.user.userId,
+            name: req.user.name,
+            email: req.user.email
+          }
+        }
+      },
+      result: 'success',
+      ipAddress: req.ip,
+      userAgent: req.get('User-Agent')
+    });
+
     res.status(201).json({
       success: true,
       message: 'Supervisor created successfully',
@@ -418,9 +449,8 @@ const createSupervisor = async (req, res) => {
 
 
 /**
- * Delete supervisor (WITHOUT TRANSACTION FOR NOW)
- * 🔴 Transaction commented to avoid MongoDB replica set error in dev
- * 🔥 Uncomment when deploying to production with replica set
+ * Delete supervisor (WITH TRANSACTION)
+ * ✅ Transaction enabled for data integrity and audit logging
  */
 
 const deleteSupervisor = async (req, res) => {
@@ -436,9 +466,9 @@ const deleteSupervisor = async (req, res) => {
     }
 
     // ==============================
-    // 🔴 TRANSACTION VERSION (COMMENTED)
+    // ✅ TRANSACTION VERSION (ENABLED)
     // ==============================
-    /*
+    
     const result = await withTransaction(async (session) => {
 
       const user = await User.findById(targetUser._id).session(session);
@@ -446,36 +476,53 @@ const deleteSupervisor = async (req, res) => {
         throw new Error('Supervisor not found');
       }
 
+      // Store old values for audit
+      const oldValues = {
+        isDeleted: user.isDeleted,
+        deletedAt: user.deletedAt,
+        deletedBy: user.deletedBy
+      };
+
       user.isDeleted = true;
       user.deletedAt = new Date();
       user.deletedBy = req.user.userId;
 
       await user.save({ session });
 
+      // Create audit log for supervisor deletion within transaction
+      const AuditLog = require('../models/AuditLog');
+      await AuditLog.createLog({
+        adminId: req.user.userId,
+        actionType: 'delete_supervisor',
+        targetId: user._id,
+        targetType: 'Supervisor',
+        details: {
+          reason: 'Supervisor soft deletion by admin',
+          changes: {
+            oldValues: oldValues,
+            newValues: {
+              isDeleted: user.isDeleted,
+              deletedAt: user.deletedAt,
+              deletedBy: user.deletedBy
+            }
+          },
+          metadata: {
+            supervisorName: user.name,
+            supervisorEmail: user.email,
+            deletedBy: {
+              id: req.user.userId,
+              name: req.user.name,
+              email: req.user.email
+            }
+          }
+        },
+        result: 'success',
+        ipAddress: req.ip,
+        userAgent: req.get('User-Agent')
+      });
+
       return user;
     });
-    */
-
-    // ==============================
-    // ✅ SAFE VERSION (WORKING NOW)
-    // ==============================
-
-    const user = await User.findById(targetUser._id);
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        error: 'Supervisor not found'
-      });
-    }
-
-    user.isDeleted = true;
-    user.deletedAt = new Date();
-    user.deletedBy = req.user.userId;
-
-    await user.save();
-
-    const result = user;
 
     res.status(200).json({
       success: true,
