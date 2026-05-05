@@ -5,6 +5,7 @@ const DynamicPermissionMiddleware = require('../middleware/dynamicPermissionMidd
 const { body, query, validationResult } = require('express-validator');
 const PermissionController = require('../controllers/permissionController');
 const { asyncErrorHandler } = require('../middlewares/userErrorMiddleware');
+const { auditAction } = require('../middlewares/auditMiddleware');
 
 // Validation middleware
 const handleValidationErrors = (req, res, next) => {
@@ -28,6 +29,10 @@ const handleValidationErrors = (req, res, next) => {
 router.post('/grant',
   authenticate,
   DynamicPermissionMiddleware.requirePermissionManagement(),
+  auditAction('grant_permission', 'User', { 
+    action: 'GRANT_PERMISSION',
+    description: 'Admin granted permission to user'
+  }),
   [
     body('userId').isMongoId().withMessage('Invalid user ID'),
     body('permissionName').notEmpty().withMessage('Permission name is required'),
@@ -42,6 +47,10 @@ router.post('/grant',
 router.post('/revoke',
   authenticate,
   DynamicPermissionMiddleware.requirePermissionManagement(),
+  auditAction('revoke_permission', 'User', { 
+    action: 'REVOKE_PERMISSION',
+    description: 'Admin revoked permission from user'
+  }),
   [
     body('userId').isMongoId().withMessage('Invalid user ID'),
     body('permissionName').notEmpty().withMessage('Permission name is required'),
@@ -99,6 +108,10 @@ router.get('/category/:category',
 router.post('/grant-multiple',
   authenticate,
   DynamicPermissionMiddleware.requirePermissionManagement(),
+  auditAction('grant_multiple_permissions', 'User', { 
+    action: 'GRANT_MULTIPLE_PERMISSIONS',
+    description: 'Admin granted multiple permissions to user'
+  }),
   [
     body('userId').isMongoId().withMessage('Invalid user ID'),
     body('permissionNames').isArray({ min: 1 }).withMessage('Permission names must be an array with at least 1 item'),

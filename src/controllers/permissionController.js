@@ -228,13 +228,13 @@ class PermissionController {
       }
 
       // Grant multiple permissions
-      const result = await PermissionService.grantMultiplePermissions(userId, permissionNames, assignedBy, expiresAt);
+      const result = await PermissionService.grantMultiplePermissions(userId, permissionNames, assignedBy, expiresAt, reason);
 
       res.status(200).json({
         success: result.success,
-        message: `Granted ${result.summary.successful} of ${result.summary.total} permissions successfully`,
+        message: `Processed ${result.summary.total} permissions: ${result.summary.granted} granted, ${result.summary.skipped} skipped, ${result.summary.failed} failed`,
         data: {
-          results,
+          results: result.results,
           summary: result.summary
         }
       });

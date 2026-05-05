@@ -6,7 +6,15 @@ const User = require('../models/User');
  */
 const createBundle = async (req, res) => {
   try {
-    const { name, doctors, price } = req.body;
+    const { name, doctors, pricing } = req.body;
+
+    // Validate pricing object
+    if (!pricing || !pricing.oneMonth || !pricing.threeMonths || !pricing.sixMonths) {
+      return res.status(400).json({
+        success: false,
+        error: 'All pricing tiers (oneMonth, threeMonths, sixMonths) are required'
+      });
+    }
 
     // Validate doctors exist and are actually doctors
     const doctorUsers = await User.find({ 
@@ -24,7 +32,7 @@ const createBundle = async (req, res) => {
     const bundle = new Bundle({
       name,
       doctors: doctors.map(doctorId => ({ doctorId })),
-      price,
+      pricing,
       createdBy: req.user.userId
     });
 
@@ -78,12 +86,21 @@ const getAllBundles = async (req, res) => {
 const updateBundle = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, doctors, price } = req.body;
+    const { name, doctors, pricing } = req.body;
 
     let updateData = {};
     
     if (name) updateData.name = name;
-    if (price !== undefined) updateData.price = price;
+    if (pricing) {
+      // Validate pricing object if provided
+      if (!pricing.oneMonth || !pricing.threeMonths || !pricing.sixMonths) {
+        return res.status(400).json({
+          success: false,
+          error: 'All pricing tiers (oneMonth, threeMonths, sixMonths) are required'
+        });
+      }
+      updateData.pricing = pricing;
+    }
     if (doctors) {
       // Validate doctors exist and are actually doctors
       const doctorUsers = await User.find({ 

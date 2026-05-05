@@ -22,7 +22,14 @@ const permissionSchema = new mongoose.Schema({
     type: String,
     required: true,
     enum: [
+      'SYSTEM_ADMINISTRATION',
+      'BUNDLE_MANAGEMENT',
+      'DIET_MANAGEMENT',
+      'WORKOUT_MANAGEMENT',
       'USER_MANAGEMENT',
+      'AUDIT_MANAGEMENT',
+      'PERMISSION_MANAGEMENT',
+      'SELF_MANAGEMENT',
       'DOCTOR_MANAGEMENT', 
       'CLIENT_MANAGEMENT',
       'DIET_PLAN_MANAGEMENT',
@@ -34,7 +41,6 @@ const permissionSchema = new mongoose.Schema({
       'BILLING',
       'SECURITY',
       'NOTIFICATIONS',
-      'WORKOUT_MANAGEMENT',
       'EXERCISE_MANAGEMENT',
       'SUBSCRIPTION_MANAGEMENT'
     ]
@@ -81,7 +87,27 @@ const permissionSchema = new mongoose.Schema({
       'SETTINGS',
       'BILLING',
       'SYSTEM',
-      'AUDIT_LOGS'
+      'AUDIT_LOGS',
+      'BUNDLES',
+      'ADMIN_PANEL',
+      'SENSITIVE_DATA',
+      'USER_DATA',
+      'SYSTEM_REPORTS',
+      'CLIENT_WORKOUT_PLANS',
+      'CLIENT_PROGRESS',
+      'DASHBOARD',
+      'USER_DETAILS',
+      'SUPERVISORS',
+      'SUPERVISOR_AUDIT',
+      'PERMISSIONS',
+      'OWN_PROFILE',
+      'OWN_SUBSCRIPTIONS',
+      'OWN_CERTIFICATES',
+      'OWN_PACKAGES',
+      'OWN_BIO',
+      'OWN_PROFILE_PICTURE',
+      'OWN_WEIGHT',
+      'OWN_PROGRESS'
     ]
   },
 
@@ -95,10 +121,10 @@ const permissionSchema = new mongoose.Schema({
     default: false
   },
   level: {
-    type: Number,
-    min: 1,
-    max: 10,
-    default: 1
+    type: String,
+    required: true,
+    enum: ['SYSTEM', 'LIMITED', 'PERSONAL'],
+    default: 'SYSTEM'
   },
 
   // Assignment tracking

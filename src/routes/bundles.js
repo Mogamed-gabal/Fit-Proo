@@ -12,25 +12,33 @@ router.use(authenticate);
  * Create a new bundle
  * POST /api/bundles
  */
+const validateBundleCreation = [
+  body('name')
+    .trim()
+    .notEmpty()
+    .withMessage('Bundle name is required')
+    .isLength({ max: 100 })
+    .withMessage('Bundle name cannot exceed 100 characters'),
+  body('doctors')
+    .isArray({ min: 2, max: 2 })
+    .withMessage('Bundle must contain exactly 2 doctors'),
+  body('doctors.*')
+    .isMongoId()
+    .withMessage('Invalid doctor ID format'),
+  body('pricing.oneMonth')
+    .isFloat({ gt: 0 })
+    .withMessage('One month price must be greater than 0'),
+  body('pricing.threeMonths')
+    .isFloat({ gt: 0 })
+    .withMessage('Three months price must be greater than 0'),
+  body('pricing.sixMonths')
+    .isFloat({ gt: 0 })
+    .withMessage('Six months price must be greater than 0')
+];
+
 router.post('/',
   requirePermission('MANAGE_BUNDLES'),
-  [
-    body('name')
-      .trim()
-      .notEmpty()
-      .withMessage('Bundle name is required')
-      .isLength({ max: 100 })
-      .withMessage('Bundle name cannot exceed 100 characters'),
-    body('doctors')
-      .isArray({ min: 2, max: 2 })
-      .withMessage('Bundle must contain exactly 2 doctors'),
-    body('doctors.*')
-      .isMongoId()
-      .withMessage('Invalid doctor ID format'),
-    body('price')
-      .isFloat({ gt: 0 })
-      .withMessage('Price must be greater than 0')
-  ],
+  validateBundleCreation,
   bundleController.createBundle
 );
 
@@ -67,10 +75,18 @@ router.put('/:id',
       .optional()
       .isMongoId()
       .withMessage('Invalid doctor ID format'),
-    body('price')
+    body('pricing.oneMonth')
       .optional()
       .isFloat({ gt: 0 })
-      .withMessage('Price must be greater than 0')
+      .withMessage('One month price must be greater than 0'),
+    body('pricing.threeMonths')
+      .optional()
+      .isFloat({ gt: 0 })
+      .withMessage('Three months price must be greater than 0'),
+    body('pricing.sixMonths')
+      .optional()
+      .isFloat({ gt: 0 })
+      .withMessage('Six months price must be greater than 0')
   ],
   bundleController.updateBundle
 );

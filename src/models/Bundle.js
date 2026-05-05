@@ -14,10 +14,22 @@ const bundleSchema = new mongoose.Schema({
       required: true
     }
   }],
-  price: {
-    type: Number,
-    required: true,
-    min: 0.01
+  pricing: {
+    oneMonth: {
+      type: Number,
+      required: true,
+      min: 0.01
+    },
+    threeMonths: {
+      type: Number,
+      required: true,
+      min: 0.01
+    },
+    sixMonths: {
+      type: Number,
+      required: true,
+      min: 0.01
+    }
   },
   isActive: {
     type: Boolean,
