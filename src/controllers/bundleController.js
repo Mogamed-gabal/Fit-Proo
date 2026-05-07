@@ -146,6 +146,38 @@ const updateBundle = async (req, res) => {
 };
 
 /**
+ * Get bundle by ID
+ */
+const getBundleById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const bundle = await Bundle.findById(id)
+      .populate('doctors.doctorId', 'name email phone specialization')
+      .populate('createdBy', 'name email');
+
+    if (!bundle) {
+      return res.status(404).json({
+        success: false,
+        error: 'Bundle not found'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        bundle
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+
+/**
  * Deactivate a bundle
  */
 const deactivateBundle = async (req, res) => {
@@ -179,9 +211,64 @@ const deactivateBundle = async (req, res) => {
   }
 };
 
+/**
+ * Delete bundle (permanent deletion)
+ */
+const deleteBundle = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const bundle = await Bundle.findById(id);
+
+    if (!bundle) {
+      return res.status(404).json({
+        success: false,
+        error: 'Bundle not found'
+      });
+    }
+
+    // Check if bundle is active
+    if (bundle.isActive) {
+      return res.status(400).json({
+        success: false,
+        error: 'Cannot delete active bundle. Please deactivate it first.'
+      });
+    }
+
+    // Store bundle info for response
+    const deletedBundleInfo = {
+      _id: bundle._id,
+      name: bundle.name
+    };
+
+    // Delete the bundle
+    await Bundle.findByIdAndDelete(id);
+
+    res.status(200).json({
+      success: true,
+      message: 'Bundle deleted successfully',
+      data: {
+        deletedBundle: deletedBundleInfo,
+        deletedAt: new Date(),
+        deletedBy: {
+          _id: req.user.userId,
+          name: req.user.name
+        }
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   createBundle,
   getAllBundles,
+  getBundleById,
   updateBundle,
-  deactivateBundle
+  deactivateBundle,
+  deleteBundle
 };

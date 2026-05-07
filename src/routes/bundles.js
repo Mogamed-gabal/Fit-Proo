@@ -105,4 +105,31 @@ router.patch('/:id/deactivate',
   bundleController.deactivateBundle
 );
 
+/**
+ * Get bundle by ID
+ * GET /api/bundles/:id
+ */
+router.get('/:id',
+  [
+    param('id')
+      .isMongoId()
+      .withMessage('Invalid bundle ID')
+  ],
+  bundleController.getBundleById
+);
+
+/**
+ * Delete bundle
+ * DELETE /api/bundles/:id
+ */
+router.delete('/:id',
+  requirePermission('DELETE_BUNDLES'),
+  [
+    param('id')
+      .isMongoId()
+      .withMessage('Invalid bundle ID')
+  ],
+  bundleController.deleteBundle
+);
+
 module.exports = router;
