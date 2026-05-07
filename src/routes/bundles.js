@@ -4,6 +4,13 @@ const bundleController = require('../controllers/bundleController');
 const { authenticate } = require('../middlewares/auth');
 const { requirePermission } = require('../middlewares/permissionMiddleware');
 const { body, param } = require('express-validator');
+const { 
+  auditCreateBundle, 
+  auditUpdateBundle, 
+  auditDeactivateBundle, 
+  auditActivateBundle, 
+  auditDeleteBundle 
+} = require('../middlewares/auditMiddleware');
 
 // Apply authentication to all routes
 router.use(authenticate);
@@ -38,6 +45,7 @@ const validateBundleCreation = [
 
 router.post('/',
   requirePermission('MANAGE_BUNDLES'),
+  auditCreateBundle,
   validateBundleCreation,
   bundleController.createBundle
 );
@@ -56,6 +64,7 @@ router.get('/',
  */
 router.put('/:id',
   requirePermission('MANAGE_BUNDLES'),
+  auditUpdateBundle,
   [
     param('id')
       .isMongoId()
@@ -97,12 +106,28 @@ router.put('/:id',
  */
 router.patch('/:id/deactivate',
   requirePermission('MANAGE_BUNDLES'),
+  auditDeactivateBundle,
   [
     param('id')
       .isMongoId()
       .withMessage('Invalid bundle ID')
   ],
   bundleController.deactivateBundle
+);
+
+/**
+ * Activate a bundle
+ * PATCH /api/bundles/:id/activate
+ */
+router.patch('/:id/activate',
+  requirePermission('MANAGE_BUNDLES'),
+  auditActivateBundle,
+  [
+    param('id')
+      .isMongoId()
+      .withMessage('Invalid bundle ID')
+  ],
+  bundleController.activateBundle
 );
 
 /**
@@ -124,6 +149,7 @@ router.get('/:id',
  */
 router.delete('/:id',
   requirePermission('DELETE_BUNDLES'),
+  auditDeleteBundle,
   [
     param('id')
       .isMongoId()

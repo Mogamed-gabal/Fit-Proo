@@ -235,6 +235,13 @@ const auditSoftDeleteUser = auditAction('soft_delete_user', 'User', { includeCha
 const auditCreateSupervisor = auditAction('create_supervisor', 'User', { includeChanges: true });
 const auditDeleteSupervisor = auditAction('delete_supervisor', 'User', { includeChanges: true });
 
+// Bundle audit middleware
+const auditCreateBundle = auditAction('create_bundle', 'Bundle', { includeChanges: true });
+const auditUpdateBundle = auditAction('update_bundle', 'Bundle', { includeChanges: true });
+const auditDeactivateBundle = auditAction('deactivate_bundle', 'Bundle', { includeChanges: true });
+const auditActivateBundle = auditAction('activate_bundle', 'Bundle', { includeChanges: true });
+const auditDeleteBundle = auditAction('delete_bundle', 'Bundle', { includeChanges: true });
+
 module.exports = {
   auditAction,
   auditSystemAction,
@@ -246,6 +253,11 @@ module.exports = {
   auditSoftDeleteUser,
   auditCreateSupervisor,
   auditDeleteSupervisor,
+  auditCreateBundle,
+  auditUpdateBundle,
+  auditDeactivateBundle,
+  auditActivateBundle,
+  auditDeleteBundle,
   captureChanges,
   sanitizeRequestBody
 };

@@ -264,11 +264,54 @@ const deleteBundle = async (req, res) => {
   }
 };
 
+/**
+ * Activate a bundle
+ */
+const activateBundle = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const bundle = await Bundle.findByIdAndUpdate(
+      id,
+      { isActive: true },
+      { new: true }
+    )
+      .populate('doctors.doctorId', 'name email')
+      .populate('createdBy', 'name email');
+
+    if (!bundle) {
+      return res.status(404).json({
+        success: false,
+        error: 'Bundle not found'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Bundle activated successfully',
+      data: {
+        bundle,
+        activatedAt: new Date(),
+        activatedBy: {
+          _id: req.user.userId,
+          name: req.user.name
+        }
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   createBundle,
   getAllBundles,
   getBundleById,
   updateBundle,
   deactivateBundle,
+  activateBundle,
   deleteBundle
 };
