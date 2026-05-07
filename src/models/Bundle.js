@@ -44,10 +44,10 @@ const bundleSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Validation: Exactly 2 doctors required
+// Validation: 2-3 doctors required
 bundleSchema.pre('save', function(next) {
-  if (this.doctors.length !== 2) {
-    return next(new Error('Bundle must contain exactly 2 doctors'));
+  if (this.doctors.length < 2 || this.doctors.length > 3) {
+    return next(new Error('Bundle must contain between 2 and 3 doctors'));
   }
   
   // Check for duplicate doctor IDs
@@ -66,8 +66,8 @@ bundleSchema.pre(['findOneAndUpdate', 'updateOne', 'updateMany'], function(next)
   const update = this.getUpdate();
   
   if (update.doctors) {
-    if (update.doctors.length !== 2) {
-      return next(new Error('Bundle must contain exactly 2 doctors'));
+    if (update.doctors.length < 2 || update.doctors.length > 3) {
+      return next(new Error('Bundle must contain between 2 and 3 doctors'));
     }
     
     // Check for duplicate doctor IDs

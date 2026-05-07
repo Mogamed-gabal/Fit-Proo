@@ -20,8 +20,8 @@ const validateBundleCreation = [
     .isLength({ max: 100 })
     .withMessage('Bundle name cannot exceed 100 characters'),
   body('doctors')
-    .isArray({ min: 2, max: 2 })
-    .withMessage('Bundle must contain exactly 2 doctors'),
+    .isArray({ min: 2, max: 3 })
+    .withMessage('Bundle must contain between 2 and 3 doctors'),
   body('doctors.*')
     .isMongoId()
     .withMessage('Invalid doctor ID format'),
@@ -69,8 +69,8 @@ router.put('/:id',
       .withMessage('Bundle name cannot exceed 100 characters'),
     body('doctors')
       .optional()
-      .isArray({ min: 2, max: 2 })
-      .withMessage('Bundle must contain exactly 2 doctors'),
+      .isArray({ min: 2, max: 3 })
+      .withMessage('Bundle must contain between 2 and 3 doctors'),
     body('doctors.*')
       .optional()
       .isMongoId()

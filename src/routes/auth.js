@@ -135,6 +135,15 @@ router.post('/logout-all', authenticate, asyncErrorHandler(authController.logout
 
 router.put('/change-password', authenticate, asyncErrorHandler(authController.changePassword));
 
+// Admin password change with enhanced security
+router.put('/admin/change-password', 
+  authenticate, 
+  requirePermission('manage_admin_settings'),
+  ...validations.adminChangePassword,
+  handleValidationErrors,
+  asyncErrorHandler(authController.adminChangePassword)
+);
+
 router.get('/me', authenticate, asyncErrorHandler(authController.getMe));
 
 // Admin routes

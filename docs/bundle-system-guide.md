@@ -21,7 +21,8 @@ Content-Type: application/json
   "name": "Premium Health Bundle",
   "doctors": [
     "507f1f77bcf86cd799439011",
-    "507f1f77bcf86cd799439012"
+    "507f1f77bcf86cd799439012",
+    "507f1f77bcf86cd799439013"
   ],
   "pricing": {
     "oneMonth": 200,
@@ -51,6 +52,13 @@ Content-Type: application/json
           "_id": "507f1f77bcf86cd799439012",
           "name": "Dr. Mike Johnson",
           "email": "mike@example.com"
+        }
+      },
+      {
+        "doctorId": {
+          "_id": "507f1f77bcf86cd799439013",
+          "name": "Dr. Emily Davis",
+          "email": "emily@example.com"
         }
       }
     ],
@@ -326,7 +334,7 @@ Authorization: Bearer <client_token>
 ## ⚠️ Validation Rules
 
 ### **Bundle Creation Rules**
-- ✅ **Exactly 2 doctors** required
+- ✅ **2-3 doctors required** (minimum 2, maximum 3)
 - ✅ **No duplicate doctor IDs**
 - ✅ **All pricing tiers required** (oneMonth, threeMonths, sixMonths)
 - ✅ **All prices must be > 0**
@@ -338,7 +346,7 @@ Authorization: Bearer <client_token>
 // Wrong number of doctors
 {
   "success": false,
-  "error": "Bundle must contain exactly 2 doctors"
+  "error": "Bundle must contain between 2 and 3 doctors"
 }
 
 // Duplicate doctors

@@ -843,6 +843,178 @@ try {
     }
   }
 
+  /**
+   * Admin password change with enhanced security and audit logging
+   */
+  async adminChangePassword(req, res) {
+    try {
+      const { currentPassword, newPassword } = req.body;
+
+      // Verify user is admin
+      if (req.user.role !== 'admin') {
+        return res.status(403).json({
+          success: false,
+          error: 'Access denied. Admin privileges required.'
+        });
+      }
+
+      // Additional security checks for admin
+      if (!currentPassword || !newPassword) {
+        return res.status(400).json({
+          success: false,
+          error: 'Current password and new password are required'
+        });
+      }
+
+      if (currentPassword === newPassword) {
+        return res.status(400).json({
+          success: false,
+          error: 'New password must be different from current password'
+        });
+      }
+
+      // Check if new password is strong enough for admin
+      const passwordStrength = this._checkPasswordStrength(newPassword);
+      if (passwordStrength.score < 4) {
+        return res.status(400).json({
+          success: false,
+          error: 'Admin password is not strong enough. Please include uppercase, lowercase, numbers, and special characters.',
+          details: {
+            score: passwordStrength.score,
+            feedback: passwordStrength.feedback
+          }
+        });
+      }
+
+      // Change password with enhanced logging
+      await authService.changePassword(req.user.userId, currentPassword, newPassword);
+
+      // Create enhanced audit log for admin password change
+      const AuditLog = require('../models/AuditLog');
+      await AuditLog.createLog({
+        adminId: req.user.userId,
+        actionType: 'admin_password_change',
+        targetId: req.user.userId,
+        targetType: 'Admin',
+        details: {
+          reason: 'Admin self-service password change',
+          changes: {
+            oldValues: { password: '[MASKED]' },
+            newValues: { password: '[MASKED]' }
+          },
+          metadata: {
+            adminName: req.user.name,
+            adminEmail: req.user.email,
+            passwordStrength: passwordStrength.score,
+            ipAddress: req.ip,
+            userAgent: req.get('User-Agent'),
+            timestamp: new Date().toISOString()
+          }
+        },
+        result: 'success',
+        ipAddress: req.ip,
+        userAgent: req.get('User-Agent')
+      });
+
+      res.status(200).json({
+        success: true,
+        message: 'Admin password changed successfully. For security reasons, you will need to login again on all devices.',
+        details: {
+          changedAt: new Date().toISOString(),
+          allSessionsRevoked: true,
+          securityLevel: 'admin_enhanced'
+        }
+      });
+
+    } catch (error) {
+      // Log failed password change attempt
+      if (error.message === 'Current password is incorrect') {
+        // Create audit log for failed attempt
+        const AuditLog = require('../models/AuditLog');
+        await AuditLog.createLog({
+          adminId: req.user.userId,
+          actionType: 'admin_password_change_failed',
+          targetId: req.user.userId,
+          targetType: 'Admin',
+          details: {
+            reason: 'Incorrect current password',
+            metadata: {
+              adminName: req.user.name,
+              adminEmail: req.user.email,
+              ipAddress: req.ip,
+              userAgent: req.get('User-Agent'),
+              timestamp: new Date().toISOString()
+            }
+          },
+          result: 'failure',
+          error: error.message,
+          ipAddress: req.ip,
+          userAgent: req.get('User-Agent')
+        });
+
+        return res.status(400).json({
+          success: false,
+          error: 'Current password is incorrect'
+        });
+      }
+      
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
+  }
+
+  /**
+   * Check password strength for admin accounts
+   */
+  _checkPasswordStrength(password) {
+    let score = 0;
+    const feedback = [];
+
+    // Length check
+    if (password.length >= 10) {
+      score += 1;
+    } else {
+      feedback.push('Password should be at least 10 characters long');
+    }
+
+    // Uppercase check
+    if (/[A-Z]/.test(password)) {
+      score += 1;
+    } else {
+      feedback.push('Include uppercase letters');
+    }
+
+    // Lowercase check
+    if (/[a-z]/.test(password)) {
+      score += 1;
+    } else {
+      feedback.push('Include lowercase letters');
+    }
+
+    // Numbers check
+    if (/\d/.test(password)) {
+      score += 1;
+    } else {
+      feedback.push('Include numbers');
+    }
+
+    // Special characters check
+    if (/[@$!%*?&]/.test(password)) {
+      score += 1;
+    } else {
+      feedback.push('Include special characters (@$!%*?&)');
+    }
+
+    return {
+      score,
+      maxScore: 5,
+      feedback,
+      isStrong: score >= 4
+    };
+  }
+
   async verifyOtp(req, res) {
     try {
       const { email, otp } = req.body;
