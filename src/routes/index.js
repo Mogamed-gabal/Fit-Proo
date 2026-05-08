@@ -24,6 +24,7 @@ const exercisesRoutes = require('./exercises');
 const usersRoutes = require('./users');
 const doctorsRoutes = require('./doctors');
 const bundleRoutes = require('./bundles');
+const clientHomeRoutes = require('./clientHome');
 
 router.use('/auth', authRoutes);
 router.use('/subscription', subscriptionRoutes);
@@ -49,5 +50,6 @@ router.use('/exercises', exercisesRoutes);
 router.use('/users', usersRoutes);
 router.use('/doctors', doctorsRoutes);
 router.use('/bundles', bundleRoutes);
+router.use('/client-home', clientHomeRoutes);
 
 module.exports = router;
