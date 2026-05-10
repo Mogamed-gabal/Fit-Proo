@@ -118,20 +118,6 @@ router.patch('/:doctorId/reject',
 );
 
 /**
- * Restore doctor (after soft delete)
- * PATCH /api/doctors/:doctorId/restore
- */
-router.patch('/:doctorId/restore',
-  requirePermission('manage_doctors'),
-  [
-    param('doctorId')
-      .isMongoId()
-      .withMessage('Invalid doctor ID')
-  ],
-  doctorController.restoreDoctor
-);
-
-/**
  * Get doctor statistics
  * GET /api/doctors/stats
  */

@@ -81,6 +81,44 @@ router.get('/deleted',
 );
 
 /**
+ * Get all soft-deleted users (any role)
+ * GET /api/users/soft-deleted
+ * Query params: page, limit, role, sortBy, sortOrder, search
+ * Returns: All users with isDeleted=true regardless of role
+ */
+router.get('/soft-deleted',
+  requirePermission('view_deleted_users'),
+  [
+    query('page')
+      .optional()
+      .isInt({ min: 1 })
+      .withMessage('Page must be a positive integer'),
+    query('limit')
+      .optional()
+      .isInt({ min: 1, max: 100 })
+      .withMessage('Limit must be between 1 and 100'),
+    query('role')
+      .optional()
+      .isIn(['client', 'doctor', 'supervisor', 'admin', 'all'])
+      .withMessage('Role must be one of: client, doctor, supervisor, admin, or all'),
+    query('sortBy')
+      .optional()
+      .isIn(['deletedAt', 'name', 'email', 'createdAt', 'role'])
+      .withMessage('Sort field must be one of: deletedAt, name, email, createdAt, role'),
+    query('sortOrder')
+      .optional()
+      .isIn(['asc', 'desc'])
+      .withMessage('Sort order must be asc or desc'),
+    query('search')
+      .optional()
+      .trim()
+      .isLength({ max: 100 })
+      .withMessage('Search term cannot exceed 100 characters')
+  ],
+  userController.getSoftDeletedUsers
+);
+
+/**
  * Get user by ID
  * GET /api/users/:id
  */
@@ -125,31 +163,14 @@ router.delete('/:id',
   userController.deleteUser
 );
 
-/**
- * Permanently delete a user (admin/supervisor with permissions)
- * DELETE /api/users/:userId/permanent
- */
-router.delete('/:userId/permanent',
-  requirePermission('permanent_delete_users'),
-  [
-    param('userId')
-      .isMongoId()
-      .withMessage('Invalid user ID'),
-    body('reason')
-      .optional()
-      .trim()
-      .isLength({ min: 3, max: 500 })
-      .withMessage('Reason must be between 3 and 500 characters')
-  ],
-  userController.permanentDeleteUser
-);
 
 /**
- * Restore deleted user
- * POST /api/users/:userId/restore
+ * Restore any deleted user (regardless of role)
+ * PATCH /api/users/:userId/restore
+ * Works for: client, doctor, supervisor, admin - any role
  */
-router.post('/:userId/restore',
-  requirePermission('restore_deleted_users'),
+router.patch('/:userId/restore',
+  requirePermission('view_deleted_users'),
   [
     param('userId')
       .isMongoId()
@@ -161,6 +182,32 @@ router.post('/:userId/restore',
       .withMessage('Reason must be between 3 and 500 characters')
   ],
   userController.restoreUser
+);
+
+/**
+ * Debug endpoint to compare query methods
+ * GET /debug/user/:id
+ */
+router.get('/debug/user/:id', userController.debugUserQuery);
+
+/**
+ * Permanently delete any user (regardless of role)
+ * DELETE /api/users/:userId/permanent
+ * Works for: client, doctor, supervisor, admin - ANY role
+ */
+router.delete('/:userId/permanent',
+  requirePermission('view_deleted_users'),
+  [
+    param('userId')
+      .isMongoId()
+      .withMessage('Invalid user ID'),
+    body('reason')
+      .optional()
+      .trim()
+      .isLength({ min: 3, max: 500 })
+      .withMessage('Reason must be between 3 and 500 characters')
+  ],
+  userController.permanentDeleteUser
 );
 
 module.exports = router;

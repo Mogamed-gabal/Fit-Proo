@@ -47,7 +47,6 @@ const supervisorAuditLogSchema = new mongoose.Schema({
       'DELETE_CLIENT_DATA',
       
       // Doctor management actions
-      'RESTORE_DOCTOR',
       'VIEW_DOCTOR_PROFILE',
       'UPDATE_DOCTOR_STATUS',
       'VIEW_DOCTOR_CERTIFICATES',

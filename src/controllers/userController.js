@@ -421,204 +421,116 @@ class UserController {
   };
 
   /**
-   * Restore deleted user (admin/supervisor with permissions)
+   * Restore any deleted user (regardless of role)
    * POST /api/users/:userId/restore
+   * Works for: client, doctor, supervisor, admin - any role
    */
   async restoreUser(req, res, next) {
     try {
+      console.log('🔍 restoreUser called for user:', req.params.userId);
+      
       const { userId } = req.params;
-      const { reason } = req.body;
+      const { reason } = req.body || {};
+      const restoredBy = req.user.id;
 
-      // Validate ObjectId format
-      if (!userId.match(/^[0-9a-fA-F]{24}$/)) {
+      // Validate user ID
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
         return res.status(400).json({
           success: false,
-          error: 'Invalid user ID format. User ID must be a 24-character hex string',
-          providedId: userId,
-          idLength: userId.length
+          error: 'Invalid user ID'
         });
       }
 
-      // Find the deleted user (handle both boolean and string isDeleted)
-      console.log(`🔍 Restore: Looking for user with ID: ${userId}`);
+      console.log('🔍 Step 1: Searching User table for ID:', userId);
+      console.log('🔍 ID type:', typeof userId);
+      console.log('🔍 ID validity:', mongoose.Types.ObjectId.isValid(userId));
       
-      // Test individual queries first
-      const userBoolean = await User.findOne({ _id: userId, isDeleted: true });
-      const userString = await User.findOne({ _id: userId, isDeleted: "true" });
-      
-      console.log(`🔍 Restore: Boolean query result:`, userBoolean ? 'YES' : 'NO');
-      console.log(`🔍 Restore: String query result:`, userString ? 'YES' : 'NO');
-      
-      const user = await User.findOne({ 
-        _id: userId, 
-        $or: [
-          { isDeleted: true },
-          { isDeleted: "true" }
-        ]
+      // Use direct MongoDB query since Mongoose has issues
+      console.log('🔍 Using direct MongoDB query (Mongoose has connection issues)');
+      const db = mongoose.connection.db;
+      const userDoc = await db.collection('users').findOne({ 
+        _id: new mongoose.Types.ObjectId(userId) 
       });
-
-      console.log(`👤 Restore: Combined query result:`, user ? 'YES' : 'NO');
       
-      // Also try the exact ObjectId format
-      const mongoose = require('mongoose');
-      const userWithObjectId = await User.findOne({ 
-        _id: new mongoose.Types.ObjectId(userId), 
-        $or: [
-          { isDeleted: true },
-          { isDeleted: "true" }
-        ]
-      });
-      console.log(`👤 Restore: ObjectId query result:`, userWithObjectId ? 'YES' : 'NO');
-      
-      // Use ObjectId query result if regular query failed
-      const finalUser = user || userWithObjectId;
-      
-      if (!finalUser) {
-        // Check if user exists at all
-        const anyUser = await User.findOne({ _id: userId });
-        console.log(`🔍 Restore: Any user with this ID:`, anyUser ? 'YES' : 'NO');
-        
-        if (anyUser) {
-          console.log(`📊 Restore: User details:`, {
-            _id: anyUser._id,
-            name: anyUser.name,
-            email: anyUser.email,
-            role: anyUser.role,
-            isDeleted: anyUser.isDeleted,
-            isDeletedType: typeof anyUser.isDeleted,
-            deletedAt: anyUser.deletedAt
-          });
-        }
-        
-        // Get ALL deleted users (both boolean and string)
-        const allDeletedUsers = await User.find({ 
-          $or: [
-            { isDeleted: true },
-            { isDeleted: "true" }
-          ]
-        })
-          .select('_id name email role isDeleted deletedAt deletedBy')
-          .lean();
-        console.log(`👥 Restore: All deleted users:`, JSON.stringify(allDeletedUsers, null, 2));
-        
-        // Also check specifically for supervisors
-        const deletedSupervisors = await User.find({ 
-          role: 'supervisor',
-          $or: [
-            { isDeleted: true },
-            { isDeleted: "true" }
-          ]
-        })
-          .select('_id name email role isDeleted deletedAt deletedBy')
-          .lean();
-        console.log(`👨‍💼 Restore: Deleted supervisors:`, JSON.stringify(deletedSupervisors, null, 2));
-        
+      if (!userDoc) {
+        console.log('❌ User with ID', userId, 'not found in database');
         return res.status(404).json({
           success: false,
-          error: 'Deleted user not found or user is not marked as deleted',
+          error: 'User not found in database'
+        });
+      }
+
+      console.log('🔍 ✅ User found in database!');
+      console.log('🔍 User ID (from DB):', userDoc._id);
+      console.log('🔍 User name:', userDoc.name);
+      console.log('🔍 User email:', userDoc.email);
+      console.log('🔍 User role:', userDoc.role);
+      console.log('🔍 User isDeleted status:', userDoc.isDeleted);
+      console.log('🔍 User isDeleted type:', typeof userDoc.isDeleted);
+      console.log('🔍 User status:', userDoc.status);
+      console.log('🔍 User deletedAt:', userDoc.deletedAt);
+      console.log('🔍 User deletedBy:', userDoc.deletedBy);
+
+      // Check if user has isDeleted=true
+      if (userDoc.isDeleted !== true) {
+        console.log('❌ User isDeleted is not true (value:', userDoc.isDeleted, ')');
+        console.log('❌ User isDeleted type:', typeof userDoc.isDeleted);
+        return res.status(400).json({
+          success: false,
+          error: 'User isDeleted is not true - cannot restore',
           debug: {
-            searchedId: userId,
-            anyUserExists: !!anyUser,
-            userRole: anyUser?.role,
-            isDeletedValue: anyUser?.isDeleted,
-            isDeletedType: typeof anyUser?.isDeleted,
-            deletedUsersCount: allDeletedUsers.length,
-            deletedUserIds: allDeletedUsers.map(u => u._id),
-            allDeletedUsers: allDeletedUsers,
-            deletedSupervisorsCount: deletedSupervisors.length,
-            deletedSupervisorIds: deletedSupervisors.map(u => u._id),
-            deletedSupervisors: deletedSupervisors
+            isDeletedValue: userDoc.isDeleted,
+            isDeletedType: typeof userDoc.isDeleted
           }
         });
       }
 
-      // Store old values for audit
-      const oldValues = {
-        isDeleted: finalUser.isDeleted,
-        deletedAt: finalUser.deletedAt,
-        deletedBy: finalUser.deletedBy,
-        restoredAt: finalUser.restoredAt,
-        restoredBy: finalUser.restoredBy
-      };
+      console.log('✅ User found with isDeleted=true in database');
+      console.log('✅ Proceeding with restore for user:', userDoc.name, 'with role:', userDoc.role);
 
-      // Restore the user
-      finalUser.isDeleted = false;
-      finalUser.deletedAt = null;
-      finalUser.deletedBy = null;
-      finalUser.restoredAt = new Date();
-      finalUser.restoredBy = req.user.userId;
-
-      await finalUser.save();
-
-      // Create audit log for user restoration
-      const AuditLog = require('../models/AuditLog');
-      await AuditLog.createLog({
-        adminId: req.user.userId,
-        actionType: 'restore_user',
-        targetId: finalUser._id,
-        targetType: finalUser.role === 'supervisor' ? 'Supervisor' : 'User',
-        details: {
-          reason: reason || 'User restoration by admin/supervisor',
-          changes: {
-            oldValues: oldValues,
-            newValues: {
-              isDeleted: finalUser.isDeleted,
-              deletedAt: finalUser.deletedAt,
-              deletedBy: finalUser.deletedBy,
-              restoredAt: finalUser.restoredAt,
-              restoredBy: finalUser.restoredBy
-            }
-          },
-          metadata: {
-            userName: finalUser.name,
-            userEmail: finalUser.email,
-            userRole: finalUser.role,
-            restoredBy: {
-              id: req.user.userId,
-              name: req.user.name,
-              email: req.user.email
-            }
+      // RESTORE THE USER - Change isDeleted from true to false using direct MongoDB
+      console.log('🔍 Step 2: Updating database - changing isDeleted from true to false...');
+      
+      const updateResult = await db.collection('users').updateOne(
+        { _id: new mongoose.Types.ObjectId(userId) },
+        {
+          $set: {
+            isDeleted: false,  // ← This is the key change!
+            deletedAt: null,
+            deletedBy: null,
+            status: 'approved',
+            updatedAt: new Date()
           }
-        },
-        result: 'success',
-        ipAddress: req.ip,
-        userAgent: req.get('User-Agent')
-      });
+        }
+      );
 
-      console.log(`🔄 User restored:`, {
-        restoredBy: req.user.userId,
-        restoredUser: {
-          id: finalUser._id,
-          name: finalUser.name,
-          email: finalUser.email,
-          role: finalUser.role
-        },
-        reason: reason || 'User restoration by admin/supervisor',
-        timestamp: new Date()
-      });
+      console.log('✅ User updated successfully in database!');
+      console.log('🔍 Update result:', updateResult);
+      console.log('🔍 Restored user role:', userDoc.role);
+      console.log('🔍 User email:', userDoc.email);
 
       res.status(200).json({
         success: true,
         message: 'User restored successfully',
         data: {
           user: {
-            _id: finalUser._id,
-            name: finalUser.name,
-            email: finalUser.email,
-            role: finalUser.role,
-            status: finalUser.status,
-            isDeleted: false,
-            restoredAt: finalUser.restoredAt,
+            _id: userDoc._id,
+            name: userDoc.name,
+            email: userDoc.email,
+            role: userDoc.role,
+            status: userDoc.status,
+            isDeleted: false,  // After restoration
+            restoredAt: new Date(),
             restoredBy: {
-              id: req.user.userId,
+              _id: req.user._id,
               name: req.user.name,
               email: req.user.email,
               role: req.user.role
             }
-          },
-          reason: reason || 'User restoration by admin/supervisor'
+          }
         }
       });
+
     } catch (error) {
       console.error('❌ Restore user error:', error);
       next(error);
@@ -626,144 +538,419 @@ class UserController {
   }
 
   /**
-   * Permanently delete a user (admin/supervisor with permissions)
+   * Get all soft-deleted users (any role)
+   * GET /api/users/soft-deleted
+   * Returns: All users with isDeleted=true regardless of role
+   */
+  async getSoftDeletedUsers(req, res, next) {
+    try {
+      console.log('🔍 getSoftDeletedUsers called - SOFT DELETED ENDPOINT');
+      console.log('🔍 Request URL:', req.originalUrl);
+      console.log('🔍 Request method:', req.method);
+      
+      const {
+        page = 1,
+        limit = 20,
+        role,
+        sortBy = 'deletedAt',
+        sortOrder = 'desc',
+        search
+      } = req.query;
+
+      // Validate inputs
+      const pageNum = parseInt(page) || 1;
+      const limitNum = parseInt(limit) || 20;
+      
+      if (pageNum < 1 || limitNum < 1 || limitNum > 100) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid pagination parameters'
+        });
+      }
+
+      // Build query for ALL soft-deleted users
+      const query = { isDeleted: true };
+      console.log('🔍 Building query for soft-deleted users:', JSON.stringify(query));
+
+      // Add role filter if specified
+      if (role && role !== 'all') {
+        if (!['client', 'doctor', 'supervisor', 'admin'].includes(role)) {
+          return res.status(400).json({
+            success: false,
+            error: 'Invalid role. Must be one of: client, doctor, supervisor, admin'
+          });
+        }
+        query.role = role;
+        console.log('🔍 Added role filter:', role);
+      }
+
+      // Add search functionality
+      if (search) {
+        const searchRegex = new RegExp(search.toLowerCase().trim(), 'i');
+        query.$or = [
+          { name: searchRegex },
+          { email: searchRegex }
+        ];
+        console.log('🔍 Added search filter:', search);
+      }
+
+      // Build sort object
+      const sort = {};
+      const sortField = sortBy || 'deletedAt';
+      sort[sortField] = sortOrder === 'desc' ? -1 : 1;
+      console.log('🔍 Sort object:', JSON.stringify(sort));
+
+      // Calculate skip for pagination
+      const skip = (pageNum - 1) * limitNum;
+      console.log('🔍 Pagination - page:', pageNum, 'limit:', limitNum, 'skip:', skip);
+
+      // Get soft-deleted users with pagination
+      console.log('🔍 Executing query:', JSON.stringify(query));
+      
+      // Build the match condition properly
+      const matchCondition = { isDeleted: true };
+      
+      // Add role filter if specified
+      if (role && role !== 'all') {
+        matchCondition.role = role;
+        console.log('🔍 Added role filter to aggregation:', role);
+      }
+      
+      // Add search filter if specified
+      if (search) {
+        const searchRegex = new RegExp(search.toLowerCase().trim(), 'i');
+        matchCondition.$or = [
+          { name: searchRegex },
+          { email: searchRegex }
+        ];
+        console.log('🔍 Added search filter to aggregation:', search);
+      }
+      
+      console.log('🔍 Final aggregation match condition:', JSON.stringify(matchCondition));
+
+      // Use aggregation to ensure proper filtering
+      const aggregationPipeline = [
+        { $match: matchCondition },
+        { $sort: sort },
+        { $skip: skip },
+        { $limit: limitNum },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'deletedBy',
+            foreignField: '_id',
+            as: 'deletedBy',
+            pipeline: [
+              { $project: { name: 1, email: 1, role: 1 } }
+            ]
+          }
+        },
+        { $unwind: { path: '$deletedBy', preserveNullAndEmptyArrays: true } },
+        {
+          $project: {
+            password: 0,
+            emailVerificationToken: 0,
+            emailOtp: 0,
+            emailOtpExpires: 0
+          }
+        }
+      ];
+
+      const softDeletedUsers = await User.aggregate(aggregationPipeline);
+
+      console.log('🔍 Found soft-deleted users count:', softDeletedUsers.length);
+      console.log('🔍 Sample result check:');
+      if (softDeletedUsers.length > 0) {
+        console.log('🔍 First user isDeleted:', softDeletedUsers[0].isDeleted);
+        console.log('🔍 First user deletedAt:', softDeletedUsers[0].deletedAt);
+      }
+
+      // Get total count for pagination using aggregation
+      const countPipeline = [
+        { $match: matchCondition },
+        { $count: 'total' }
+      ];
+      const countResult = await User.aggregate(countPipeline);
+      const totalSoftDeletedUsers = countResult[0]?.total || 0;
+      console.log('🔍 Total soft-deleted users in DB:', totalSoftDeletedUsers);
+
+      // Get count by role (for statistics, use base isDeleted filter)
+      const deletedByRole = await User.aggregate([
+        { $match: { isDeleted: true } },
+        { $group: { _id: '$role', count: { $sum: 1 } } }
+      ]);
+      console.log('🔍 Soft-deleted users by role:', deletedByRole);
+
+      // Verify all results are actually soft-deleted
+      const allActuallyDeleted = softDeletedUsers.every(user => {
+        return user.isDeleted === true && user.deletedAt !== null;
+      });
+      console.log('🔍 All users actually soft-deleted:', allActuallyDeleted);
+
+      res.status(200).json({
+        success: true,
+        data: {
+          users: softDeletedUsers,
+          pagination: {
+            currentPage: pageNum,
+            totalPages: Math.ceil(totalSoftDeletedUsers / limitNum),
+            totalUsers: totalSoftDeletedUsers,
+            itemsPerPage: limitNum,
+            hasNext: pageNum < Math.ceil(totalSoftDeletedUsers / limitNum),
+            hasPrev: pageNum > 1
+          },
+          statistics: {
+            totalSoftDeleted: totalSoftDeletedUsers,
+            deletedByRole: deletedByRole.reduce((acc, item) => {
+              acc[item._id] = item.count;
+              return acc;
+            }, {})
+          },
+          filters: {
+            role: role || 'all',
+            sortBy: sortField,
+            sortOrder: sortOrder || 'desc',
+            search: search || ''
+          }
+        }
+      });
+    } catch (error) {
+      console.error('❌ Get soft-deleted users error:', error);
+      next(error);
+    }
+  }
+
+  /**
+   * Debug endpoint to compare query methods for finding users
+   * GET /debug/user/:id
+   */
+  async debugUserQuery(req, res, next) {
+    try {
+      const { id } = req.params;
+      console.log('🔍 Debug: Comparing query methods for ID:', id);
+
+      // Method 1: Simple findById (what restore endpoint uses)
+      console.log('\n🔍 Method 1: User.findById()');
+      const user1 = await User.findById(id);
+      console.log('Result:', !!user1);
+      if (user1) {
+        console.log('User found:', user1.name, 'isDeleted:', user1.isDeleted);
+      }
+
+      // Method 2: Aggregation pipeline (what soft-deleted endpoint uses)
+      console.log('\n🔍 Method 2: Aggregation pipeline (like soft-deleted endpoint)');
+      const aggregationPipeline = [
+        { $match: { _id: new mongoose.Types.ObjectId(id) } },
+        { $match: { isDeleted: true } },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'deletedBy',
+            foreignField: '_id',
+            as: 'deletedBy',
+            pipeline: [
+              { $project: { name: 1, email: 1, role: 1 } }
+            ]
+          }
+        },
+        { $unwind: { path: '$deletedBy', preserveNullAndEmptyArrays: true } }
+      ];
+      
+      const user2 = await User.aggregate(aggregationPipeline);
+      console.log('Result:', user2.length);
+      if (user2.length > 0) {
+        console.log('User found:', user2[0].name, 'isDeleted:', user2[0].isDeleted);
+      }
+
+      // Method 3: Simple findOne with isDeleted filter
+      console.log('\n🔍 Method 3: User.findOne() with isDeleted: true');
+      const user3 = await User.findOne({ _id: id, isDeleted: true });
+      console.log('Result:', !!user3);
+      if (user3) {
+        console.log('User found:', user3.name, 'isDeleted:', user3.isDeleted);
+      }
+
+      // Method 4: Direct MongoDB query
+      console.log('\n🔍 Method 4: Direct MongoDB query');
+      const db = mongoose.connection.db;
+      const user4 = await db.collection('users').findOne({ 
+        _id: new mongoose.Types.ObjectId(id) 
+      });
+      console.log('Result:', !!user4);
+      if (user4) {
+        console.log('User found:', user4.name, 'isDeleted:', user4.isDeleted);
+      }
+
+      // Method 5: Count all users to verify database connection
+      console.log('\n🔍 Method 5: Count all users');
+      const totalUsers = await User.countDocuments();
+      console.log('Total users in User model:', totalUsers);
+      
+      const totalUsersDirect = await db.collection('users').countDocuments();
+      console.log('Total users in direct DB:', totalUsersDirect);
+
+      // Return comparison results
+      res.json({
+        success: true,
+        debug: {
+          id: id,
+          methods: {
+            findById: {
+              found: !!user1,
+              user: user1 ? {
+                name: user1.name,
+                email: user1.email,
+                isDeleted: user1.isDeleted,
+                role: user1.role
+              } : null
+            },
+            aggregation: {
+              found: user2.length > 0,
+              user: user2.length > 0 ? {
+                name: user2[0].name,
+                email: user2[0].email,
+                isDeleted: user2[0].isDeleted,
+                role: user2[0].role
+              } : null
+            },
+            findOne: {
+              found: !!user3,
+              user: user3 ? {
+                name: user3.name,
+                email: user3.email,
+                isDeleted: user3.isDeleted,
+                role: user3.role
+              } : null
+            },
+            directMongo: {
+              found: !!user4,
+              user: user4 ? {
+                name: user4.name,
+                email: user4.email,
+                isDeleted: user4.isDeleted,
+                role: user4.role
+              } : null
+            }
+          },
+          counts: {
+            userModel: totalUsers,
+            directDB: totalUsersDirect
+          }
+        }
+      });
+
+    } catch (error) {
+      console.error('❌ Debug query error:', error);
+      next(error);
+    }
+  }
+
+  /**
+   * Permanently delete any user (regardless of role)
    * DELETE /api/users/:userId/permanent
+   * Works for: client, doctor, supervisor, admin - ANY role
    */
   async permanentDeleteUser(req, res, next) {
     try {
+      console.log('🔍 permanentDeleteUser called for user:', req.params.userId);
+      
       const { userId } = req.params;
-      const { reason } = req.body;
+      const { reason } = req.body || {};
+      const deletedBy = req.user.id;
 
-      // Validate ObjectId format
-      if (!userId.match(/^[0-9a-fA-F]{24}$/)) {
+      // Validate user ID
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
         return res.status(400).json({
           success: false,
-          error: 'Invalid user ID format. User ID must be a 24-character hex string',
-          providedId: userId,
-          idLength: userId.length
+          error: 'Invalid user ID'
         });
       }
 
-      // Find the user (must be already soft-deleted) - works for both users and supervisors
-      console.log(`🔍 Permanent Delete: Looking for user with ID: ${userId}`);
+      console.log('🔍 Step 1: Finding user for permanent deletion...');
       
-      const user = await User.findOne({ 
-        _id: userId, 
-        $or: [
-          { isDeleted: true },
-          { isDeleted: "true" }
-        ]
+      // Use direct MongoDB query since Mongoose has issues
+      console.log('🔍 Using direct MongoDB query for permanent deletion');
+      const db = mongoose.connection.db;
+      const userDoc = await db.collection('users').findOne({ 
+        _id: new mongoose.Types.ObjectId(userId) 
       });
-
-      console.log(`👤 Permanent Delete: Found deleted user:`, user ? 'YES' : 'NO');
-
-      if (!user) {
-        // Check if user exists at all
-        const anyUser = await User.findOne({ _id: userId });
-        console.log(`🔍 Permanent Delete: Any user with this ID:`, anyUser ? 'YES' : 'NO');
-        
-        if (anyUser) {
-          console.log(`📊 Permanent Delete: User details:`, {
-            _id: anyUser._id,
-            name: anyUser.name,
-            email: anyUser.email,
-            role: anyUser.role,
-            isDeleted: anyUser.isDeleted,
-            isDeletedType: typeof anyUser.isDeleted,
-            deletedAt: anyUser.deletedAt
-          });
-        }
-
+      
+      if (!userDoc) {
+        console.log('❌ User with ID', userId, 'not found in database');
         return res.status(404).json({
           success: false,
-          error: 'Deleted user/supervisor not found or not marked as deleted',
-          debug: {
-            searchedId: userId,
-            anyUserExists: !!anyUser,
-            userRole: anyUser?.role,
-            isDeletedValue: anyUser?.isDeleted,
-            isDeletedType: typeof anyUser?.isDeleted
-          }
+          error: 'User not found in database'
         });
       }
 
-      // Store user info for audit before deletion
+      console.log('🔍 ✅ User found in database!');
+      console.log('🔍 User name:', userDoc.name);
+      console.log('🔍 User email:', userDoc.email);
+      console.log('🔍 User role:', userDoc.role);
+      console.log('🔍 User isDeleted status:', userDoc.isDeleted);
+
+      // Store user info for audit trail before deletion
       const userInfo = {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        deletedAt: user.deletedAt,
-        deletedBy: user.deletedBy
+        id: userDoc._id,
+        name: userDoc.name,
+        email: userDoc.email,
+        role: userDoc.role,
+        status: userDoc.status,
+        isDeleted: userDoc.isDeleted,
+        deletedAt: userDoc.deletedAt,
+        deletedBy: userDoc.deletedBy
       };
 
-      // Check if user has related data that should be cleaned up
-      const relatedDataChecks = [
-        // Check for subscriptions
-        Subscription && Subscription.countDocuments({ 
-          $or: [{ clientId: userId }, { doctorId: userId }] 
-        }),
-        // Check for diet plans
-        DietPlan && DietPlan.countDocuments({ doctorId: userId }),
-        // Check for workout plans
-        WorkoutPlan && WorkoutPlan.countDocuments({ 
-          $or: [{ clientId: userId }, { doctorId: userId }] 
-        })
-      ];
+      console.log('✅ Proceeding with permanent deletion for user:', userDoc.name, 'with role:', userDoc.role);
 
-      const relatedDataCounts = await Promise.all(relatedDataChecks);
-      const hasRelatedData = relatedDataCounts.some(count => count > 0);
-
-      if (hasRelatedData) {
-        return res.status(400).json({
-          success: false,
-          error: 'Cannot permanently delete user. User has related data (subscriptions, diet plans, etc.)',
-          relatedData: {
-            subscriptions: relatedDataCounts[0] || 0,
-            dietPlans: relatedDataCounts[1] || 0,
-            workoutPlans: relatedDataCounts[2] || 0
-          }
-        });
-      }
-
-      // Permanently delete the user
-      await User.findByIdAndDelete(userId);
-
-      // Create audit log for permanent user deletion
-      const AuditLog = require('../models/AuditLog');
-      await AuditLog.createLog({
-        adminId: req.user.userId,
-        actionType: 'permanent_delete_user',
-        targetId: userInfo.id,
-        targetType: userInfo.role === 'supervisor' ? 'Supervisor' : 'User',
-        details: {
-          reason: reason || 'Permanent deletion by admin/supervisor',
-          changes: {
-            oldValues: userInfo,
-            newValues: null // User is permanently deleted
-          },
-          metadata: {
-            userName: userInfo.name,
-            userEmail: userInfo.email,
-            userRole: userInfo.role,
-            deletedBy: {
-              id: req.user.userId,
-              name: req.user.name,
-              email: req.user.email
-            },
-            relatedData: {
-              subscriptions: relatedDataCounts[0] || 0,
-              dietPlans: relatedDataCounts[1] || 0,
-              workoutPlans: relatedDataCounts[2] || 0
-            }
-          }
-        },
-        result: 'success',
-        ipAddress: req.ip,
-        userAgent: req.get('User-Agent')
+      // PERMANENTLY DELETE THE USER using direct MongoDB
+      console.log('🔍 Step 2: Permanently deleting user from database...');
+      
+      const deleteResult = await db.collection('users').deleteOne({
+        _id: new mongoose.Types.ObjectId(userId)
       });
 
-      // Log the permanent deletion for audit
+      console.log('✅ User permanently deleted from database!');
+      console.log('🔍 Delete result:', deleteResult);
+      console.log('🔍 Permanently deleted user role:', userDoc.role);
+      console.log('🔍 User email:', userDoc.email);
+
+      // Create audit log for permanent user deletion
+      try {
+        const AuditLog = require('../models/AuditLog');
+        await AuditLog.createLog({
+          adminId: req.user.userId,
+          actionType: 'permanent_delete_user',
+          targetId: userInfo.id,
+          targetType: userInfo.role === 'supervisor' ? 'Supervisor' : 'User',
+          details: {
+            reason: reason || 'Permanent deletion by admin/supervisor',
+            changes: {
+              oldValues: userInfo,
+              newValues: null // User is permanently deleted
+            },
+            metadata: {
+              userName: userInfo.name,
+              userEmail: userInfo.email,
+              userRole: userInfo.role,
+              deletedBy: {
+                id: req.user.userId,
+                name: req.user.name,
+                email: req.user.email,
+                role: req.user.role
+              }
+            }
+          },
+          result: 'success',
+          ipAddress: req.ip,
+          userAgent: req.get('User-Agent')
+        });
+        console.log('🔍 Audit log created for permanent user deletion');
+      } catch (auditError) {
+        console.error('❌ Failed to create audit log:', auditError);
+        // Continue even if audit fails
+      }
+
       console.log(`🗑️ User permanently deleted:`, {
         deletedBy: req.user.userId,
         deletedUser: userInfo,
@@ -777,7 +964,7 @@ class UserController {
         data: {
           deletedUser: userInfo,
           deletedBy: {
-            id: req.user.userId,
+            _id: req.user._id,
             name: req.user.name,
             email: req.user.email,
             role: req.user.role
@@ -786,11 +973,13 @@ class UserController {
           reason: reason || 'Permanent deletion by admin/supervisor'
         }
       });
+
     } catch (error) {
       console.error('❌ Permanent delete user error:', error);
       next(error);
     }
   }
-}
+
+};
 
 module.exports = new UserController();

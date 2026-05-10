@@ -64,7 +64,6 @@ const permissionSchema = new mongoose.Schema({
       'ACCESS',
       'MODIFY',
       'CANCEL',
-      'RESTORE',
       'RECOMMEND',
       'UNRECOMMEND'
     ]
@@ -240,15 +239,7 @@ permissionSchema.statics.createDefaultPermissions = async function() {
       resource: 'USERS',
       level: 5
     },
-    {
-      name: 'restore_deleted_users',
-      description: 'Ability to restore soft-deleted users',
-      category: 'USER_MANAGEMENT',
-      action: 'RESTORE',
-      resource: 'USERS',
-      level: 4
-    },
-
+        
     // Doctor Management
     {
       name: 'manage_doctors',
@@ -275,15 +266,7 @@ permissionSchema.statics.createDefaultPermissions = async function() {
       resource: 'DOCTORS',
       level: 3
     },
-    {
-      name: 'restore_doctor',
-      description: 'Ability to restore deleted doctors',
-      category: 'DOCTOR_MANAGEMENT',
-      action: 'RESTORE',
-      resource: 'DOCTORS',
-      level: 4
-    },
-    {
+        {
       name: 'view_doctor_profile',
       description: 'Ability to view doctor profiles',
       category: 'DOCTOR_MANAGEMENT',

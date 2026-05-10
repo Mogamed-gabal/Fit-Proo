@@ -18,7 +18,6 @@ const SUPERVISOR_ALLOWED_ACTIONS = [
   'manage_supervisor_audit',
   'read_permissions',
   'manage_permissions',
-  'restore_deleted_users',
   'permanent_delete_users',
   'view_deleted_users',
   'MANAGE_BUNDLES'

@@ -265,49 +265,6 @@ class DoctorController {
   }
 
   /**
-   * Restore doctor (after soft delete)
-   * PATCH /api/doctors/:doctorId/restore
-   */
-  async restoreDoctor(req, res, next) {
-    try {
-      const { doctorId } = req.params;
-
-      const doctor = await User.findOneAndUpdate(
-        { 
-          _id: doctorId, 
-          role: 'doctor', 
-          isDeleted: true 
-        },
-        { 
-          isDeleted: false,
-          deletedAt: null,
-          deletedBy: null,
-          restoredAt: new Date(),
-          restoredBy: req.user.userId
-        },
-        { new: true }
-      )
-      .select('-password -id_card_front -id_card_back -__v');
-
-      if (!doctor) {
-        return res.status(404).json({
-          success: false,
-          error: 'Doctor not found or not deleted'
-        });
-      }
-
-      res.status(200).json({
-        success: true,
-        message: 'Doctor restored successfully',
-        data: doctor
-      });
-    } catch (error) {
-      console.error('❌ Restore doctor error:', error);
-      next(error);
-    }
-  }
-
-  /**
    * Get doctor statistics
    * GET /api/doctors/stats
    */

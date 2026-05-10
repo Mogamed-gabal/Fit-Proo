@@ -126,7 +126,6 @@ class GlobalSupervisorAudit {
       // Doctor management
       'PATCH:/api/doctors/:doctorId/approve': { action: 'APPROVE_DOCTOR', module: 'DOCTORS' },
       'PATCH:/api/doctors/:doctorId/reject': { action: 'REJECT_DOCTOR', module: 'DOCTORS' },
-      'PATCH:/api/doctors/:doctorId/restore': { action: 'RESTORE_DOCTOR', module: 'DOCTORS' },
       'GET:/api/doctors/:doctorId': { action: 'VIEW_DOCTOR_PROFILE', module: 'DOCTORS' },
       
       // Diet plan management
