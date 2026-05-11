@@ -464,6 +464,101 @@ class WorkoutPlanController {
       next(error);
     }
   }
+
+  /**
+   * Get all workout plans (admin only)
+   */
+  async getAllWorkoutPlans(req, res, next) {
+    try {
+      const { 
+        page = 1, 
+        limit = 10, 
+        status, 
+        difficulty, 
+        clientId, 
+        doctorId,
+        search,
+        isActive 
+      } = req.query;
+      const skip = (page - 1) * limit;
+
+      // Validate limit
+      if (limit > 100) {
+        return res.status(400).json({
+          success: false,
+          error: 'Limit cannot exceed 100'
+        });
+      }
+
+      // Build query
+      const query = {};
+      
+      if (status) {
+        query.status = status;
+      }
+      
+      if (difficulty) {
+        query.difficulty = difficulty;
+      }
+      
+      if (clientId) {
+        query.clientId = clientId;
+      }
+      
+      if (doctorId) {
+        query.doctorId = doctorId;
+      }
+
+      if (isActive !== undefined) {
+        query.isActive = isActive === 'true';
+      }
+
+      // Add search functionality
+      if (search) {
+        query.$or = [
+          { name: { $regex: search, $options: 'i' } },
+          { description: { $regex: search, $options: 'i' } },
+          { notes: { $regex: search, $options: 'i' } }
+        ];
+      }
+
+      // Get workout plans
+      const [workoutPlans, total] = await Promise.all([
+        WorkoutPlan.find(query)
+          .populate('clientId', 'name email')
+          .populate('doctorId', 'name email')
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(parseInt(limit))
+          .lean(),
+        WorkoutPlan.countDocuments(query)
+      ]);
+
+      res.status(200).json({
+        success: true,
+        data: {
+          workoutPlans,
+          pagination: {
+            currentPage: parseInt(page),
+            totalPages: Math.ceil(total / limit),
+            totalPlans: total,
+            hasNext: skip + limit < total,
+            hasPrev: page > 1
+          },
+          filters: {
+            search,
+            status,
+            difficulty,
+            clientId,
+            doctorId,
+            isActive
+          }
+        }
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = new WorkoutPlanController();

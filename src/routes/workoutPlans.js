@@ -28,6 +28,16 @@ router.use(authenticate);
 // Apply global sanitization
 router.use(sanitizeInputs);
 
+// ADMIN ROUTES
+
+/**
+ * Get all workout plans (admin only)
+ */
+router.get('/plans', 
+  requirePermission('view_all_workout_plans'),
+  workoutPlanController.getAllWorkoutPlans.bind(workoutPlanController)
+);
+
 // DOCTOR ROUTES
 
 /**
