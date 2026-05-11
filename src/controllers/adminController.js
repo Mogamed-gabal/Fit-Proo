@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const bcrypt = require('bcryptjs');
 const { blockUserWithSubscriptionHandling, softDeleteUserWithCleanup, withTransaction } = require('../utils/transactionHelper');
 const { auditBlockUser, auditUnblockUser, auditSoftDeleteUser } = require('../middlewares/auditMiddleware');
 
@@ -660,6 +661,149 @@ const getBlockedUsers = async (req, res) => {
     });
   }
 };
+
+/**
+ * Change user password (admin only)
+ */
+const changeUserPassword = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { newPassword, confirmPassword } = req.body;
+
+    // Validate inputs
+    if (!newPassword || !confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        error: 'New password and confirmation are required'
+      });
+    }
+
+    if (newPassword.length < 8) {
+      return res.status(400).json({
+        success: false,
+        error: 'Password must be at least 8 characters'
+      });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        error: 'Passwords do not match'
+      });
+    }
+
+    // Find user
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: 'User not found'
+      });
+    }
+
+    // Hash new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update password
+    await User.findByIdAndUpdate(userId, {
+      password: hashedPassword,
+      updatedAt: new Date()
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Password changed successfully',
+      data: {
+        userId: userId,
+        changedAt: new Date()
+      }
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+
+/**
+ * Admin change own password
+ */
+const changeOwnPassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+
+    // Validate inputs
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        error: 'Current password, new password, and confirmation are required'
+      });
+    }
+
+    if (newPassword.length < 8) {
+      return res.status(400).json({
+        success: false,
+        error: 'New password must be at least 8 characters'
+      });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        error: 'New passwords do not match'
+      });
+    }
+
+    // Get current admin user
+    const adminId = req.user._id;
+    const admin = await User.findById(adminId);
+    
+    if (!admin) {
+      return res.status(404).json({
+        success: false,
+        error: 'Admin not found'
+      });
+    }
+
+    // Verify current password
+    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, admin.password);
+    if (!isCurrentPasswordValid) {
+      return res.status(400).json({
+        success: false,
+        error: 'Current password is incorrect'
+      });
+    }
+
+    // Hash new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedNewPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update password
+    await User.findByIdAndUpdate(adminId, {
+      password: hashedNewPassword,
+      updatedAt: new Date()
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Password changed successfully',
+      data: {
+        adminId: adminId,
+        changedAt: new Date()
+      }
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   getAllUsers,
   getUserById,
@@ -669,5 +813,7 @@ module.exports = {
   createSupervisor,
   deleteSupervisor,
   getAllSupervisors,
-  getBlockedUsers
+  getBlockedUsers,
+  changeUserPassword,
+  changeOwnPassword
 };

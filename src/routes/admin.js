@@ -67,6 +67,19 @@ router.delete('/users/:userId',
   adminController.softDeleteUser
 );
 
+// Change user password
+router.put('/users/:userId/change-password', 
+  requirePermission('manage_user'),
+  canManageUser('userId'),
+  adminController.changeUserPassword
+);
+
+// Admin change own password
+router.put('/change-password', 
+  requirePermission('manage_profile'),
+  adminController.changeOwnPassword
+);
+
 // Create supervisor
 router.post('/supervisors', 
   requirePermission('manage_supervisors'),
