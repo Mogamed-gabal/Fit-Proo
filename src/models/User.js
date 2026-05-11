@@ -189,14 +189,16 @@ phone: {
     originalName: String,
     mimetype: String,
     size: Number,
-    buffer: Buffer
+    secure_url: String,
+    public_id: String
   },
   id_card_back: {
     filename: String,
     originalName: String,
     mimetype: String,
     size: Number,
-    buffer: Buffer
+    secure_url: String,
+    public_id: String
   },
 height: {
     type: Number,

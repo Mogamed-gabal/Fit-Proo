@@ -70,7 +70,7 @@ class DoctorController {
       // Get doctors with pagination
       const [doctors, total] = await Promise.all([
         User.find(query)
-          .select('-password -id_card_front -id_card_back -__v')
+          .select('-password -__v')
           .sort({ createdAt: -1 })
           .skip(skip)
           .limit(limitNum)
@@ -607,6 +607,7 @@ class DoctorController {
       next(error);
     }
   }
-}
+
+  }
 
 module.exports = new DoctorController();
