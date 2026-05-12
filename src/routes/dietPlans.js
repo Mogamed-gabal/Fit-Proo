@@ -8,6 +8,48 @@ const { body, param, query } = require('express-validator');
 // Apply authentication middleware to all routes
 router.use(authenticate);
 
+// ADMIN ROUTES
+
+/**
+ * Get all diet plans (admin only)
+ * GET /api/diet-plans/admin/all
+ */
+router.get('/admin/all',
+  requirePermission('view_all_diet_plans'),
+  [
+    query('page')
+      .optional()
+      .isInt({ min: 1 })
+      .withMessage('Page must be a positive integer'),
+    query('limit')
+      .optional()
+      .isInt({ min: 1, max: 100 })
+      .withMessage('Limit must be between 1 and 100'),
+    query('search')
+      .optional()
+      .trim()
+      .isLength({ max: 100 })
+      .withMessage('Search term cannot exceed 100 characters'),
+    query('clientId')
+      .optional()
+      .isMongoId()
+      .withMessage('Invalid client ID'),
+    query('doctorId')
+      .optional()
+      .isMongoId()
+      .withMessage('Invalid doctor ID'),
+    query('status')
+      .optional()
+      .isIn(['active', 'completed', 'paused'])
+      .withMessage('Status must be active, completed, or paused'),
+    query('difficulty')
+      .optional()
+      .isIn(['beginner', 'intermediate', 'advanced'])
+      .withMessage('Difficulty must be beginner, intermediate, or advanced')
+  ],
+  dietPlanController.getAllDietPlans.bind(dietPlanController)
+);
+
 /**
  * Create a new diet plan for a client
  * POST /api/diet-plans

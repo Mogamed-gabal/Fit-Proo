@@ -408,7 +408,13 @@ class WorkoutPlanController {
 
       let workoutPlan;
 
-      if (req.user.role === 'doctor') {
+      if (req.user.role === 'admin') {
+        // Admin can view any workout plan
+        workoutPlan = await WorkoutPlan.findOne({ 
+          _id: planId 
+        }).populate('clientId', 'name email')
+         .populate('doctorId', 'name email');
+      } else if (req.user.role === 'doctor') {
         // Doctor can view any plan they created
         workoutPlan = await WorkoutPlan.findOne({ 
           _id: planId, 

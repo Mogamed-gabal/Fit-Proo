@@ -585,6 +585,97 @@ class DietPlanController {
   }
 
   /**
+   * Get all diet plans (admin only)
+   * GET /api/diet-plans/admin/all
+   */
+  async getAllDietPlans(req, res, next) {
+    try {
+      const { 
+        page = 1, 
+        limit = 10, 
+        search, 
+        clientId, 
+        doctorId, 
+        status, 
+        difficulty 
+      } = req.query;
+
+      const skip = (page - 1) * limit;
+
+      // Validate limit
+      if (limit > 100) {
+        return res.status(400).json({
+          success: false,
+          error: 'Limit cannot exceed 100'
+        });
+      }
+
+      // Build query
+      const query = {};
+      
+      if (clientId) {
+        query.clientId = clientId;
+      }
+      
+      if (doctorId) {
+        query.doctorId = doctorId;
+      }
+      
+      if (status) {
+        query.status = status;
+      }
+      
+      if (difficulty) {
+        query.difficulty = difficulty;
+      }
+
+      // Add search functionality
+      if (search) {
+        query.$or = [
+          { name: { $regex: search, $options: 'i' } },
+          { description: { $regex: search, $options: 'i' } },
+          { notes: { $regex: search, $options: 'i' } }
+        ];
+      }
+
+      // Get diet plans
+      const [dietPlans, total] = await Promise.all([
+        DietPlan.find(query)
+          .populate('clientId', 'name email')
+          .populate('doctorId', 'name email')
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(parseInt(limit))
+          .lean(),
+        DietPlan.countDocuments(query)
+      ]);
+
+      res.status(200).json({
+        success: true,
+        data: {
+          dietPlans,
+          pagination: {
+            currentPage: parseInt(page),
+            totalPages: Math.ceil(total / limit),
+            totalPlans: total,
+            hasNext: skip + limit < total,
+            hasPrev: page > 1
+          },
+          filters: {
+            search,
+            clientId,
+            doctorId,
+            status,
+            difficulty
+          }
+        }
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
    * Get all diet plans for the current doctor
    * GET /api/diet-plans
    */
