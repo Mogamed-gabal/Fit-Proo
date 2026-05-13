@@ -55,7 +55,7 @@ const corsOptions = {
       'http://localhost:3000',
       'http://localhost:5500',
       'http://localhost:4200',
-      'https://fit-front-three.vercel.app'
+      'https://fit-front-hazel.vercel.app'
     ];
 
     if (!origin) return callback(null, true);
@@ -72,7 +72,7 @@ app.use(cors({
   origin: [
     'http://localhost:4200',
     'http://localhost:3000', 
-    'https://fit-front-three.vercel.app',
+    'https://fit-front-hazel.vercel.app',
     'https://fit-proo.vercel.app'
   ],
   credentials: true
