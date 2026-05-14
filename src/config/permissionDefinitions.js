@@ -88,6 +88,13 @@ const PERMISSION_DEFINITIONS = {
     defaultRoles: ['admin'],
     isAssignable: true
   },
+  view_all_workout_plans: {
+    description: 'View all workout plans in the system (admin only)',
+    category: 'WORKOUT_MANAGEMENT',
+    level: 'SYSTEM',
+    defaultRoles: ['admin'],
+    isAssignable: true
+  },
   view_client_progress: {
     description: 'View client progress and analytics',
     category: 'WORKOUT_MANAGEMENT',
@@ -118,6 +125,13 @@ const PERMISSION_DEFINITIONS = {
     defaultRoles: ['supervisor'],
     isAssignable: true
   },
+  view_dashboard_analytics: {
+    description: 'View dashboard analytics and statistics',
+    category: 'USER_MANAGEMENT',
+    level: 'LIMITED',
+    defaultRoles: ['supervisor'],
+    isAssignable: true
+  },
   read_subscriptions: {
     description: 'Read subscription information',
     category: 'USER_MANAGEMENT',
@@ -141,6 +155,20 @@ const PERMISSION_DEFINITIONS = {
   },
   read_user_details: {
     description: 'Read detailed user information',
+    category: 'USER_MANAGEMENT',
+    level: 'LIMITED',
+    defaultRoles: ['supervisor'],
+    isAssignable: true
+  },
+  view_deleted_users: {
+    description: 'View deleted and blocked users',
+    category: 'USER_MANAGEMENT',
+    level: 'LIMITED',
+    defaultRoles: ['supervisor'],
+    isAssignable: true
+  },
+  permanent_delete_users: {
+    description: 'Permanently delete users from system',
     category: 'USER_MANAGEMENT',
     level: 'LIMITED',
     defaultRoles: ['supervisor'],

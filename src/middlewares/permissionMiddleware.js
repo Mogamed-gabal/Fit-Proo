@@ -6,10 +6,13 @@
 const SUPERVISOR_ALLOWED_ACTIONS = [
   'read_users',
   'read_dashboard',
+  'view_dashboard_analytics',
   'read_subscriptions',
   'block_client',
   'unblock_client',
   'read_user_details',
+  'view_deleted_users',
+  'permanent_delete_users',
   'manage_users_limited',
   'manage_supervisors',
   'read_audit_logs',
@@ -18,10 +21,8 @@ const SUPERVISOR_ALLOWED_ACTIONS = [
   'manage_supervisor_audit',
   'read_permissions',
   'manage_permissions',
-  'permanent_delete_users',
-  'view_deleted_users',
   'MANAGE_BUNDLES'
-  
+
 ];
 
 const DOCTOR_ALLOWED_ACTIONS = [

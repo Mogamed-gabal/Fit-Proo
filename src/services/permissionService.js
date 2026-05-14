@@ -52,22 +52,6 @@ class PermissionService {
         throw new Error(`Permission '${permissionName}' cannot be assigned to users`);
       }
 
-      // Check if user already has this permission
-      const existingPermission = await Permission.findOne({
-        assignedTo: userId,
-        name: permissionName,
-        isActive: true,
-        isDeleted: false,
-        $or: [
-          { expiresAt: null },
-          { expiresAt: { $gt: new Date() } }
-        ]
-      });
-
-      if (existingPermission) {
-        throw new Error(`User already has permission '${permissionName}'`);
-      }
-
       // Get user info
       const user = await User.findById(userId);
       if (!user) {
@@ -78,6 +62,49 @@ class PermissionService {
       const assignedByUser = await User.findById(assignedBy);
       if (!assignedByUser) {
         throw new Error('Assigned by user not found');
+      }
+
+      // Check if user already has this permission (including deleted ones)
+      const existingPermission = await Permission.findOne({
+        assignedTo: userId,
+        name: permissionName
+      });
+
+      if (existingPermission) {
+        if (existingPermission.isActive && !existingPermission.isDeleted) {
+          throw new Error(`User already has permission '${permissionName}'`);
+        } else {
+          // Reactivate the permission instead of creating a new one
+          existingPermission.isActive = true;
+          existingPermission.isDeleted = false;
+          existingPermission.assignedBy = assignedBy;
+          existingPermission.assignedAt = new Date();
+          existingPermission.expiresAt = expiresAt;
+          existingPermission.metadata = {
+            reason: reason || 'Permission reactivated via admin panel'
+          };
+          await existingPermission.save();
+
+          console.log(`🔐 Reactivated permission '${permissionName}' for user ${userId} by ${assignedBy}`);
+
+          return {
+            success: true,
+            data: {
+              permission: existingPermission,
+              user: {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role
+              },
+              grantedBy: {
+                _id: assignedByUser._id,
+                name: assignedByUser.name,
+                email: assignedByUser.email
+              }
+            }
+          };
+        }
       }
 
       // Create permission assignment

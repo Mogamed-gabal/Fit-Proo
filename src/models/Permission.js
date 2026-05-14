@@ -9,7 +9,6 @@ const permissionSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    unique: true,
     trim: true,
     maxlength: [100, 'Permission name cannot exceed 100 characters']
   },

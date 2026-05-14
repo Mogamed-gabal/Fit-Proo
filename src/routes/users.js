@@ -14,7 +14,7 @@ router.use(authenticate);
  * Query params: page, limit, search
  */
 router.get('/',
-  requirePermission('view_client_workout_plans'),
+  requirePermission('read_users'),
   [
     query('page')
       .optional()
@@ -38,7 +38,7 @@ router.get('/',
  * GET /api/users/stats
  */
 router.get('/stats',
-  requirePermission('view_client_workout_plans'),
+  requirePermission('read_users'),
   userController.getUserStats
 );
 
@@ -123,7 +123,7 @@ router.get('/soft-deleted',
  * GET /api/users/:id
  */
 router.get('/:id',
-  requirePermission('view_client_workout_plans'),
+  requirePermission('read_user_details'),
   [
     param('id')
       .isMongoId()
@@ -137,7 +137,7 @@ router.get('/:id',
  * PATCH /api/users/:id/status
  */
 router.patch('/:id/status',
-  requirePermission('manage_client_workout_plans'),
+  requirePermission('manage_users_limited'),
   [
     param('id')
       .isMongoId()
@@ -154,7 +154,7 @@ router.patch('/:id/status',
  * DELETE /api/users/:id
  */
 router.delete('/:id',
-  requirePermission('manage_client_workout_plans'),
+  requirePermission('manage_users_limited'),
   [
     param('id')
       .isMongoId()
@@ -196,7 +196,7 @@ router.get('/debug/user/:id', userController.debugUserQuery);
  * Works for: client, doctor, supervisor, admin - ANY role
  */
 router.delete('/:userId/permanent',
-  requirePermission('view_deleted_users'),
+  requirePermission('permanent_delete_users'),
   [
     param('userId')
       .isMongoId()
