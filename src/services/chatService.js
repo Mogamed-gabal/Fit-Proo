@@ -154,6 +154,12 @@ class ChatService {
 
       for (const chat of expiredChats) {
         const subscription = chat.subscriptionBinding.subscriptionId;
+        
+        // Skip if subscription is null or deleted
+        if (!subscription) {
+          continue;
+        }
+        
         const gracePeriodEnd = new Date(subscription.endDate.getTime() + (24 * 60 * 60 * 1000));
         
         if (now > gracePeriodEnd) {
@@ -259,9 +265,9 @@ class ChatService {
         attachment
       });
 
-      // Step 6: Record message usage (atomic) - Only for non-system messages
+      // Step 6: Record message usage (atomic) - Only for non-system messages and clients
       let usageResult = null;
-      if (type !== 'SYSTEM') {
+      if (type !== 'SYSTEM' && sendPermission.accessType !== 'DOCTOR_FREE') {
         usageResult = await EnhancedChatAccessService.recordMessage(senderId, chatId, {
           messageType: type,
           messageId: message.messageId
@@ -271,11 +277,19 @@ class ChatService {
       // Step 7: Update chat rate limiting
       await Chat.updateRateLimit(chatId);
 
+      // Update accessResult with the latest remainingFreeMessages from usage (for clients only)
+      const updatedAccessResult = {
+        ...sendPermission,
+        remainingFreeMessages: sendPermission.accessType === 'DOCTOR_FREE'
+          ? null
+          : (usageResult?.usage?.remainingFreeMessages ?? sendPermission.remainingFreeMessages)
+      };
+
       return {
         success: true,
         message: message.toSafeObject(),
-        usage: usageResult ? usageResult.usage : null,
-        accessResult: sendPermission
+        usage: sendPermission.accessType === 'DOCTOR_FREE' ? null : (usageResult ? usageResult.usage : null),
+        accessResult: updatedAccessResult
       };
 
     } catch (error) {

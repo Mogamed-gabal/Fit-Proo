@@ -76,14 +76,14 @@ class EnhancedChatAccessService {
     try {
       // First check if user can access the chat
       const accessResult = await this.canAccessChat(userId, chatId);
-      
+
       if (!accessResult.allowed) {
         return accessResult;
       }
 
       // Additional send-specific checks
       const sendChecks = await this._performSendMessageChecks(userId, chatId);
-      
+
       if (!sendChecks.allowed) {
         return this._createAccessResponse(false, sendChecks.reason, {
           ...accessResult,
@@ -91,7 +91,19 @@ class EnhancedChatAccessService {
         });
       }
 
-      // Check user rate limiting for sending messages
+      // Doctors are always free to send messages - skip rate limiting and free message checks
+      if (sendChecks.isDoctor) {
+        return this._createAccessResponse(true, config.ACCESS_REASONS.DOCTOR_FREE_ACCESS, {
+          mode: config.ACCESS_MODES.DOCTOR_FREE,
+          isUsingFreeMessage: false,
+          remainingFreeMessages: null, // Doctors don't have free message limits
+          willExpireSoon: false,
+          isInGracePeriod: false,
+          accessType: 'DOCTOR_FREE'
+        });
+      }
+
+      // Check user rate limiting for sending messages (for clients only)
       const rateLimitCheck = await UserRateLimit.checkRateLimit(userId, 'SEND_MESSAGE');
       if (!rateLimitCheck.allowed) {
         return this._createAccessResponse(false, rateLimitCheck.reason, {
@@ -268,6 +280,26 @@ class EnhancedChatAccessService {
    */
   static async _evaluateAccessPriority(userId, chat, subscription) {
     const now = new Date();
+    
+    // Handle free chats without subscription
+    if (!subscription && chat.subscriptionBinding.accessType === 'FREE') {
+      const remainingFreeMessages = await UserMessageUsage.getRemainingFreeMessages(userId);
+      return this._createAccessResponse(true, config.ACCESS_REASONS.FREE_CHAT_ACCESS, {
+        mode: config.ACCESS_MODES.FREE,
+        accessType: 'FREE',
+        isUsingFreeMessage: true,
+        remainingFreeMessages: remainingFreeMessages,
+        willExpireSoon: false,
+        isInGracePeriod: false
+      });
+    }
+    
+    // If no subscription and not free chat, deny access
+    if (!subscription) {
+      return this._createAccessResponse(false, config.ACCESS_REASONS.NO_ACCESS, {
+        reason: 'No subscription found and not a free chat'
+      });
+    }
     
     // Priority 1: Active Subscription Access
     if (subscription.status === 'ACTIVE' && subscription.endDate >= now) {
@@ -572,17 +604,28 @@ class EnhancedChatAccessService {
   static async _performSendMessageChecks(userId, chatId) {
     try {
       // Check if chat is active
-      const chat = await Chat.findOne({ 
-        chatId, 
-        status: 'ACTIVE', 
-        isDeleted: false 
+      const chat = await Chat.findOne({
+        chatId,
+        status: 'ACTIVE',
+        isDeleted: false
       });
 
       if (!chat) {
         return { allowed: false, reason: config.ACCESS_REASONS.CHAT_SUSPENDED };
       }
 
-      return { allowed: true };
+      // Get user info to check role
+      const user = await User.findById(userId);
+      if (!user) {
+        return { allowed: false, reason: 'USER_NOT_FOUND' };
+      }
+
+      // Doctors are always free to send messages in active chats
+      if (user.role === 'doctor') {
+        return { allowed: true, isDoctor: true };
+      }
+
+      return { allowed: true, isDoctor: false };
 
     } catch (error) {
       console.error('Error performing send message checks:', error);
