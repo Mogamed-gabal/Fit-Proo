@@ -219,6 +219,36 @@ const PERMISSION_DEFINITIONS = {
     isAssignable: true
   },
 
+  // CHAT MANAGEMENT
+  VIEW_ALL_CHATS: {
+    description: 'View all chats in the system',
+    category: 'CHAT_MANAGEMENT',
+    level: 'SYSTEM',
+    defaultRoles: ['admin'],
+    isAssignable: true
+  },
+  manage_chat: {
+    description: 'Manage chat messages and conversations',
+    category: 'CHAT_MANAGEMENT',
+    level: 'SYSTEM',
+    defaultRoles: ['admin'],
+    isAssignable: true
+  },
+  moderate_chat: {
+    description: 'Moderate chat content and block users',
+    category: 'CHAT_MANAGEMENT',
+    level: 'SYSTEM',
+    defaultRoles: ['admin'],
+    isAssignable: true
+  },
+  view_chat_analytics: {
+    description: 'View chat analytics and statistics',
+    category: 'CHAT_MANAGEMENT',
+    level: 'SYSTEM',
+    defaultRoles: ['admin'],
+    isAssignable: true
+  },
+
   // PERMISSION MANAGEMENT
   read_permissions: {
     description: 'Read permission assignments',

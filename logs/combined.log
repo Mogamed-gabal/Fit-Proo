@@ -2817,3 +2817,102 @@
 {"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-16 05:47:06"}
 {"level":"info","message":"User 69eb51928c5f34603f96294f connected (admin)","service":"fitness-platform","timestamp":"2026-05-16 05:47:34"}
 {"level":"info","message":"Auto-rejoined 0 chats for user 69eb51928c5f34603f96294f","service":"fitness-platform","timestamp":"2026-05-16 05:47:36"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-16 05:47:51"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-16 05:47:51"}
+{"level":"info","message":"User 69eb51928c5f34603f96294f connected (admin)","service":"fitness-platform","timestamp":"2026-05-16 05:47:56"}
+{"level":"info","message":"Auto-rejoined 0 chats for user 69eb51928c5f34603f96294f","service":"fitness-platform","timestamp":"2026-05-16 05:47:57"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-16 05:50:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-16 05:50:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-16 05:55:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-16 05:55:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-16 06:00:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-16 06:00:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-16 06:05:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-16 06:05:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-16 06:10:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-16 06:10:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-16 06:15:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-16 06:15:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-16 06:20:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-16 06:20:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-16 06:25:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-16 06:25:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-16 06:30:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-16 06:30:00"}
+{"level":"info","message":"User 69eb51928c5f34603f96294f disconnected","service":"fitness-platform","timestamp":"2026-05-16 06:31:39"}
+{"level":"info","message":"User 69eb51928c5f34603f96294f connected (admin)","service":"fitness-platform","timestamp":"2026-05-16 06:31:43"}
+{"level":"info","message":"Auto-rejoined 0 chats for user 69eb51928c5f34603f96294f","service":"fitness-platform","timestamp":"2026-05-16 06:31:44"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-16 06:35:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-16 06:35:00"}
+{"level":"info","message":"User 69eb51928c5f34603f96294f disconnected","service":"fitness-platform","timestamp":"2026-05-16 06:37:58"}
+{"level":"info","message":"User 69eb51928c5f34603f96294f connected (admin)","service":"fitness-platform","timestamp":"2026-05-16 06:38:00"}
+{"level":"info","message":"Auto-rejoined 0 chats for user 69eb51928c5f34603f96294f","service":"fitness-platform","timestamp":"2026-05-16 06:38:01"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-16 06:40:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-16 06:40:00"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-16 06:40:57"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-16 06:40:57"}
+{"expiredAt":"2026-05-16T03:38:22.000Z","level":"error","message":"Socket authentication error: jwt expired","name":"TokenExpiredError","service":"fitness-platform","stack":"TokenExpiredError: jwt expired\n    at C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\jsonwebtoken\\verify.js:190:21\n    at getSecret (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\jsonwebtoken\\verify.js:97:14)\n    at module.exports [as verify] (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\jsonwebtoken\\verify.js:101:10)\n    at ChatSocketHandler.authenticateSocket (C:\\Users\\user\\Desktop\\fitness-app\\backend\\src\\socket\\chatSocketHandler.js:48:27)\n    at run (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\socket.io\\dist\\namespace.js:133:19)\n    at Namespace.run (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\socket.io\\dist\\namespace.js:144:9)\n    at Namespace._add (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\socket.io\\dist\\namespace.js:221:14)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)","timestamp":"2026-05-16 06:41:00"}
+{"level":"info","message":"User 69eb51928c5f34603f96294f connected (admin)","service":"fitness-platform","timestamp":"2026-05-16 06:41:37"}
+{"level":"info","message":"Auto-rejoined 0 chats for user 69eb51928c5f34603f96294f","service":"fitness-platform","timestamp":"2026-05-16 06:41:38"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-16 06:43:58"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-16 06:43:58"}
+{"level":"info","message":"User 69eb51928c5f34603f96294f connected (admin)","service":"fitness-platform","timestamp":"2026-05-16 06:44:00"}
+{"level":"info","message":"Auto-rejoined 0 chats for user 69eb51928c5f34603f96294f","service":"fitness-platform","timestamp":"2026-05-16 06:44:01"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-16 06:45:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-16 06:45:00"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-16 06:45:35"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-16 06:45:35"}
+{"level":"info","message":"User 69eb51928c5f34603f96294f connected (admin)","service":"fitness-platform","timestamp":"2026-05-16 06:45:36"}
+{"level":"info","message":"Auto-rejoined 0 chats for user 69eb51928c5f34603f96294f","service":"fitness-platform","timestamp":"2026-05-16 06:45:37"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-16 06:47:03"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-16 06:47:03"}
+{"level":"info","message":"User 69eb51928c5f34603f96294f connected (admin)","service":"fitness-platform","timestamp":"2026-05-16 06:47:07"}
+{"level":"info","message":"Auto-rejoined 0 chats for user 69eb51928c5f34603f96294f","service":"fitness-platform","timestamp":"2026-05-16 06:47:08"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-16 06:50:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-16 06:50:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-16 06:55:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-16 06:55:00"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-16 07:00:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-16 07:00:00"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-16 07:02:03"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-16 07:02:03"}
+{"expiredAt":"2026-05-16T03:56:35.000Z","level":"error","message":"Socket authentication error: jwt expired","name":"TokenExpiredError","service":"fitness-platform","stack":"TokenExpiredError: jwt expired\n    at C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\jsonwebtoken\\verify.js:190:21\n    at getSecret (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\jsonwebtoken\\verify.js:97:14)\n    at module.exports [as verify] (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\jsonwebtoken\\verify.js:101:10)\n    at ChatSocketHandler.authenticateSocket (C:\\Users\\user\\Desktop\\fitness-app\\backend\\src\\socket\\chatSocketHandler.js:48:27)\n    at run (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\socket.io\\dist\\namespace.js:133:19)\n    at Namespace.run (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\socket.io\\dist\\namespace.js:144:9)\n    at Namespace._add (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\socket.io\\dist\\namespace.js:221:14)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)","timestamp":"2026-05-16 07:02:04"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-16 07:04:23"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-16 07:04:23"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-16 07:05:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-16 07:05:00"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-16 07:05:47"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-16 07:05:47"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-16 07:07:20"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-16 07:07:20"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-16 07:08:04"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-16 07:08:04"}
+{"level":"info","message":"User 69eb51928c5f34603f96294f connected (admin)","service":"fitness-platform","timestamp":"2026-05-16 07:08:09"}
+{"level":"info","message":"Auto-rejoined 0 chats for user 69eb51928c5f34603f96294f","service":"fitness-platform","timestamp":"2026-05-16 07:08:10"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-16 07:10:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-16 07:10:00"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-16 07:11:34"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-16 07:11:34"}
+{"level":"info","message":"User 69eb51928c5f34603f96294f connected (admin)","service":"fitness-platform","timestamp":"2026-05-16 07:11:39"}
+{"level":"info","message":"Auto-rejoined 0 chats for user 69eb51928c5f34603f96294f","service":"fitness-platform","timestamp":"2026-05-16 07:11:40"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-16 07:15:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-16 07:15:00"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-16 07:18:56"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-16 07:18:56"}
+{"expiredAt":"2026-05-16T04:12:59.000Z","level":"error","message":"Socket authentication error: jwt expired","name":"TokenExpiredError","service":"fitness-platform","stack":"TokenExpiredError: jwt expired\n    at C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\jsonwebtoken\\verify.js:190:21\n    at getSecret (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\jsonwebtoken\\verify.js:97:14)\n    at module.exports [as verify] (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\jsonwebtoken\\verify.js:101:10)\n    at ChatSocketHandler.authenticateSocket (C:\\Users\\user\\Desktop\\fitness-app\\backend\\src\\socket\\chatSocketHandler.js:48:27)\n    at run (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\socket.io\\dist\\namespace.js:133:19)\n    at Namespace.run (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\socket.io\\dist\\namespace.js:144:9)\n    at Namespace._add (C:\\Users\\user\\Desktop\\fitness-app\\backend\\node_modules\\socket.io\\dist\\namespace.js:221:14)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)","timestamp":"2026-05-16 07:18:57"}
+{"level":"info","message":"Running subscription lifecycle sync...","service":"fitness-platform","timestamp":"2026-05-16 07:20:00"}
+{"level":"info","message":"Subscription lifecycle sync completed","service":"fitness-platform","timestamp":"2026-05-16 07:20:00"}
+{"level":"info","message":"User 69eb51938c5f34603f962956 connected (supervisor)","service":"fitness-platform","timestamp":"2026-05-16 07:20:56"}
+{"level":"info","message":"Auto-rejoined 0 chats for user 69eb51938c5f34603f962956","service":"fitness-platform","timestamp":"2026-05-16 07:20:58"}
+{"level":"info","message":"User 69eb51938c5f34603f962956 disconnected","service":"fitness-platform","timestamp":"2026-05-16 07:24:35"}
+{"level":"info","message":"User 69eb51938c5f34603f962956 connected (supervisor)","service":"fitness-platform","timestamp":"2026-05-16 07:24:38"}
+{"level":"info","message":"Auto-rejoined 0 chats for user 69eb51938c5f34603f962956","service":"fitness-platform","timestamp":"2026-05-16 07:24:39"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-16 07:25:13"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-16 07:25:13"}
+{"level":"info","message":"User 69eb51938c5f34603f962956 connected (supervisor)","service":"fitness-platform","timestamp":"2026-05-16 07:25:19"}
+{"level":"info","message":"Auto-rejoined 0 chats for user 69eb51938c5f34603f962956","service":"fitness-platform","timestamp":"2026-05-16 07:25:20"}
+{"level":"info","message":"User 69eb51938c5f34603f962956 disconnected","service":"fitness-platform","timestamp":"2026-05-16 07:26:41"}
+{"level":"info","message":"Chat socket handler initialized","service":"fitness-platform","timestamp":"2026-05-16 07:28:40"}
+{"level":"info","message":"Server running on port 5000 in development mode","service":"fitness-platform","timestamp":"2026-05-16 07:28:40"}
+{"level":"info","message":"User 69eb51928c5f34603f96294f connected (admin)","service":"fitness-platform","timestamp":"2026-05-16 07:29:28"}
+{"level":"info","message":"Auto-rejoined 0 chats for user 69eb51928c5f34603f96294f","service":"fitness-platform","timestamp":"2026-05-16 07:29:29"}

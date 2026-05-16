@@ -29,7 +29,7 @@ const permissionSchema = new mongoose.Schema({
       'AUDIT_MANAGEMENT',
       'PERMISSION_MANAGEMENT',
       'SELF_MANAGEMENT',
-      'DOCTOR_MANAGEMENT', 
+      'DOCTOR_MANAGEMENT',
       'CLIENT_MANAGEMENT',
       'DIET_PLAN_MANAGEMENT',
       'DIET_PROGRESS_MANAGEMENT',
@@ -41,7 +41,8 @@ const permissionSchema = new mongoose.Schema({
       'SECURITY',
       'NOTIFICATIONS',
       'EXERCISE_MANAGEMENT',
-      'SUBSCRIPTION_MANAGEMENT'
+      'SUBSCRIPTION_MANAGEMENT',
+      'CHAT_MANAGEMENT'
     ]
   },
   action: {
