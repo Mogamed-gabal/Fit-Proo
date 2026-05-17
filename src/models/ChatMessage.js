@@ -197,16 +197,59 @@ chatMessageSchema.statics.getChatMessages = async function(chatId, options = {})
     }
     
     const messages = await this.find(query)
-      .populate('senderId', 'name email role avatar')
-      .populate('readBy.userId', 'name email')
+      .populate('senderId', 'name email role avatar profilePicture')
+      .populate('readBy.userId', 'name email avatar profilePicture')
       .populate('metadata.replyTo', 'messageId content senderId')
       .sort({ createdAt: -1 })
       .limit(limit)
       .skip((page - 1) * limit)
       .lean();
-    
+
+    // Replace null senderId with deleted-user
+    const processedMessages = messages.map(message => {
+      if (!message.senderId) {
+        message.senderId = {
+          _id: null,
+          name: 'deleted-user',
+          email: 'deleted-user',
+          role: 'deleted',
+          avatar: null,
+          profilePicture: null
+        };
+      }
+
+      // Replace null readBy.userId with deleted-user
+      if (message.readBy && message.readBy.length > 0) {
+        message.readBy = message.readBy.map(read => {
+          if (!read.userId) {
+            read.userId = {
+              _id: null,
+              name: 'deleted-user',
+              email: 'deleted-user',
+              avatar: null,
+              profilePicture: null
+            };
+          }
+          return read;
+        });
+      }
+
+      // Replace null metadata.replyTo.senderId with deleted-user
+      if (message.metadata && message.metadata.replyTo && !message.metadata.replyTo.senderId) {
+        message.metadata.replyTo.senderId = {
+          _id: null,
+          name: 'deleted-user',
+          email: 'deleted-user',
+          avatar: null,
+          profilePicture: null
+        };
+      }
+
+      return message;
+    });
+
     // Reverse to get chronological order
-    return messages.reverse();
+    return processedMessages.reverse();
     
   } catch (error) {
     console.error('Error getting chat messages:', error);
@@ -426,13 +469,41 @@ chatMessageSchema.statics.removeReaction = async function(messageId, userId) {
 // Instance methods
 chatMessageSchema.methods.toSafeObject = function() {
   const obj = this.toObject();
-  
+
+  // Replace null senderId with deleted-user
+  if (!obj.senderId) {
+    obj.senderId = {
+      _id: null,
+      name: 'deleted-user',
+      email: 'deleted-user',
+      role: 'deleted',
+      avatar: null,
+      profilePicture: null
+    };
+  }
+
+  // Replace null readBy.userId with deleted-user
+  if (obj.readBy && obj.readBy.length > 0) {
+    obj.readBy = obj.readBy.map(read => {
+      if (!read.userId) {
+        read.userId = {
+          _id: null,
+          name: 'deleted-user',
+          email: 'deleted-user',
+          avatar: null,
+          profilePicture: null
+        };
+      }
+      return read;
+    });
+  }
+
   // Remove sensitive data if needed
   if (this.isDeleted) {
     obj.content = '[Message deleted]';
     obj.attachment = null;
   }
-  
+
   return obj;
 };
 

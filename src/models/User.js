@@ -127,6 +127,10 @@ phone: {
       return this.role === 'doctor';
     }
   },
+  dynamicPermissions: {
+    type: [String],
+    default: []
+  },
   recommendedAt: {
     type: Date,
     required: function() {

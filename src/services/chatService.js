@@ -428,15 +428,30 @@ class ChatService {
         createdAt: { $gt: lastReadAt },
         isDeleted: false
       })
-      .populate('senderId', 'name email role avatar')
+      .populate('senderId', 'name email role avatar profilePicture')
       .sort({ createdAt: -1 })
       .limit(20)
       .lean();
 
+      // Replace null senderId with deleted-user
+      const processedUnreadMessages = unreadMessages.map(message => {
+        if (!message.senderId) {
+          message.senderId = {
+            _id: null,
+            name: 'deleted-user',
+            email: 'deleted-user',
+            role: 'deleted',
+            avatar: null,
+            profilePicture: null
+          };
+        }
+        return message;
+      });
+
       return {
         success: true,
         unreadCount,
-        unreadMessages: unreadMessages.reverse(),
+        unreadMessages: processedUnreadMessages.reverse(),
         lastReadAt
       };
 
@@ -546,7 +561,7 @@ class ChatService {
         ...(type && { type })
       })
       .populate('subscriptionBinding.subscriptionId')
-      .populate('participants.userId', 'name email role avatar')
+      .populate('participants.userId', 'name email role avatar profilePicture')
       .sort({ updatedAt: -1 })
       .limit(limit)
       .skip((page - 1) * limit)
@@ -592,7 +607,7 @@ class ChatService {
 
       // Get chat details
       const chat = await Chat.findOne({ chatId, status: 'ACTIVE', isDeleted: false })
-        .populate('participants.userId', 'name email role avatar')
+        .populate('participants.userId', 'name email role avatar profilePicture')
         .populate('subscriptionBinding.subscriptionId');
 
       if (!chat) {
@@ -766,8 +781,39 @@ class ChatService {
         ChatMessage.countDocuments({ chatId, isDeleted: false }),
         this._getUnreadCountsByUser(chatId),
         ChatMessage.distinct('senderId', { chatId, isDeleted: false }),
-        ChatMessage.findOne({ chatId, isDeleted: false }).sort({ createdAt: -1 })
+        ChatMessage.findOne({ chatId, isDeleted: false })
+          .populate('senderId', 'name email role avatar profilePicture')
+          .populate('readBy.userId', 'name email avatar profilePicture')
+          .sort({ createdAt: -1 })
       ]);
+
+      // Replace null senderId with deleted-user in lastMessage
+      if (lastMessage && !lastMessage.senderId) {
+        lastMessage.senderId = {
+          _id: null,
+          name: 'deleted-user',
+          email: 'deleted-user',
+          role: 'deleted',
+          avatar: null,
+          profilePicture: null
+        };
+      }
+
+      // Replace null readBy.userId with deleted-user in lastMessage
+      if (lastMessage && lastMessage.readBy && lastMessage.readBy.length > 0) {
+        lastMessage.readBy = lastMessage.readBy.map(read => {
+          if (!read.userId) {
+            read.userId = {
+              _id: null,
+              name: 'deleted-user',
+              email: 'deleted-user',
+              avatar: null,
+              profilePicture: null
+            };
+          }
+          return read;
+        });
+      }
 
       return {
         success: true,
@@ -1049,7 +1095,19 @@ class ChatService {
             from: 'users',
             localField: 'participants.userId',
             foreignField: '_id',
-            as: 'participantDetails'
+            as: 'participantDetails',
+            pipeline: [
+              {
+                $project: {
+                  _id: 1,
+                  name: 1,
+                  email: 1,
+                  role: 1,
+                  avatar: 1,
+                  profilePicture: 1
+                }
+              }
+            ]
           }
         },
         
@@ -1139,10 +1197,25 @@ class ChatService {
           const participantDetail = chat.participantDetails.find(
             detail => detail._id.toString() === participant.userId.toString()
           );
-          
+
+          // Replace null user with deleted-user
+          if (!participantDetail) {
+            return {
+              ...participant,
+              user: {
+                _id: null,
+                name: 'deleted-user',
+                email: 'deleted-user',
+                role: 'deleted',
+                avatar: null,
+                profilePicture: null
+              }
+            };
+          }
+
           return {
             ...participant,
-            user: participantDetail || null
+            user: participantDetail
           };
         });
         

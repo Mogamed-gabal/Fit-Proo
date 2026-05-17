@@ -47,7 +47,8 @@ const authenticate = async (req, res, next) => {
       role: user.role,
       email: user.email,
       sessionId: decoded.sessionId,
-      jti: decoded.jti // 🔒 SECURITY FIX: Add JWT ID for potential logout
+      jti: decoded.jti, // 🔒 SECURITY FIX: Add JWT ID for potential logout
+      dynamicPermissions: user.dynamicPermissions || [] // Load dynamic permissions
     };
 
     next();

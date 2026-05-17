@@ -30,7 +30,7 @@ const PERMISSION_DEFINITIONS = {
     description: 'Access admin dashboard and panels',
     category: 'SYSTEM_ADMINISTRATION',
     level: 'SYSTEM',
-    defaultRoles: ['admin'],
+    defaultRoles: ['admin', 'supervisor'],
     isAssignable: true
   },
   view_sensitive_data: {
@@ -72,20 +72,27 @@ const PERMISSION_DEFINITIONS = {
     defaultRoles: ['admin'],
     isAssignable: true
   },
+  view_all_diet_plans: {
+    description: 'View all diet plans in the system',
+    category: 'DIET_MANAGEMENT',
+    level: 'SYSTEM',
+    defaultRoles: ['admin'],
+    isAssignable: true
+  },
 
   // WORKOUT MANAGEMENT
   manage_client_workout_plans: {
     description: 'Manage client workout plans',
     category: 'WORKOUT_MANAGEMENT',
     level: 'SYSTEM',
-    defaultRoles: ['admin'],
+    defaultRoles: ['doctor'],
     isAssignable: true
   },
   view_client_workout_plans: {
     description: 'View client workout plans',
     category: 'WORKOUT_MANAGEMENT',
     level: 'SYSTEM',
-    defaultRoles: ['admin'],
+    defaultRoles: ['doctor'],
     isAssignable: true
   },
   view_all_workout_plans: {
@@ -99,14 +106,14 @@ const PERMISSION_DEFINITIONS = {
     description: 'View client progress and analytics',
     category: 'WORKOUT_MANAGEMENT',
     level: 'SYSTEM',
-    defaultRoles: ['admin'],
+    defaultRoles: ['doctor'],
     isAssignable: true
   },
   manage_workout_templates: {
     description: 'Create and manage workout templates',
     category: 'WORKOUT_MANAGEMENT',
     level: 'SYSTEM',
-    defaultRoles: ['admin'],
+    defaultRoles: ['doctor'],
     isAssignable: true
   },
 
@@ -115,84 +122,84 @@ const PERMISSION_DEFINITIONS = {
     description: 'Read user information and profiles',
     category: 'USER_MANAGEMENT',
     level: 'LIMITED',
-    defaultRoles: ['supervisor'],
+    defaultRoles: ['admin'],
     isAssignable: true
   },
   read_dashboard: {
     description: 'Access main dashboard',
     category: 'USER_MANAGEMENT',
     level: 'LIMITED',
-    defaultRoles: ['supervisor'],
+    defaultRoles: ['admin'],
     isAssignable: true
   },
   view_dashboard_analytics: {
     description: 'View dashboard analytics and statistics',
     category: 'USER_MANAGEMENT',
     level: 'LIMITED',
-    defaultRoles: ['supervisor'],
+    defaultRoles: ['admin'],
     isAssignable: true
   },
   read_subscriptions: {
     description: 'Read subscription information',
     category: 'USER_MANAGEMENT',
     level: 'LIMITED',
-    defaultRoles: ['supervisor'],
+    defaultRoles: ['admin'],
     isAssignable: true
   },
   block_client: {
     description: 'Block client accounts',
     category: 'USER_MANAGEMENT',
     level: 'LIMITED',
-    defaultRoles: ['supervisor'],
+    defaultRoles: ['admin'],
     isAssignable: true
   },
   unblock_client: {
     description: 'Unblock client accounts',
     category: 'USER_MANAGEMENT',
     level: 'LIMITED',
-    defaultRoles: ['supervisor'],
+    defaultRoles: ['admin'],
     isAssignable: true
   },
   read_user_details: {
     description: 'Read detailed user information',
     category: 'USER_MANAGEMENT',
     level: 'LIMITED',
-    defaultRoles: ['supervisor'],
+    defaultRoles: ['admin'],
     isAssignable: true
   },
   view_deleted_users: {
     description: 'View deleted and blocked users',
     category: 'USER_MANAGEMENT',
     level: 'LIMITED',
-    defaultRoles: ['supervisor'],
+    defaultRoles: ['admin'],
     isAssignable: true
   },
   permanent_delete_users: {
     description: 'Permanently delete users from system',
     category: 'USER_MANAGEMENT',
     level: 'LIMITED',
-    defaultRoles: ['supervisor'],
+    defaultRoles: ['admin'],
     isAssignable: true
   },
   manage_users_limited: {
     description: 'Limited user management capabilities',
     category: 'USER_MANAGEMENT',
     level: 'LIMITED',
-    defaultRoles: ['supervisor'],
+    defaultRoles: ['admin'],
     isAssignable: true
   },
   manage_supervisors: {
     description: 'Manage supervisor accounts',
     category: 'USER_MANAGEMENT',
     level: 'LIMITED',
-    defaultRoles: ['supervisor'],
+    defaultRoles: ['admin'],
     isAssignable: true
   },
   read_audit_logs: {
     description: 'Read system audit logs',
     category: 'USER_MANAGEMENT',
     level: 'LIMITED',
-    defaultRoles: ['supervisor'],
+    defaultRoles: ['admin'],
     isAssignable: true
   },
 

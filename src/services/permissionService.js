@@ -127,7 +127,12 @@ class PermissionService {
       });
 
       await assignment.save();
-      
+
+      // Update user's dynamic permissions array
+      await User.findByIdAndUpdate(userId, {
+        $addToSet: { dynamicPermissions: permissionName }
+      });
+
       // Log the assignment
       console.log(`🔐 Granted permission '${permissionName}' to user ${userId} by ${assignedBy}`);
       
@@ -191,7 +196,12 @@ class PermissionService {
       };
 
       await permission.save();
-      
+
+      // Remove from user's dynamic permissions array
+      await User.findByIdAndUpdate(userId, {
+        $pull: { dynamicPermissions: permissionName }
+      });
+
       console.log(`🔐 Revoked permission '${permissionName}' from user ${userId} by ${revokedBy}`);
       
       return {

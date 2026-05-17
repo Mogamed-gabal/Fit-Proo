@@ -4,25 +4,7 @@
 
 // Define allowed actions for each role
 const SUPERVISOR_ALLOWED_ACTIONS = [
-  'read_users',
-  'read_dashboard',
-  'view_dashboard_analytics',
-  'read_subscriptions',
-  'block_client',
-  'unblock_client',
-  'read_user_details',
-  'view_deleted_users',
-  'permanent_delete_users',
-  'manage_users_limited',
-  'manage_supervisors',
-  'read_audit_logs',
-  'read_supervisor_audit',
-  'export_supervisor_audit',
-  'manage_supervisor_audit',
-  'read_permissions',
-  'manage_permissions',
-  'MANAGE_BUNDLES'
-
+  'access_admin_panel' // Allow supervisor to access admin panel
 ];
 
 const DOCTOR_ALLOWED_ACTIONS = [
@@ -34,11 +16,7 @@ const DOCTOR_ALLOWED_ACTIONS = [
   'manage_own_bio',
   'update_own_profile',
   'manage_own_profile_picture',
-  'read_own_weight',
-  'manage_client_workout_plans',
-  'view_client_workout_plans',
-  'view_client_progress',
-  'manage_workout_templates'
+  'read_own_weight'
 ];
 
 const CLIENT_ALLOWED_ACTIONS = [
@@ -52,8 +30,7 @@ const CLIENT_ALLOWED_ACTIONS = [
   'manage_own_profile_picture',
   'read_own_weight',
   'manage_own_progress',
-  'view_own_progress',
-  'manage_workout_templates'
+  'view_own_progress'
 ];
 
 /**
@@ -236,12 +213,12 @@ const requirePermission = (action) => {
       if (req.user.role === 'admin') {
         return next();
       }
-      
-      // Allow supervisor if they have permission
-      if (req.user.role === 'supervisor' && req.user.permissions && req.user.permissions.includes('manage_doctors')) {
+
+      // Allow supervisor with explicit permission
+      if (req.user.role === 'supervisor' && req.user.dynamicPermissions && req.user.dynamicPermissions.includes('manage_doctors')) {
         return next();
       }
-      
+
       // If we reach here, it means access was not allowed
       return res.status(403).json({
         success: false,

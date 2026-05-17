@@ -216,18 +216,52 @@ class ChatSocketHandler {
                 createdAt: { $gt: lastReadAt },
                 isDeleted: false
               })
+              .populate('senderId', 'name email role avatar profilePicture')
+              .populate('readBy.userId', 'name email avatar profilePicture')
               .sort({ createdAt: -1 })
               .limit(MAX_REJOIN_MESSAGES)
               .lean();
 
+              // Replace null senderId with deleted-user
+              const processedRecentMessages = recentMessages.map(message => {
+                if (!message.senderId) {
+                  message.senderId = {
+                    _id: null,
+                    name: 'deleted-user',
+                    email: 'deleted-user',
+                    role: 'deleted',
+                    avatar: null,
+                    profilePicture: null
+                  };
+                }
+
+                // Replace null readBy.userId with deleted-user
+                if (message.readBy && message.readBy.length > 0) {
+                  message.readBy = message.readBy.map(read => {
+                    if (!read.userId) {
+                      read.userId = {
+                        _id: null,
+                        name: 'deleted-user',
+                        email: 'deleted-user',
+                        avatar: null,
+                        profilePicture: null
+                      };
+                    }
+                    return read;
+                  });
+                }
+
+                return message;
+              });
+
               // Update participant lastReadAt to current time for sync
               await ChatService.updateParticipantLastRead(chat.chatId, socket.userId);
-              
+
               socket.emit('chat_rejoined', {
                 chatId: chat.chatId,
                 chat: accessResult.chat,
                 unreadCount: accessResult.unreadCount,
-                recentMessages: recentMessages.reverse(), // Reverse to chronological order
+                recentMessages: processedRecentMessages.reverse(), // Reverse to chronological order
                 timestamp: new Date()
               });
 
