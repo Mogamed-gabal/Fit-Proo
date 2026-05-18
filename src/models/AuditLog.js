@@ -126,13 +126,14 @@ auditLogSchema.pre('save', function(next) {
 // Static method to create audit log
 auditLogSchema.statics.createLog = async function(logData) {
   try {
+    console.log('🔍 AuditLog.createLog called:', logData);
     const log = new this(logData);
     await log.save();
+    console.log(`✅ Audit log created: ${logData.actionType} by admin ${logData.adminId}`);
     return log;
   } catch (error) {
-    // Log the error but don't throw to avoid breaking the main operation
-    console.error('Failed to create audit log:', error);
-    return null;
+    console.error('❌ Error creating audit log:', error);
+    throw error;
   }
 };
 

@@ -13,6 +13,8 @@ const AuditLog = require('../models/AuditLog');
  */
 const auditAction = (actionType, targetType, options = {}) => {
   return async (req, res, next) => {
+    console.log('🔍 Audit middleware called:', { actionType, targetType, path: req.path });
+
     // Store original res.json to intercept response
     const originalJson = res.json;
     let responseData = null;
@@ -21,8 +23,9 @@ const auditAction = (actionType, targetType, options = {}) => {
 
     // Intercept response
     res.json = function(data) {
+      console.log('🔍 Audit: Response intercepted:', { actionType, success: data?.success });
       responseData = data;
-      
+
       // Determine if action was successful
       if (data && data.success === false) {
         isSuccess = false;
@@ -31,7 +34,7 @@ const auditAction = (actionType, targetType, options = {}) => {
           code: data.code || 'UNKNOWN_ERROR'
         };
       }
-      
+
       return originalJson.call(this, data);
     };
 
@@ -40,13 +43,17 @@ const auditAction = (actionType, targetType, options = {}) => {
       try {
         // Only log if user is authenticated and is admin/supervisor
         if (!req.user || !['admin', 'supervisor'].includes(req.user.role)) {
+          console.log('❌ Audit: User not admin/supervisor', req.user?.role);
           return;
         }
 
         // Get target ID from request parameters or body
-        const targetId = req.params.userId || req.params.id || req.body.userId || req.body.id;
-        
+        const targetId = req.params.userId || req.params.id || req.params.doctorId || req.body.userId || req.body.id || req.body.doctorId;
+
+        console.log('🔍 Audit: Logging action', { actionType, targetType, targetId, userRole: req.user.role });
+
         if (!targetId && !options.allowNoTarget) {
+          console.log('❌ Audit: No target ID found');
           return; // Skip logging if no target ID found (unless explicitly allowed)
         }
 
@@ -242,6 +249,10 @@ const auditDeactivateBundle = auditAction('deactivate_bundle', 'Bundle', { inclu
 const auditActivateBundle = auditAction('activate_bundle', 'Bundle', { includeChanges: true });
 const auditDeleteBundle = auditAction('delete_bundle', 'Bundle', { includeChanges: true });
 
+// Doctor recommendation audit middleware
+const auditRecommendDoctor = auditAction('recommend_doctor', 'Doctor', { includeChanges: true });
+const auditUnrecommendDoctor = auditAction('unrecommend_doctor', 'Doctor', { includeChanges: true });
+
 module.exports = {
   auditAction,
   auditSystemAction,
@@ -258,6 +269,8 @@ module.exports = {
   auditDeactivateBundle,
   auditActivateBundle,
   auditDeleteBundle,
+  auditRecommendDoctor,
+  auditUnrecommendDoctor,
   captureChanges,
   sanitizeRequestBody
 };

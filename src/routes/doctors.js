@@ -4,6 +4,7 @@ const doctorController = require('../controllers/doctorController');
 const { authenticate } = require('../middlewares/auth');
 const { requirePermission } = require('../middlewares/permissionMiddleware');
 const { body, param, query } = require('express-validator');
+const { auditRecommendDoctor, auditUnrecommendDoctor } = require('../middlewares/auditMiddleware');
 
 // Apply authentication middleware to all routes
 router.use(authenticate);
@@ -132,6 +133,7 @@ router.get('/stats',
  */
 router.post('/:doctorId/recommend',
   requirePermission('recommend_doctor'),
+  auditRecommendDoctor,
   [
     param('doctorId')
       .isMongoId()
@@ -151,6 +153,7 @@ router.post('/:doctorId/recommend',
  */
 router.delete('/:doctorId/recommend',
   requirePermission('unrecommend_doctor'),
+  auditUnrecommendDoctor,
   [
     param('doctorId')
       .isMongoId()
